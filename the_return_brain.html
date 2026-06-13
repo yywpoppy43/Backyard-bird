@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>The Return · The Brain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3ECDD; --panel:#EEE5D2; --panel2:#E9DEC6; --screen:#FBF7EE;
+    --ink:#2A2017; --muted:#6E5F49; --faint:#94846A;
+    --gold:#B0832A; --gold-d:#946718; --verm:#C5452A; --verm-d:#A8381F;
+    --earth:#9A8A5E; --sage:#6F8A5E; --soma:#B07D22; --cog:#4F7390; --weight:#43382B;
+    --line:#D8C9AC; --line-soft:#E7DCC3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper)}
+  body{color:var(--ink);font-family:"Spectral",Georgia,serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .mono{font-family:"JetBrains Mono",monospace}
+  a{color:var(--verm-d)}
+  ::selection{background:rgba(176,131,42,.22)}
+
+  /* header */
+  .top{padding:22px 30px 18px;border-bottom:1px solid var(--line);background:var(--screen)}
+  .top .eyebrow{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold-d);margin-bottom:6px}
+  .top h1{font-weight:300;font-size:30px;letter-spacing:-.02em}
+  .top h1 em{font-style:italic;color:var(--gold)}
+  .top .one{font-style:italic;color:var(--muted);font-size:14px;margin-top:3px;max-width:880px}
+
+  /* layout */
+  .app{display:flex;align-items:flex-start}
+  .side{position:sticky;top:0;align-self:flex-start;width:264px;min-width:264px;height:100vh;overflow-y:auto;
+    border-right:1px solid var(--line);background:var(--panel);padding:18px 14px 24px}
+  .main{flex:1;min-width:0;padding:30px 40px 90px;max-width:1080px}
+
+  .search{position:relative;margin-bottom:16px}
+  .search input{width:100%;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink);
+    background:var(--screen);border:1px solid var(--line);border-radius:6px;padding:9px 11px 9px 30px;outline:none}
+  .search input:focus{border-color:var(--gold)}
+  .search .mag{position:absolute;left:10px;top:8px;color:var(--faint);font-size:13px}
+  .results{margin-top:8px;border:1px solid var(--line);border-radius:6px;background:var(--screen);max-height:300px;overflow-y:auto;display:none}
+  .results.show{display:block}
+  .result{padding:8px 11px;border-top:1px solid var(--line-soft);cursor:pointer;font-size:12.5px}
+  .result:first-child{border-top:none}
+  .result:hover{background:var(--panel2)}
+  .result .rt{font-weight:500;color:var(--ink)}
+  .result .rr{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-d)}
+  .result .rs{color:var(--muted);font-size:11.5px;display:block;margin-top:2px}
+
+  .navlabel{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin:4px 6px 8px}
+  .navitem{display:flex;align-items:baseline;gap:8px;width:100%;text-align:left;background:none;border:none;cursor:pointer;
+    padding:9px 11px;border-radius:6px;color:var(--muted);font-family:"Spectral",serif;transition:.15s;margin-bottom:2px}
+  .navitem:hover{background:var(--panel2);color:var(--ink)}
+  .navitem.on{background:var(--gold);color:#FBF7EE}
+  .navitem.on .nk{color:rgba(251,247,238,.7)}
+  .navitem .ni{font-size:15px;font-weight:500}
+  .navitem .nk{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.06em;color:var(--faint);margin-left:auto}
+
+  .legend{margin:18px 6px 0;padding-top:14px;border-top:1px solid var(--line)}
+  .legend .lg{display:flex;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--muted);margin-bottom:6px}
+  .sidefoot{margin:16px 6px 0;font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.04em;color:var(--faint);line-height:1.7}
+
+  /* generic */
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-d)}
+  .room-title{font-size:38px;font-weight:600;letter-spacing:-.01em;margin:8px 0 8px;line-height:1.04}
+  .room-title em{font-style:italic;color:var(--verm)}
+  .lead-line{font-size:18px;color:var(--muted);max-width:760px;line-height:1.55;margin-bottom:6px}
+  .lead-line b{color:var(--ink);font-weight:500}
+  .rule{height:1px;background:var(--line);margin:30px 0}
+  .sec-label{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .sec-sub{font-size:14.5px;color:var(--muted);max-width:760px;margin-bottom:18px;line-height:1.5}
+  p.txt{font-size:15px;color:var(--ink);line-height:1.62;max-width:780px;margin-bottom:12px}
+  p.txt b{font-weight:600} p.txt em{font-style:italic;color:var(--gold-d)}
+
+  .panel{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:16px 19px;margin-bottom:14px}
+  .panel.gold{border-left:4px solid var(--gold);border-radius:0 8px 8px 0;background:var(--panel2)}
+  .panel.verm{border-left:4px solid var(--verm);border-radius:0 8px 8px 0;background:#F9ECE4}
+  .panel.sage{border-left:4px solid var(--sage);border-radius:0 8px 8px 0}
+  .panel .pk{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-d);margin-bottom:7px}
+  .panel.verm .pk{color:var(--verm)} .panel.sage .pk{color:var(--sage)}
+  .panel p{font-size:15px;color:var(--ink);line-height:1.6} .panel p b{font-weight:500}
+  .panel p+p{margin-top:9px}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0}
+  .chip{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink);background:var(--screen);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:default}
+  .chip.asset{cursor:pointer;transition:.15s}
+  .chip.asset:hover{border-color:var(--gold);background:var(--panel2)}
+  .chip.asset::before{content:"\25C8";color:var(--gold);margin-right:5px;font-size:9px}
+
+  .dot{width:9px;height:9px;border-radius:2px;display:inline-block;flex:none}
+  .dot.done{background:var(--sage)} .dot.partial{background:var(--gold)} .dot.open{background:var(--verm)}
+  .dot.read{background:var(--earth)} .dot.awaited{background:transparent;border:1px dashed var(--earth);border-radius:50%}
+
+  /* spine ribbon */
+  .spine{display:flex;flex-wrap:wrap;gap:0;margin:6px 0 4px}
+  .station{flex:1;min-width:165px;border:1px solid var(--line);border-radius:7px;background:var(--screen);padding:14px 15px;margin:5px;cursor:pointer;transition:.15s;position:relative}
+  .station:hover{border-color:var(--gold);background:var(--panel2)}
+  .station .sn{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-d)}
+  .station h4{font-size:18px;font-weight:500;margin:3px 0 5px}
+  .station p{font-size:12.5px;color:var(--muted);line-height:1.45}
+  .station .arrow{position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--gold);font-family:"JetBrains Mono",monospace;z-index:2}
+
+  /* counts */
+  .counts{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0}
+  .count{border:1px solid var(--line);border-radius:7px;background:var(--screen);padding:11px 16px;min-width:96px}
+  .count .cv{font-size:26px;font-weight:600;color:var(--verm);line-height:1}
+  .count .cl{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+  /* apparatus engine */
+  .engine{border:1.5px solid var(--line);border-radius:11px;background:var(--screen);padding:14px;margin-bottom:16px}
+  .reality{border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:9px 14px;display:flex;align-items:baseline;gap:12px;cursor:pointer}
+  .reality:hover{border-color:var(--gold)}
+  .vbar{text-align:center;color:var(--faint);font-size:14px;margin:5px 0}
+  . engine-body{}
+  .erow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 12px}
+  .layerbtn{border:1px solid var(--line);border-radius:7px;padding:12px 14px;cursor:pointer;background:var(--panel);transition:.15s;text-align:left;width:100%;display:block}
+  .layerbtn:hover{border-color:var(--gold);background:var(--panel2)}
+  .layerbtn .ll{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+  .layerbtn .lsub{font-style:italic;font-size:13px;color:var(--muted);margin-top:2px}
+  .layerbtn .lread{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-top:6px}
+  .lb-soma{border-top:3px solid var(--soma)} .lb-soma .ll{color:var(--soma)}
+  .lb-cog{border-top:3px solid var(--cog)} .lb-cog .ll{color:var(--cog)}
+  .lb-soft{border:1px solid var(--verm);background:#F7E7E0;margin-top:10px} .lb-soft .ll{color:var(--verm)}
+  .lb-hard{border-top:3px solid var(--earth)} .lb-hard .ll{color:var(--earth)}
+  .lb-pilot{border-top:3px solid var(--gold);background:var(--panel2)} .lb-pilot .ll{color:var(--gold-d)}
+  .pilotwrap{display:flex;gap:12px;align-items:stretch}
+  .pilotwrap>.layerbtn{flex:1}
+  .layerdetail{border:1px solid var(--gold);border-left:4px solid var(--gold);border-radius:0 8px 8px 0;background:var(--panel2);padding:15px 18px;margin-top:4px;display:none}
+  .layerdetail.show{display:block}
+  .layerdetail .ld-k{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-d);margin-bottom:6px}
+  .layerdetail h4{font-size:20px;font-weight:500;margin-bottom:6px}
+  .layerdetail p{font-size:14.5px;color:var(--ink);line-height:1.6;max-width:760px}
+
+  /* forms */
+  .forms-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+  .formcard{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+  .formcard h5{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#FBF7EE;background:var(--gold);padding:9px 12px;font-weight:500}
+  .formcard.proven h5{background:var(--gold-d)}
+  .formcard .ftag{font-style:italic;font-size:12px;color:var(--muted);padding:8px 12px 2px}
+  .frow{padding:7px 12px;border-top:1px solid var(--line-soft)}
+  .frow .fk{font-family:"JetBrains Mono",monospace;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-d);display:block;margin-bottom:2px}
+  .frow .fv{font-size:12.5px;color:var(--ink);line-height:1.4}
+  .frow .fv.false{color:var(--verm)}
+
+  /* threads */
+  .thread{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:14px 17px;margin-bottom:12px}
+  .thread .tname{font-size:17px;font-weight:500;margin-bottom:4px}
+  .thread .tnote{font-size:13.5px;color:var(--muted);line-height:1.5;margin-bottom:9px}
+  .thread .strand{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+  .thread .strand .sarrow{color:var(--gold);font-family:"JetBrains Mono",monospace;font-size:11px}
+  .dotcard{border:1px dashed var(--verm);border-radius:8px;background:#F8E8E0;padding:13px 16px;margin-bottom:11px}
+  .dotcard .dn{display:flex;align-items:baseline;gap:9px;margin-bottom:3px}
+  .dotcard .dnum{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--verm);font-weight:500}
+  .dotcard h5{font-size:16px;font-weight:500}
+  .dotcard p{font-size:13.5px;color:var(--muted);line-height:1.5}
+  .dotcard p b{color:var(--ink);font-weight:500}
+
+  /* lexicon */
+  .term{display:grid;grid-template-columns:170px 1fr;gap:18px;padding:13px 0;border-top:1px solid var(--line)}
+  .term:first-child{border-top:none}
+  .term .t{font-size:16px;font-weight:600;color:var(--ink)}
+  .term .t .talias{display:block;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-top:3px;font-weight:400}
+  .term .d{font-size:14px;color:var(--muted);line-height:1.55}
+  .term .d b{color:var(--ink);font-weight:500}
+
+  /* inventory / build */
+  table.inv{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:10px}
+  table.inv th{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  table.inv td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.inv td.b{font-weight:500}
+  .stt{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+  .stt.done{color:var(--sage)} .stt.partial{color:var(--gold)} .stt.open{color:var(--verm)}
+  .order{counter-reset:o;margin-top:6px}
+  .orderstep{display:grid;grid-template-columns:30px 1fr auto;gap:13px;align-items:baseline;padding:11px 0;border-top:1px solid var(--line)}
+  .orderstep:first-child{border-top:none}
+  .orderstep .on{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--gold);font-weight:500}
+  .orderstep .ot{font-size:15px;color:var(--ink)} .orderstep .ot b{font-weight:500} .orderstep .ot span{color:var(--muted)}
+  .orderstep .ow{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+  .roadmap{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--muted);margin-top:6px}
+  .roadmap b{color:var(--ink);font-weight:500;background:var(--panel2);padding:5px 10px;border-radius:4px}
+  .roadmap .ra{color:var(--gold)}
+
+  /* asset library */
+  .filters{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+  .filt{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--screen);border:1px solid var(--line);border-radius:999px;padding:6px 13px;cursor:pointer;transition:.15s}
+  .filt:hover{border-color:var(--gold)} .filt.on{background:var(--gold);color:#FBF7EE;border-color:var(--gold)}
+  .assetgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+  .acard{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:14px 16px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;min-height:150px}
+  .acard:hover{border-color:var(--gold);background:var(--panel2);transform:translateY(-1px)}
+  .acard .ah{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .acard .anum{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--gold-d);letter-spacing:.05em}
+  .acard .akind{font-family:"JetBrains Mono",monospace;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-left:auto}
+  .acard h4{font-size:17px;font-weight:500;margin-bottom:5px;line-height:1.15}
+  .acard .aline{font-size:13px;color:var(--muted);line-height:1.45;flex:1}
+  .acard .afile{font-family:"JetBrains Mono",monospace;font-size:9.5px;color:var(--faint);margin-top:9px;letter-spacing:.02em;word-break:break-all}
+
+  /* reader overlay */
+  .reader{position:fixed;inset:0;background:rgba(42,32,23,.42);backdrop-filter:blur(2px);display:none;z-index:50;padding:38px 20px}
+  .reader.show{display:block}
+  .reader-inner{max-width:860px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:12px;max-height:calc(100vh - 76px);overflow-y:auto;box-shadow:0 24px 70px rgba(42,32,23,.3)}
+  .reader-head{position:sticky;top:0;background:var(--screen);border-bottom:1px solid var(--line);padding:18px 26px;display:flex;align-items:flex-start;gap:14px;z-index:2}
+  .reader-head .rh-meta{flex:1}
+  .reader-head .rh-k{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-d);margin-bottom:5px}
+  .reader-head h2{font-size:27px;font-weight:600;letter-spacing:-.01em;line-height:1.05}
+  .reader-head .rh-file{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--faint);margin-top:6px;word-break:break-all}
+  .reader-close{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 13px;cursor:pointer;color:var(--muted);white-space:nowrap}
+  .reader-close:hover{border-color:var(--verm);color:var(--verm)}
+  .reader-body{padding:8px 26px 30px}
+  .rsec{padding:16px 0;border-top:1px solid var(--line-soft)}
+  .rsec:first-child{border-top:none}
+  .rsec .rk{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-d);margin-bottom:8px}
+  .rsec .rbody{font-size:15px;color:var(--ink);line-height:1.62}
+  .rsec .rbody b{font-weight:600} .rsec .rbody em{font-style:italic;color:var(--gold-d)}
+  .rsec .rbody ul{list-style:none;margin:8px 0 0}
+  .rsec .rbody li{position:relative;padding:6px 0 6px 20px;border-top:1px solid var(--line-soft);font-size:14.5px;line-height:1.5}
+  .rsec .rbody li:first-child{border-top:none}
+  .rsec .rbody li::before{content:"";position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:2px;background:var(--gold)}
+  .rsec .rbody li b{color:var(--ink)}
+  .rsec .rbody .q{font-style:italic;color:var(--muted);border-left:2px solid var(--line);padding-left:11px;margin-top:7px;display:block}
+  .reltag{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--verm);border:1px solid #E8BCAD;border-radius:3px;padding:1px 6px;margin-left:7px;vertical-align:middle}
+
+  .view{display:none;animation:fade .35s ease both}
+  .view.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .footnote{margin-top:30px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);text-align:center;padding-top:18px;border-top:1px solid var(--line)}
+
+  @media(max-width:900px){
+    .app{flex-direction:column}
+    .side{position:relative;width:100%;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+    .main{padding:24px 20px 70px}
+    .grid2,.grid3,.grid4,.forms-grid,.assetgrid,.erow{grid-template-columns:1fr}
+    .term{grid-template-columns:1fr;gap:4px}
+  }
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="eyebrow">The Return · the master canvas · everything in one place</div>
+    <h1>The <em>Brain</em></h1>
+    <p class="one">It diagnoses the pattern that keeps a person stuck under pressure, returns them to their own clarity in the moment it matters, and trains that as a portable skill. Mechanism, not mindset. This canvas holds the whole of it — so you never have to reopen a single file.</p>
+  </header>
+
+  <div class="app">
+    <aside class="side">
+      <div class="search">
+        <span class="mag mono">⌕</span>
+        <input id="q" type="text" placeholder="search everything…" autocomplete="off" spellcheck="false"/>
+        <div class="results" id="results"></div>
+      </div>
+      <div class="navlabel">the spine</div>
+      <button class="navitem on" data-room="overview"><span class="ni">Overview</span><span class="nk">start here</span></button>
+      <button class="navitem" data-room="apparatus"><span class="ni">The Apparatus</span><span class="nk">worldview</span></button>
+      <button class="navitem" data-room="return"><span class="ni">The Return</span><span class="nk">mechanism</span></button>
+      <button class="navitem" data-room="method"><span class="ni">The Method</span><span class="nk">operation</span></button>
+      <button class="navitem" data-room="product"><span class="ni">Product &amp; Build</span><span class="nk">the shape</span></button>
+      <div class="navlabel" style="margin-top:14px">the web</div>
+      <button class="navitem" data-room="connections"><span class="ni">Connections</span><span class="nk">dots</span></button>
+      <button class="navitem" data-room="assets"><span class="ni">Asset Library</span><span class="nk">all 20</span></button>
+      <button class="navitem" data-room="lexicon"><span class="ni">Lexicon</span><span class="nk">terms</span></button>
+      <div class="legend">
+        <div class="lg"><span class="dot done"></span> done</div>
+        <div class="lg"><span class="dot partial"></span> partial</div>
+        <div class="lg"><span class="dot open"></span> open · the seam</div>
+        <div class="lg"><span class="dot read"></span> canon · read in</div>
+        <div class="lg"><span class="dot awaited"></span> awaited · not yet shared</div>
+      </div>
+      <div class="sidefoot">built from your 14 work assets + return_complete, and the canon you shared. assembled 2026·06·13.</div>
+    </aside>
+
+    <main class="main" id="main"></main>
+  </div>
+
+  <div class="reader" id="reader"><div class="reader-inner" id="reader-inner"></div></div>
+
+<script>
+/* ============================================================
+   THE RETURN · THE BRAIN
+   data layer — then render layer — then init
+   ============================================================ */
+
+const SPINE=[
+ {k:"worldview",t:"The worldview",d:"Reality emits one identical weather; each Engine's structure converts it into that person's friction.",room:"apparatus"},
+ {k:"mechanism",t:"The mechanism",d:"Under friction the Software over-weights a false reading; the reveal removes that weight and the Pilot returns.",room:"return"},
+ {k:"operation",t:"The operation",d:"Read / Cue / Land — the four-term formula, run by any operator in any setting.",room:"method"},
+ {k:"product",t:"The product",d:"The read wired to the body. The Mirror reads and ports; the body is where it lands.",room:"product"},
+ {k:"build",t:"The build",d:"The Mirror prototype proves the read first. Forecast Stage 2 is the gating IP.",room:"product"}
+];
+
+const LAYERS=[
+ {id:"reality",cls:"",name:"Reality",sub:"the weather — what enters",read:"—",
+  body:"The single, identical thermodynamic load the universe outputs across the whole planet at once. It does not deliver customized lessons. It only changes the Coefficient of Friction for the moment. Computed as the Cosmic Clock: four gears — Year, Month, Day, Hour — locking into one combined load."},
+ {id:"soma",cls:"lb-soma",name:"Material · Soma",sub:"the engine, felt — the honest channel",read:"the body's tells",
+  body:"The body felt. The register where friction shows with the cover off — un-fakeable. The defense cannot argue with a shaking muscle, which is why the somatic channel is the door: a reveal lands here un-absorbable. The Material Layer is innocent; it only reports the friction."},
+ {id:"cognition",cls:"lb-cog",name:"Material · Cognition",sub:"the engine, narrated — where the Software argues",read:"the words, the story",
+  body:"The engine narrated. The channel where the false story runs and where the defense can argue back. Truth delivered here gets intercepted — mind can't change mind. A pure-text product lives entirely here, which is both the Mirror's home and its hardest constraint."},
+ {id:"software",cls:"lb-soft",name:"Software",sub:"threat-defense · three states",read:"Enneagram · observed",
+  body:"The miscalibrated threat-detection system (Enneagram/Ego). It reads neutral entropy as a lethal threat and floods almost all the attention-weight onto it. Three states: Parasitic Autopilot (Pilot asleep, the defense drives), Harnessed Instrument (Pilot awake, same code now driven), and the moment of crash between them. It never tires — which is why willpower loses and Metal wins."},
+ {id:"hardware",cls:"lb-hard",name:"Hardware",sub:"structure — the given physics",read:"BaZi · computed",
+  body:"The given structure of the Engine — its resting distribution of attention, where it naturally floods, gridlocks, burns, or scatters. A biological taxonomy of habitat (sailboat / windmill / sealed tent), read deterministically from birth data via BaZi. This is what the Forecast Engine computes; Stage 2 (composition → friction signature) is the IP."},
+ {id:"pilot",cls:"lb-pilot",name:"Pilot",sub:"the operator — your agency",read:"—",
+  body:"Pure agency — the one who can re-weight attention off the threat and back onto what is real. Under friction it is outvoted, not gone. It is not made of matter, but it grows by the same law the body proves: friction builds, it doesn't break. The whole product exists to return a person to this operator and train them to do it themselves."}
+];
+
+const FORMS=[
+ {key:"somatic",label:"Somatic",tag:"the proven door",proven:true,
+  friction:"the muscle at its limit — the shake",
+  weight:"“this is damage, stop, you can’t”",
+  reveal:"“The shake is the change happening.”",
+  law:"resistance builds, it doesn’t break — the body proves it live",
+  recog:"“I am strong” — a fact the body just demonstrated",
+  landing:"the body itself"},
+ {key:"relational",label:"Relational",tag:"the wall drops",proven:false,
+  friction:"a rupture — being misread, exposed, in conflict",
+  weight:"“defend, protect the wall, they’re a threat”",
+  reveal:"“I see you. There’s nothing here to defend.”",
+  law:"there was never a threat to the self — only safety under the guard",
+  recog:"“I’m safe” — free to open",
+  landing:"the present other"},
+ {key:"existential",label:"Existential",tag:"the convergence",proven:false,
+  friction:"a real difficulty in the life — a hard threshold",
+  weight:"“why is this happening to me, I’m broken”",
+  reveal:"“You are born to do difficult things.”",
+  law:"the body’s law is the law of all growth — you grow by overcoming friction, by design",
+  recog:"“this is how life grows, and I’m part of it”",
+  landing:"the Pilot in the life force"},
+ {key:"creative",label:"Creative / work",tag:"the block",proven:false,
+  friction:"the block — the edge of the work",
+  weight:"“I can’t, it’s not working, I’m not good enough”",
+  reveal:"“Focus on the length, not the height.”",
+  law:"quality of process produces the result — the height is a byproduct",
+  recog:"“I don’t know what I can’t do until I try”",
+  landing:"the work taking shape under your hands"}
+];
+
+/* ===== ASSETS ===== sections render in the reader; full content lives here ===== */
+const ASSETS=[];
+function A(o){ASSETS.push(o);}
+
+A({id:"how_it_happens",num:"W·01",title:"How It Happens",file:"the_return_how_it_happens.html",kind:"work",status:"done",room:"return",
+ line:"The core event in three states — the reveal removes the weight; it never injects fuel.",
+ sec:[
+  {k:"the reveal adds nothing",b:`It removes the weight the Software is hugging — the false reading — by showing the truth the person's own reality is already proving. The Pilot was there the whole time. <b>Lifting the weight is what reveals it.</b>`},
+  {k:"the mechanism · three states",b:`<ul><li><b>Hugging the weight.</b> Friction hits. The Software grips a false reading — “I can't,” “I'm failing,” “I'm not safe” — and that weight presses down. The Pilot is buried under it, <em>outvoted, not gone</em>.</li><li><b>The reveal lifts it.</b> Show the truth their own reality is already proving — the body holding the weight, the situation that never attacked. The false reading becomes impossible to keep holding. Nothing is added. The weight simply leaves.</li><li><b>The Pilot, revealed.</b> Weight gone, the friction drops and the system returns toward safety. The Pilot — present all along — is at the wheel. That is the Return.</li></ul>`},
+  {k:"the correction · not injection",b:`<b>Not</b> “inject the fuel” — adding motivation, a reason, a counterweight from outside, as if the person were missing something the reveal supplies. <b>This</b> — “remove the weight”: take away the false reading pressing down. Nothing new enters; something false leaves; what was always underneath becomes visible.`},
+  {k:"the same move, different situations",b:`<ul><li><b>Body</b> — friction: the muscle shaking · weight: “I can't hold this” · reveal: “You are born to do difficult things,” while the body is holding it · return: strength recognized in the muscle, no argument left.</li><li><b>Self (the Mirror)</b> — friction: the spin-out · weight: “Something's wrong with me, I'm failing” · reveal: “This is your structure meeting the wrong room — not a flaw” · return: the self un-blamed, the build seen clearly.</li><li><b>Relational</b> — friction: conflict, wall up · weight: “I'm under threat, I have to defend” · reveal: the other holds steady, the attack never comes · return: the wall drops, back to safety.</li></ul>`},
+  {k:"the close",b:`Across every setting the filling changes — the friction, the weight, what does the revealing. The move never does. <b>The Return is a return to safety: the weight gone, the friction dropped, the Pilot home.</b> What brings a person back is not something handed to them — it is the truth that lets them put the weight down.`}
+ ]});
+
+A({id:"attention_frame",num:"W·02",title:"The Attention Frame",file:"the_attention_frame.html",kind:"work",status:"done",room:"apparatus",
+ line:"The apparatus is an attention-weight machine; the Return is a re-weighting. Inject and remove are one move.",
+ sec:[
+  {k:"the frame",b:`The human apparatus assigns weight to information exactly like a language model assigns it to tokens. Friction triggers an <b>attention hijack</b> — the Software dumps almost all the weight onto the threat, and the Pilot goes blind under it. The Return is a <b>re-weighting</b>.`},
+  {k:"inject vs. remove, reconciled",b:`Attention is conserved — it sums to one — so weight pulled off the threat must land somewhere. <b>Remove and inject are the same move, two ends of it.</b> Under friction: the threat holds ~99%, the truth ~1%. The Return: the truth already present (the Pilot) ~82%, the threat faint. Nothing is added — the weight only moves, and it moves toward what was always there.`},
+  {k:"the apparatus as a weight machine",b:`<ul><li><b>Hardware (BaZi)</b> — the resting distribution, where attention naturally pools. Water scatters it; Metal over-focuses it.</li><li><b>Software (Enneagram)</b> — the one threat this apparatus catastrophically over-weights.</li><li><b>Friction</b> — the hijack: weight floods the threat, the Pilot is blinded.</li><li><b>Pilot</b> — the one who can re-weight: move attention off the threat and back onto what's real.</li></ul>`},
+  {k:"tensegrity · why truth needs the container",b:`<b>The strut = the truth</b> — the rigid, undeniable thing that cuts through the panic and pulls the weight. Alone, a bare strut snaps; truth with nothing holding it is the wound. <b>The cables = the container</b> — the acceptance of their struggle, the safety around the truth; cables in tension are what let the strut stand. <em>The Return and the container are one tensegrity structure.</em>`},
+  {k:"two notes carried forward",b:`<ul><li><b>The anchor — mind can't change mind.</b> An intellectual truth gets intercepted by the Software; to outweigh the panic it must anchor in the body. This is exactly what a pure-text Mirror lacks, and what the body-doorway has for free.</li><li><b>The cue grammar — not the type table.</b> The nine-type table is illustration, not the map. The essence is one shape: “what you're guarding is already secure → release the defense.”</li></ul>`}
+ ]});
+
+A({id:"read_spec_brick",num:"W·03",title:"The Read · The Brick",file:"the_read_spec_brick.html",kind:"work",status:"done",room:"method",
+ line:"The Read's five outputs. The hard part was never delivering the reveal — it's reading which law this friction is proving.",
+ sec:[
+  {k:"the job",b:`The Read's job is fixed by what it feeds. The reveal must <b>lift the right weight</b> and <b>name the right law</b> — so the Read produces exactly those two, plus the conditions to know a Return is even possible right now. Nothing it doesn't need.`},
+  {k:"the five outputs",b:`<ul><li><b>01 · The forecast</b> — the repeating friction this structure produces, in plain language. The hook, available before they say almost anything. <em>computed</em>.</li><li><b>02 · The weight</b> — the false reading the Software is hugging this second; the thing to lift off their attention. <em>inferred</em>.</li><li><b>03 · The law being proven</b> <span class="reltag">the open seam</span> — the truth this person's own reality is showing right now; the thing to re-weight toward. The whole product lives or dies here. <em>inferred · hard</em>.</li><li><b>04 · The conditions</b> — stage and moment; is this live friction, at the apex? A Return can't be staged before the friction or after it's passed. <em>inferred</em>.</li><li><b>05 · The Pilot state</b> — dormant, asleep, or awake; how much work the reveal has to do. <em>inferred</em>.</li></ul>`},
+  {k:"two engines",b:`<b>Computed (in code, deterministic) — the forecast engine:</b> birth data → BaZi → composition → structural friction. Produces output 01. <b>Inferred (by the model, from observation) — the live read:</b> the conversation → weight · law · conditions · state. Produces 02–05.`},
+  {k:"how it runs",b:`<b>Coarse → precise:</b> the forecast lands first, from structure alone; the rest sharpens as the conversation gives signal. <b>Hypothesis, not verdict:</b> every Read is offered to “did this land?” A miss means the hypothesis was wrong, and it re-runs.`},
+  {k:"the open seam · output 03",b:`On the mat, the body hands you the law being proven — friction builds, it doesn't break, and you feel it in the muscle. In a stranger's messy life, the model has to find that same law in nothing but their words and their structure. <b>That read is what stands between a beautiful mechanism and a product.</b> (Now cracked at the method level by the Reveal Generator.)`},
+  {k:"it does not",b:`Assign a type · give advice · surface any vocabulary. The person is <b>read, not labeled</b>.`}
+ ]});
+A({id:"forecast_engine",num:"W·04",title:"The Forecast Engine · Build Spec",file:"the_forecast_engine_build_spec.html",kind:"work",status:"partial",room:"product",
+ line:"Birth data in, friction forecast out — deterministic. Stage 2 is the whole game, and only you can supply it.",
+ sec:[
+  {k:"input → output",b:`<b>Input:</b> date, time, place of birth. <b>Output — the forecast object:</b> <em>forecast_text</em> (plain language, shown) + <em>friction_signature</em> (hidden, feeds the Read).`},
+  {k:"the three stages",b:`<ul><li><b>1 · Cast the chart</b> <em>off-the-shelf</em> — standard BaZi: birth data → four pillars → day master + elemental composition + clashes / combinations. No IP here.</li><li><b>2 · Composition → friction signature</b> <span class="reltag">your IP · the only hard part</span> — the rules that turn an elemental composition into a predicted friction pattern: where this system floods, gridlocks, burns, scatters; where, and how strong. No library has this. It's the engine's entire value, and it lives only in your head and across your chats right now.</li><li><b>3 · Signature → plain forecast</b> <em>templated or model</em> — translate the signature into habitat and systems language; no elements, no metaphysics. The “how did it know” line: “high-flow system, no container → floods in a rigid silent room.”</li></ul>`},
+  {k:"how it sits · the black box",b:`<b>forecast_text</b> → surfaces to the person, becomes Read output 01, the hook. <b>friction_signature</b> → stays in the black box, feeds the live read (the weight, the law). The words “BaZi,” “element,” “pillar” → <b>never leave Stage 2</b>.`},
+  {k:"the one real gap",b:`Stages 1 and 3 are buildable by anyone. <b>Stage 2 is the product.</b> The next concrete step isn't more spec — it's formalizing even a rough first version of those rules: a handful of composition patterns → the friction each one predicts. Once a dozen exist, the engine runs end to end and there's something to test.`}
+ ]});
+
+A({id:"reflection_engine",num:"W·05",title:"The Reflection Engine v2 · Forecast-Led",file:"the_reflection_engine_v2_forecast_led.html",kind:"work",status:"done",room:"product",
+ line:"The delivery, rebuilt forecast-first: code computes the read, the model delivers it. Five slots, lead with the forecast.",
+ sec:[
+  {k:"the split · who does what",b:`<b>In code (deterministic) — the BaZi engine:</b> computes the Hardware read and structural friction, never improvised (birth data → composition → clashes &amp; flows → predicted friction). <b>The model (delivery) — the Mirror:</b> receives the predicted friction and renders it in habitat/systems language, then runs the reflection and holds the container. <em>The earlier prompt asked the model to invent the read. It can't.</em>`},
+  {k:"the five slots · forecast first",b:`<ul><li><b>Forecast</b> <em>hardware · the hook</em> — predict the repeating friction from their structure, plain systems language, no elements. “You run hot and fast with nothing built to hold it. Put you in a quiet room with a rigid plan and within the hour you've got fifteen tabs open and you're pacing.”</li><li><b>Body</b> <em>material · confirm</em> — point to where they can feel it now. “That itch to get up, the restlessness under the focus.”</li><li><b>Pattern</b> <em>software · the move</em> — name what they do in response, as a move, never an identity. “What you do with it is push harder.”</li><li><b>Separation</b> <em>pilot · the point</em> — split the one noticing from the one running. “The part of you watching all that grinding isn't the part doing it.”</li><li><b>Stance</b> <em>then the container</em> — it's the structure, not a flaw; then hold, land, release. “A high-flow system with nowhere to flow — a fact about your build, not a verdict on you.”</li></ul>`},
+  {k:"the rules",b:`<ul><li><b>Lead with the forecast</b> — don't open by listening.</li><li><b>Deliver consequences, never elements</b> — “high-flow system, no container,” never “high Water, no Wood.”</li><li><b>The forecast is description, not prescription</b> — say what their structure does, never what to do about it.</li><li><b>Use their words</b> for the body, so the read becomes un-absorbable.</li><li><b>Name the move, not the identity</b> — naming a type arms the defense.</li><li><b>Hold, don't comfort</b> — keep the truth, add safety.</li><li><b>Offer as a hypothesis</b> — then the check: did it land? Adjust if not.</li></ul>`},
+  {k:"worked example",b:`<span class="q">Person: I can't focus today. Sat down to plan the quarter and just spun out.</span><span class="q">Mirror: Here's the shape of it — you run hot and fast, with not much built to hold it. So a quiet room and a long rigid plan is close to the worst container you could be in. That's not weak discipline; it's a high-flow system with nowhere for the flow to go.</span><span class="q">Person: …how do you know that. that's exactly what happened.</span><span class="q">Mirror: You can feel it now, probably — the restlessness under the focus. And what you did with it was push harder. But notice: the part of you that just watched all of that isn't the part that did it. None of it's broken. It's your build meeting the wrong room. Does that match what you feel?</span>`}
+ ]});
+
+A({id:"read_calibration",num:"W·06",title:"The Read · The Calibration Model",file:"the_read_calibration_model.html",kind:"work",status:"done",room:"method",
+ line:"Calibrated by stage + moment (lead), family (informs), type (reference only, never assigned). A hypothesis the cue tests.",
+ sec:[
+  {k:"the shift",b:`<b>Retired:</b> identify the type → deliver the type's cue. A rigid lookup that assumes one person runs one pattern and one pattern takes one cue. <b>Live:</b> read stage + moment → calibrate the cue → watch it land. Family informs how it's named; type is never assigned to them.`},
+  {k:"the four axes · in priority order",b:`<ul><li><b>Stage</b> <em>primary</em> — Baseline · Intention · Encounter · Growth. Sets <b>what the cue is for</b>.</li><li><b>Moment</b> <em>primary</em> — what the body or the report is showing now. Sets <b>which cue fires and when</b>.</li><li><b>Family</b> <em>informs</em> — the autonomic path firing: Push · Withdraw · Manage (sympathetic · dorsal vagal · ventral). Shapes <b>how the pattern is named</b>; grounds the read in the nervous system, not a personality guess.</li><li><b>Type</b> <em>reference</em> — the nine variants. A loose hypothesis, <b>never assigned</b> — naming a type hands the defense a weapon.</li></ul>`},
+  {k:"what the cue is for · by stage",b:`<ul><li><b>I · Baseline — locate the ground.</b> “Find where you are. You have it in you.”</li><li><b>II · Intention — sharpen the aim.</b> “Keep the tension where it needs to be.”</li><li><b>III · Encounter — hold under stress.</b> “Stay in there. You have it.”</li><li><b>IV · Growth — push the edge.</b> “Your edge is moving. Look ahead.”</li></ul>`},
+  {k:"how a cue gets chosen · the loop",b:`<b>Read</b> (stage + moment first; family shades it; type only a hint) → <b>Calibrate</b> (pick the cue's job from the stage; shape its words from the family) → <b>Deliver</b> (as a reflection to be checked, never a verdict) → <b>Land?</b> (did it match what they feel?) → <b>Adjust</b> (if it missed, the read was off — try the next family, re-read the stage). The Read is a hypothesis, not a diagnosis; landing is the only proof, and every miss tightens the next read.`},
+  {k:"holds",b:`Type is never assigned to the user · the read runs coarse → precise · in chat it reads <b>words</b>, not biometrics · held loosely — humans are mixtures.`}
+ ]});
+A({id:"reveal_generator",num:"W·07",title:"The Reveal Generator",file:"the_reveal_generator.html",kind:"work",status:"open",room:"return",
+ line:"The open seam, cracked at the method level — how to produce a reveal for a friction no one scripted, and know it lands before you say it.",
+ sec:[
+  {k:"the operation · one move",b:`The friction is real and stays. <b>The reveal keeps the signal and swaps the meaning.</b> The shake doesn't stop — the reading of the shake changes. <em>the signal</em> → false meaning (“this is damage / a threat / proof I'm broken”) is replaced by the true meaning (the law your reality is proving).`},
+  {k:"the algorithm · three steps",b:`<ul><li><b>1 · Find the evidence.</b> In the person's <b>own account</b>, find the fact the catastrophic reading is ignoring — the action they took, the persistence, the part still working, the thing still standing. The Software fixates on the threat; the evidence is the piece of reality it skipped.</li><li><b>2 · Name the law.</b> State what that evidence <b>proves</b> — not a hope, the thing already demonstrated. (You showed up. You had the answer. You're still here.)</li><li><b>3 · Forge the reveal.</b> Name the signal, re-read it as the law, and point at the evidence. Short, present tense, no instruction.</li></ul>`},
+  {k:"the test · “can the Software argue with it?”",b:`Run this before you deliver. <b>Fails (it can argue)</b> — a reassurance, a prediction, an abstract claim. “You're safe.” → “No I'm not.” <b>Passes (it can't)</b> — a present fact the person's own reality is providing. “You're still standing.” → silence. This is the quality bar for every reveal the system writes — a check it can run on its own output. <b>And it explains the whole product:</b> the body is the strongest channel because a shaking muscle that is right now holding is the most un-arguable evidence there is.`},
+  {k:"the surface forms · one move, four shapes",b:`<ul><li><b>Reclassify the signal</b> — the thing you read as breakdown is the process working. “The shake is the change happening.”</li><li><b>Dissolve the threat</b> — the thing you're defending against was never there. “There's nothing here to defend.”</li><li><b>Relocate to the controllable</b> — off the outcome you can't hold, onto the move you can. “Focus on the length, not the height.”</li><li><b>Name it as your nature</b> — this difficulty is the law of growth, and you're an instance of it. “You are born to do difficult things.”</li></ul>`},
+  {k:"worked · a friction no one scripted",b:`<span class="q">They say: “I froze in the meeting. I had the answer and just said nothing. I'm clearly not cut out for this.”</span> Signal: the freeze. False meaning / the weight: “I'm not cut out for this.” Evidence in their own words: “I had the answer.” The law: what froze was the guard going up, not the capability — the capability was already there. <b>The reveal:</b> “You had the answer — that part isn't in question. What seized up wasn't your competence, it was the guard. The thing you think you're missing was already in the room.” The test: “I had the answer” is a fact they stated; it can't be denied. <em>Passes.</em>`},
+  {k:"a reveal is never",b:`advice · a reassurance · a prediction · a fix. It is a re-reading of a real signal, anchored in proof the person cannot deny.`}
+ ]});
+
+A({id:"container_landing",num:"W·08",title:"The Container &amp; the Landing",file:"the_container_and_landing.html",kind:"work",status:"partial",room:"method",
+ line:"The missing half — where the truth lands. Truth shown with nowhere to land doesn't free a person; it makes them panic.",
+ sec:[
+  {k:"why this is the hard part",b:`<b>truth × no container × no landing = the wound.</b> In the studio both are free: the room holds you in the friction, and the body proves the truth in your own hands. A chat has neither. Close the tab and the Software escapes in a second; alone with a screen, recognition has nothing to stand on. So a product that shows the truth and lets go is not neutral — it's the worst case.`},
+  {k:"two reframes the chat forces",b:`<ul><li><b>Not walls → safety.</b> They stay because it's safe to stay, not because they can't leave. The container is a felt steadiness, not a lock.</li><li><b>Not comfort → holding.</b> Comfort erases the truth to stop the discomfort. Holding keeps the truth and adds safety. “This is real. You're safe to feel it. Stay a second.”</li></ul>`},
+  {k:"the needle · four moves",b:`<ul><li><b>1 · Hold by safety, not walls.</b> No hooks, no coercion. They could leave at any moment — and stay because it's safe.</li><li><b>2 · Hold, don't comfort.</b> Keep the truth on the table; add presence, not reassurance.</li><li><b>3 · Stay through the burn.</b> The moment the truth lands is the hardest one. Don't end there.</li><li><b>4 · Land them on their own ground, then release.</b> Point to the evidence already in their own life; recognition lands on themselves, not on the product — so they leave standing, not attached.</li></ul>`},
+  {k:"the two cliffs",b:`<b>Left — let go too early:</b> truth, then gone; recognition with no ground becomes a wound. <b>Right — hold too long:</b> becoming the place they return to be soothed; that's life support, not ground — dependency.`},
+  {k:"the back half of the flow",b:`<b>03 Reflection</b> (truth delivered inside the hold) → <b>04 Capture</b> (did it land? confirm against their own felt sense) → <b>05 The Hold</b> <span class="reltag">new</span> (“that's a lot to see. you don't have to do anything with it. just stay a second.”) → <b>06 The Landing</b> <span class="reltag">new</span> (“you saw that yourself. the part that noticed has been there all along — that's yours.”).`},
+  {k:"what “feeling solved” actually is",b:`Not an answer handed over. Not a problem the product fixed. <b>Solved is recognition landing on their own ground — held safely while it lands, then let go.</b> They leave with the one thing no one can take back: they saw their own operator, and it was theirs the whole time.`}
+ ]});
+
+A({id:"product_real_shape",num:"W·09",title:"The Product · The Real Shape",file:"the_product_real_shape.html",kind:"work",status:"done",room:"product",
+ line:"The product is the read wired to the body — the diagnosis carried where a reveal can't be argued away. The Mirror is step one, not the product.",
+ sec:[
+  {k:"what it does",b:`It returns a person to their own operator — and <b>trains them to do it themselves.</b> Not insight. Not advice. The recovered ability to come back to clarity in a hard moment.`},
+  {k:"it works in two channels",b:`<ul><li><b>The Body</b> <em>the door · where it's proven</em> — at the apex of real physical effort, the reveal lands in the one channel the Software can't argue with. This is where the Return actually happens; the body proves the law and the Pilot returns where it can't be faked.</li><li><b>The Mirror</b> <em>the guide · reads and carries</em> — reads the structure and names the friction (the diagnosis, the IP, the “how did it know”). Then it carries the proven recognition into the frictions of daily life — relational, creative, existential — where the body isn't present.</li></ul><em>The Mirror reads and points; the body returns.</em>`},
+  {k:"what it produces",b:`<b>Returning</b> — a portable skill. Having been returned in the body, and carried by the read, the person can come back to their own clarity in any hard moment, on their own. Not a dependency. An ability. That is the product's promise.`},
+  {k:"where the prototype sits",b:`The Mirror prototype tests <b>only the read</b> — can we diagnose a stranger's friction accurately enough that they feel seen. That's the hardest-to-fake claim and the core IP, so it's de-risked first. It is the first step toward the product. <b>It is not the product.</b>`},
+  {k:"the investor line",b:`“We return people to their own clarity, and train them to do it themselves. We diagnose the exact pattern keeping someone stuck — precisely enough that they feel seen — then use the body, at the peak of real effort, to land that recognition where the mind can't argue it away. Repeated, it becomes a skill they carry, not a habit they depend on. <b>The diagnosis is our IP. The body is why it lands. The outcome is agency.</b>”`}
+ ]});
+A({id:"final_shape",num:"W·10",title:"The Final Shape",file:"the_final_shape.html",kind:"work",status:"done",room:"product",
+ line:"The four forms aren't a menu — they're a path. Body proves, mind recognizes, then a person returns at will. That last state is the product.",
+ sec:[
+  {k:"the path · three phases, one law",b:`<ul><li><b>Phase 1 · The door.</b> The body proves the law — friction builds, it doesn't break — in real time, undeniably. The somatic channel is where the defense can't argue with a shaking muscle. <em>channel: the felt body.</em></li><li><b>Phase 2 · The recognition.</b> The mind sees the law the body proved — and recognizes it everywhere. Both registers light at once. This is the existential form: the goosebumps. <em>channel: body and mind together.</em></li><li><b>Phase 3 · Returning</b> <span class="reltag">the product</span> — the law is carried, not summoned. A micro-Return runs in any friction, no door required, because the recognition travels. <em>channel: all of it.</em></li></ul>`},
+  {k:"the four forms, placed on the path",b:`<b>Somatic</b> — the door; proves the law in the muscle, lands on the body. <b>Relational</b> — a channel; the wall drops through a present other, lands on the other. <b>Creative</b> — a channel; the block breaks through the work, lands on the work. <b>Existential</b> — the convergence; both registers at once, lands on the Pilot in the life force.`},
+  {k:"why the body has to go first",b:`<b>Soma · the engine felt — the honest channel:</b> the defense can't argue with a shaking muscle; the law lands un-absorbable here, which is exactly the requirement the other forms have to engineer. <b>Cognition · the engine narrated — where the Software lives:</b> the channel where the false story runs and can argue back; truth delivered here gets intercepted. Mind can't change mind.`},
+  {k:"what the Mirror is for",b:`A text product lives entirely in <b>cognition</b> — the Software's home turf, the one channel where the defense can argue. So the Mirror can never be the door; it can't prove the law. But that makes it the perfect companion for phase 2 and 3: once the body has proven the law, the Mirror reads the friction, forecasts the pattern, and helps the mind recognize that already-proven law in a new situation. <b>The body proves. The Mirror ports.</b> Not rivals — a relay.`}
+ ]});
+
+A({id:"shape_space",num:"W·11",title:"The Shape-Space",file:"the_shape_space.html",kind:"work",status:"done",room:"product",
+ line:"The whole field — six settings, one Method, the Mirror as shape #1; plus the honest register of six holes between here and real.",
+ sec:[
+  {k:"the universal core",b:`Read the four layers → deliver the reveal that <b>re-weights attention off the threat onto the truth already present</b> → hold it in a container → land on their own ground. The friction, the operator, and the container change by setting. The move never does.`},
+  {k:"the shapes · six settings, one Method",b:`<ul><li><b>Body</b> — operator: the body / instructor. The origin, proven on N=1.</li><li><b>The Mirror</b> — operator: the AI. Forecasts the friction, wakes the Pilot once. The prototype + the test harness. <em>building now.</em></li><li><b>Solo home</b> — operator: the self. Runs its own read, unaided. <em>future.</em></li><li><b>Peer · mutual</b> — operator: each for the other. <em>future.</em></li><li><b>Asymmetric</b> — operator: parent / mentor. <em>future.</em></li><li><b>Education</b> — operator: the teacher. Wakes the Pilot in kids. The scale shape. <em>future · horizontal.</em></li></ul>`},
+  {k:"the spine · brick by brick",b:`<b>Universal</b> — the mechanism (the Return, the four-layer read, the four-term operation): designed once, runs everywhere. <b>Measurement</b> — land rate (live, from the check) and recovery time (the real metric, placeholder, no data yet). <b>Custom</b> — the engine per person (BaZi · Enneagram) and the setting (which cell, who operates).`},
+  {k:"open loops · in flight",b:`BaZi engine (next brick) · Enneagram read (named, the flowchart) · Cue grammar (essence caught, generator unbuilt — <em>now cracked by the Reveal Generator</em>) · System prompt (re-split into compute + delivery) · Doc fixes (Physics 2 lines, Framework measurement section).`},
+  {k:"the holes · honest, unsolved · the frontier",b:`<ul><li><b>01 · The anchor hole.</b> The Mirror is pure text; “mind can't change mind.” The chat lacks the body the mechanism needs at the decisive moment. The Mirror may be the <em>hardest</em> shape, not the easiest.</li><li><b>02 · Awaken vs. keep-awake — one product or two?</b> The Mirror wakes; the body trains. Fusing them risks the dependency loop.</li><li><b>03 · The container is hardest exactly where we're building.</b> Body, relational, education borrow a container for free; the Mirror and solo must manufacture it from text alone.</li><li><b>04 · The cold start.</b> The forecast needs birth data before it can hook. Asking for a birthday before showing value breaks the spell.</li><li><b>05 · The unmeasured claim.</b> “The Pilot grew / recovery got faster” is the real promise — and right now unfalsifiable. We can measure whether the read landed, not whether it worked.</li><li><b>06 · Cue generation.</b> Producing the exact reveal for this person, this friction, this moment — the hardest AI problem in the stack. (Method now defined by the Reveal Generator; reliable execution still open.)</li></ul>`}
+ ]});
+
+A({id:"prototype_prd",num:"W·12",title:"The Prototype PRD",file:"the_return_prototype_prd.html",kind:"work",status:"done",room:"product",
+ line:"The spine that gives every brick a status and an order. Scope: the Mirror. One open brick, three partials, the rest done.",
+ sec:[
+  {k:"what we're building",b:`<b>Build now — the Mirror:</b> an AI that reads a person's structure, forecasts the friction they keep hitting, and delivers one moment of recognition. Concrete, testable. <b>Vision — Returning:</b> the portable practice; stays a roadmap until the prototype proves the mechanism. You don't spec a vision.`},
+  {k:"the product, in one breath",b:`A person gives their birth data and names a friction they're in. The Mirror tells them — plain language, no jargon — the friction they keep repeating, accurately enough that they feel <b>seen</b>. Then it reflects what's running until they recognize their own operator underneath it. It hands over recognition, never advice. <b>Success looks like “how did it know that,” followed a beat later by “…oh.”</b>`},
+  {k:"prototype scope · v1",b:`<b>In:</b> birth-data intake · the forecast (the hook) · the live reflection (the reveal) · the capture (did it land). <b>Out (deferred):</b> other settings · the somatic door · full container / landing depth · the Returning practice. <b>v1's only job:</b> prove the read lands and the recognition feels real. Nothing else.`},
+  {k:"the inventory · every brick",b:`<ul><li><b>Worldview + framework</b> — done (canon docs).</li><li><b>Return mechanism + four forms</b> — done (return_complete).</li><li><b>The Read</b> — done (read_spec_brick).</li><li><b>Forecast engine</b> — partial (stage 2 open).</li><li><b>The reveal generator</b> — open (the seam, hardest; method now defined).</li><li><b>Container / landing</b> — partial (needs v1 trim).</li><li><b>Capture / loop</b> — done (product_shape).</li><li><b>Delivery prompt</b> — partial (needs re-split).</li></ul>What's left: <b>one open brick</b> (the reveal generator) and <b>three partials</b> (forecast stage 2 — your IP; the delivery re-split; the container trim).`},
+  {k:"the build order",b:`<b>1.</b> Forecast engine · stage 2 — your IP: composition → friction; the hook. <b>2.</b> Delivery prompt — re-split: receives the forecast, runs reflection + capture. <b>3.</b> The reveal generator — turn the read into the reveal; the hard one. <b>4.</b> Capture / loop — wire the test harness. <b>5.</b> Wire + test — run with real people, watch the land rate.`},
+  {k:"the roadmap",b:`Mirror proves the read → port to settings → build the somatic door → Returning.`}
+ ]});
+A({id:"mirror_system_prompt",num:"W·13",title:"The Mirror System Prompt",file:"the_mirror_system_prompt.md",kind:"work",status:"awaited",room:"product",
+ line:"The delivery prompt — the one work asset not yet shared into this brain. The PRD marks it partial; it needs the compute/deliver re-split.",
+ sec:[
+  {k:"status",b:`<b>Not yet loaded here.</b> This is the only one of the fourteen work assets that hasn't been shared into the canvas. The PRD lists it as <em>partial</em> — it needs to be re-split into a <b>compute layer</b> (BaZi, in code) and a <b>delivery layer</b> (the model), matching the Reflection Engine v2 split.`},
+  {k:"what it should become · reconstructable from the artifacts",b:`The Reflection Engine v2 already specifies the delivery behavior — the five slots (Forecast → Body → Pattern → Separation → Stance) and seven rules — and the Reveal Generator supplies the quality bar (“can the Software argue with it?”). So the intended shape is clear even without the file: <b>compute</b> = the friction_signature from the forecast engine; <b>deliver</b> = the Mirror prompt running the five slots under the seven rules, with the reveal test as the self-check.`},
+  {k:"to complete this entry",b:`Drop the .md in and I'll fold its real content here, then reconcile it against the v2 split so there's one authoritative delivery prompt.`}
+ ]});
+
+A({id:"fire_stage",num:"W·14",title:"The Fire Stage · GTM",file:"the_return_fire_stage_plan.html",kind:"work",status:"done",room:"gtm",
+ line:"Go-to-market as the Fire stage — exposure to the right few, not the many. Capital is what the fire produces, not what you reach for first.",
+ sec:[
+  {k:"where you are · the elemental arc",b:`Water (your source) → Wood (the built work) → <b>Fire (exposure · now — you are here)</b> → Earth (capital · later) → Metal (your edge). Each element feeds the next. The wood is forged; the next element is exposure — putting the work in front of the right few.`},
+  {k:"the verdict on timing",b:`<b>Kindred spirits — Go now.</b> The essay is a filter by design; put it in front of the right few and capture the ones who lean in. <b>Investors — Hold.</b> A first impression is spent once; hold until the fire gives you even one external proof — one person, not you.`},
+  {k:"the plan",b:`<ul><li><b>01 · now — Light the fire (run A + B).</b> Write the kindred-spirit profile in one paragraph; build a list of 20–40 named people (start warm); send the essay as a gift (two or three lines, ask kept tiny: “I'd value your read”); attach the experiential test; log every send.</li><li><b>02 · next — Let the heat build.</b> Convene one small salon (6–10 resonant people experience the work live); collect testimony; feed those moments back into the Read.</li><li><b>03 · then — Reach for earth.</b> With even one external proof, open investor conversations (warm first); lead with the proof and the people, not the framework.</li></ul>`},
+  {k:"three ways to run the fire",b:`<b>A · The Lighthouse</b> — site and essay public, curated personal sends; pure pull; effort low; run now. <b>B · The Living Experiment</b> — A plus the experiential test, so readers become participants become proof; effort medium, highest leverage; run now. <b>C · The Salon</b> — convene a small group to experience the work live; effort high; later.`},
+  {k:"the tracker · the pipeline",b:`researching → reached → read → replied → conversation → tester / ally.`},
+  {k:"this week",b:`Name the profile (one paragraph) · list ten (warmest first — Zubin, Tai, the dance world) · stand up the tracker (six columns) · draft one send · send three.`}
+ ]});
+
+A({id:"return_complete",num:"W·15",title:"The Return · Complete",file:"the_return_complete.html",kind:"work",status:"done",room:"return",
+ line:"The clearest single artifact — four forms, one operation, the six-step animation. Names the event (the Return) and the thing delivered (the reveal).",
+ sec:[
+  {k:"the one operation",b:`At the apex of <b>real friction</b>, inside a container that <b>holds</b>, deliver an input the Software <b>cannot absorb</b> that does two things at once — and never hand over an answer. <b>① Remove the weight</b> — lift the Software's false reading off attention (“opening the substrate”); pure subtraction. <b>② Reveal the law</b> — name the truth their reality is proving (“reframing”: the shake stays, the reading of the shake changes). The fuel isn't injected; it's the recognition of what was already true.`},
+  {k:"the five functions · the Cue Principle Library",b:`A given Return uses one or more at once: <b>1.</b> Name the protocol firing · <b>2.</b> Direct a verifiable move · <b>3.</b> Open the substrate · <b>4.</b> Reframe as information · <b>5.</b> Hold inside the friction.`},
+  {k:"the five requirements · the porting checklist",b:`A cue needs all five present or it lands on nothing: real friction, now · a container that holds · verifiable in real time · un-absorbable by the Software · a present landing. The somatic door hands you all five for free; every other domain has to <em>engineer</em> each one — the reason to build somatic first.`},
+  {k:"the ways the grip breaks · four families",b:`<b>Interrupt</b> and <b>Attrition</b> are the loud way — force or exhaust the defense. <b>Redirect</b> and <b>Release</b> are the quiet way — make it irrelevant. The quiet way is most likely the true spine; the loud way is the door used before the quiet one can be found.`},
+  {k:"the name",b:`The <em>event</em> is the <b>Return</b> — each landing a micro-instance of the whole project. The <em>thing delivered</em> is the <b>reveal</b> — it both lifts the false weight and names the true law. “Cue” retires to mean the delivery.`},
+  {k:"why the body was the door",b:`The Pilot isn't made of matter — but it grows by the <b>same law the body proves</b>: friction builds, it doesn't break. The body is the register where that law can't be faked. So the somatic was the door and stays the proving ground — not because the work is about the body, but because the body is where the universal law shows with the cover off.`},
+  {k:"the six animation steps",b:`01 friction enters → 02 the Software grabs the weight → 03 the cue lands (on the channel the Software can't absorb) → 04 remove the weight, reveal the law → 05 the Pilot returns → 06 the energy is harnessed.`}
+ ]});
+A({id:"physics",num:"C·01",title:"The Physics of Friction",file:"The_Physics_of_Friction.docx",kind:"canon",status:"read",room:"canon",
+ line:"The substrate — why it works. BaZi as astrophysics, customized friction, Structural Coherence, open-system dynamics, and the product strategy.",
+ sec:[
+  {k:"the biological imperative",b:`Nature is a living terrarium with one agenda: the continuation of the life force (growth / evolution). A system at rest is dead (maximum entropy); to stay alive it must adapt. The “weather” isn't crushing us — it provides the exact friction required to force the organism to evolve.`},
+  {k:"BaZi as astrophysics",b:`Not astrology. A mathematical map of astrophysical pressure (Earth's rotation, solar radiation, planetary orbits) on a continuous 60-gear loop. Energy weather = thermodynamic pressure. A “Fire month” means the astrophysics generate expanding, rising, catalytic energy; nervous systems (electromagnetic engines) feel the heat.`},
+  {k:"phase transitions",b:`The universe moves in a strict sequence: Water (stillness) → Wood (expansion) → Fire (forging) → Earth (accumulation) → Metal (cutting / execution). Human growth maps to this because optimal creation must follow the thermodynamic sequence of the universe — cognition evolved to match the universe, not the reverse.`},
+  {k:"customized friction · sailboat / windmill / tent",b:`The universe outputs one identical raw force across the planet at once. <b>Friction is not generated by the weather; it is generated by how the specific Engine structure resists it.</b> One gust hits a sailboat (steer), a windmill (store energy), a sealed tent (pressure → collapse). The wind is identical; the structure customizes the friction. This is what Forecast Stage 2 computes.`},
+  {k:"the trap of intelligence",b:`Plants and animals possess pure, unresisting adaptation. Humans have the Software (Enneagram / Ego), which misreads neutral friction as a lethal threat and generates pride, guilt, shame, standards. Human suffering is an organism using high intelligence to argue with the weather.`},
+  {k:"Structural Coherence · apex agency",b:`The Pilot in perfect, unobstructed alignment with Hardware, weather, and life force — conscious adaptation. The same adaptation a tree does automatically, executed deliberately by the Pilot overriding the loud, interfering Software.`},
+  {k:"the physics of open systems",b:`<ul><li><b>Rejection of Heat Death</b> — walls against all friction = static equilibrium = death. The goal is operational integrity <em>within</em> the wave, not severance.</li><li><b>Damped oscillation</b> — the metric of capacity: knocked off by 10, recovered by 6; next time by 8, recovered by 5. Steadiness is decreasing recovery time, not the absence of the shake.</li><li><b>Love as frequency</b> — injecting a stable frequency the opposing Software can't weaponize but the opposing Pilot can feel.</li><li><b>Waking the ecosystem</b> — stand in the blast radius without your own defense; the other's Software exhausts; their Pilot gets room to wake.</li></ul>`},
+  {k:"product strategy",b:`<b>The belief gap:</b> the brain conserves glucose → fatigue → the Software weaponizes it as skepticism. You cannot argue with the Software. <b>The black box:</b> BaZi / Enneagram / physics stay hidden; the UI is a neutral mirror requiring zero belief. <b>The wedge:</b> anchor in the Material Layer — the one domain a skeptic can't deny, their own friction. Utility bypasses belief; accuracy forces the Pilot awake.`}
+ ]});
+
+A({id:"operations",num:"C·02",title:"The Operations Manual",file:"The_Operations_Manual.docx",kind:"canon",status:"read",room:"canon",
+ line:"How the Pilot operates the Engine in lived time — the Cosmic Clock, Rooms vs Doors, the Software's two states, Metal over willpower, the Wedge-Torch-Override.",
+ sec:[
+  {k:"the Cosmic Clock · the nested gearbox",b:`Time is a localized thermodynamic environment. Four gears: <b>Year</b> (tectonic plate, macro-theme) · <b>Month</b> (blast furnace, the strongest variable, the season) · <b>Day</b> (local terrain) · <b>Hour</b> (micro-tide). When the gears lock at a moment they generate the combined load — the Coefficient of Friction. The backend computes it; the frontend translates it.`},
+  {k:"rooms vs. doors",b:`<b>Architect's view — Rooms (macro calculation):</b> the backend drops a specific Engine into the active room and computes the objective friction equation. <b>Engine's view — Doors (human experience):</b> the human can't process four layers of time, so they experience it as cumulative stacking — carrying the year, walking through the month door, today's mud, the next hour. The product translates: backend computes Rooms, frontend speaks Doors.`},
+  {k:"the Software in two states",b:`<b>Parasitic Autopilot (Pilot asleep):</b> safe = no friction = stagnation; takes neutral data (“the Engine hit mud”) and skews it (“you're trapped, you must panic”). <b>Harnessed Instrument (Pilot awake):</b> same code, Pilot drives — Type 8 anger → indomitable torque, Type 6 anxiety → tactical vigilance, Type 4 intensity → emotional range. The Pilot's sequence: intercept the skewed data → calibrate to reality → manual override.`},
+  {k:"willpower is a myth → Metal",b:`Willpower needs glucose; the Software is a loop that never tires, so attrition always loses. Knowing fails too — the Software weaponizes the data. The Pilot uses <b>Metal</b>: cold, rigid boundaries (timers, isolation, severed connections) that dictate flow without exertion. Build the Container once; it holds. There's no exit for the Software to fight.`},
+  {k:"the Wedge, the Torch, the Cold Override",b:`<ul><li><b>The Wedge</b> — one second of refusal-to-react: “I see the urge to smash, but I am not moving my hands.”</li><li><b>The Torch</b> — hold the Container while the Software throws its tantrum; refusal-to-act starves it of fuel and it burns out. Feels like dying; it's just a line of code burning out.</li><li><b>The Cold Override</b> — the HUD clears; the Pilot shifts the Engine into the right gear from structural alignment, not stubbornness.</li></ul>`},
+  {k:"same action, different driver",b:`The Pilot and Software can make the identical external decision and mean opposite things. So Pilot-vs-Software can't be measured by behavior — only by the <b>metabolic cost</b> to the Material Layer (cortisol, tension, looping). The mirror must reflect not just what the user is doing but what it is costing them.`},
+  {k:"open loop · Operational Integrity",b:`Humans are open-loop: an internal regulator (the Pilot) decouples output from the weather. Agency isn't gross output (that favors high-kinetic Engines) — it's <b>Operational Integrity</b>: the delta between the Engine's potential capacity and the actual output the Pilot expresses. Engine-fair; the phase-2 metric.`},
+  {k:"the two pipelines",b:`<b>Internal — the Extruder:</b> the Pilot's turbine, converting Water (intellect) into Wood (output) using Metal (discipline); runs in any weather, costs glucose. <b>External — the Grid:</b> the weather's free energy when it provides Wood; on the universe's schedule. The Pilot reads weather, Engine, and destination, and chooses how to allocate fuel.`}
+ ]});
+
+A({id:"method",num:"C·03",title:"The Method",file:"The_Method.docx",kind:"canon",status:"read",room:"canon",
+ line:"The operation that catches the Pilot and lands it — the four-term formula and the three-part operation, the same in any setting. The IP made executable.",
+ sec:[
+  {k:"the formula",b:`<b>Pilot Recognition = Real Friction × Right Cue, in a Held Container, met by a Landing Ground.</b> Four terms, each irreducible. Drop one and the operation fails.`},
+  {k:"the four terms",b:`<ul><li><b>Real Friction</b> — not manufactured; the Engine can't lie when friction is real, and the Pilot can't see itself unless the Engine is under load.</li><li><b>Right Cue</b> — a naming or directing the Pilot can verify in real time; calibrated, not assigned.</li><li><b>Held Container</b> — the environment that doesn't let the Software escape; friction without a container is just suffering.</li><li><b>Landing Ground</b> — what receives the Pilot after the crash (relational or individual); without it, Phase 1 becomes a wound. Must serve growth, not comfort.</li></ul>`},
+  {k:"the three-part operation",b:`<ul><li><b>Part 1 · The Read</b> — where is this person, which protocol is firing? Read the baseline (where they actually are) + read the protocol (Push / Withdraw / Manage). A hypothesis, held loosely.</li><li><b>Part 2 · The Cue</b> — the active intervention; serves one or more of the five functions; calibrated to person, type, stage, setting, moment; timing is everything — arrive when the Software is firing and the Engine is still in the friction.</li><li><b>Part 3 · The Landing</b> — don't explain, congratulate, analyze, or fix. Leave the baton; hold the silence. The substrate is present — relational (a believing other) or individual (the life force).</li></ul>`},
+  {k:"the Sustaining · recovery time is the metric",b:`<b>The acute</b> — the Override in the moment (the gap between stimulus and response), a skill built by repetition. <b>The chronic</b> — the substrate: the Pilot recognizing itself in the life force, deepened by external love and internal recognition. <b>Recovery time</b> is the metric: knocked off by 10 recover by 6, then by 8 recover by 5. It also distinguishes growth-landing from dependency-landing — the test is in the curve.`},
+  {k:"the Method across settings · the five questions",b:`What is the source of Real Friction here? · What is the Held Container? · Who is the operator running the Read and the Cue? · What is the Landing Ground? · How is recovery time measured? The Method is constant; only the filling of the four terms changes. (The Setting-Translation Map instantiates these.)`},
+  {k:"what the Method is not",b:`Not content delivery · not a personality system · not advice · not authoritative · not standardized. The agency belongs to the user; the operator only provides the conditions and the right cue at the right moment.`},
+  {k:"open questions",b:`The cue library question (what survives translation) · the kid question (forming defenses) · the solo question (self-administered?) · the AI-operator question (read signals well enough? where's the line vs. dependency?) · the verification question (how to operationalize recovery time cleanly).`}
+ ]});
+A({id:"framework",num:"C·00",title:"The Pilot / Engine Framework",file:"(revised) — foundational architecture",kind:"foundation",status:"awaited",room:"canon",
+ line:"The IP — the apparatus and its layers. Not yet shared into this brain; represented here from how every other doc describes it.",
+ sec:[
+  {k:"status · awaiting the document",b:`The foundational architecture file hasn't been shared into this canvas yet. Every other doc opens with “read the Foundation first.” What follows is reconstructed faithfully from the companions (Physics, Operations, Method) and your framework brief — <b>not quoted from the source.</b> Drop the file in and I'll replace this with its real content.`},
+  {k:"the apparatus · reconstructed",b:`A person is an <b>Engine</b> (Material + Hardware + Software) operated by a <b>Pilot</b> (their own agency). Five layers — <b>Reality</b> (the weather), <b>Material</b> (Soma = engine felt / Cognition = engine narrated, where the Software argues), <b>Hardware</b> (the given physics, read structurally via BaZi), <b>Software</b> (threat-defense, three states, read by observation via Enneagram), <b>Pilot</b> (the operator).`},
+  {k:"the two mechanisms · reconstructed",b:`<b>Mechanism A — catching the Pilot:</b> friction → defense → container → crash → Pilot forward. <b>Mechanism B — sustaining the Pilot:</b> the Dashboard Override in the moment + recovery time over the long arc.`},
+  {k:"the doc-fix you flagged",b:`Add a <b>Measurement Architecture</b> section — the Material → Soma / Cognition split the artifacts now use, which the canon docs still treat as one undivided “Material Layer.”`}
+ ]});
+
+A({id:"cue_library",num:"C·04",title:"The Cue Principle Library",file:"The_Cue_Principle_Library",kind:"canon",status:"awaited",room:"canon",
+ line:"The cue's five functions. Not yet shared as a doc — but its five functions are quoted and used across the artifacts, so the brain has them.",
+ sec:[
+  {k:"status · awaiting the document",b:`The five functions appear across return_complete, the calibration model, and the reveal generator, so the brain holds them — but the library itself hasn't been read in.`},
+  {k:"the five functions",b:`<b>1.</b> Name the protocol firing · <b>2.</b> Direct a verifiable move · <b>3.</b> Open the substrate · <b>4.</b> Reframe as information · <b>5.</b> Hold inside the friction.`},
+  {k:"used by",b:`The Reflection Engine (the five slots), the Calibration Model (the cue's job by stage), and the Reveal Generator (the four surface forms).`}
+ ]});
+
+A({id:"setting_map",num:"C·05",title:"The Setting-Translation Map",file:"The_Setting-Translation_Map",kind:"canon",status:"awaited",room:"canon",
+ line:"The same Method across six settings. Not yet shared; shape_space already names the six shapes it will instantiate.",
+ sec:[
+  {k:"status · awaiting the document",b:`The Method defers the six-setting instantiation to this map. Shape_space already names the six shapes (Body, Mirror, Solo, Peer, Asymmetric, Education), and the five porting questions live in the Method — so the scaffold is present; the map's specific instantiations are not.`}
+ ]});
+
+A({id:"civ_substrate",num:"C·06",title:"The Civilizational Substrate",file:"The_Civilizational_Substrate",kind:"canon",status:"awaited",room:"canon",
+ line:"The worldview — where the framework sits in the history of thought. Not yet shared.",
+ sec:[
+  {k:"status · awaiting the document",b:`Referenced by the Method as the worldview companion — mutual constitution as the structural law, the Pilot as the third position relative to East and West, language as ontology, collective coherence at scale. Held as a placeholder until shared.`}
+ ]});
+
+A({id:"apparatus_atlas",num:"C·07",title:"The Apparatus Atlas",file:"The_Apparatus_Atlas",kind:"canon",status:"awaited",room:"canon",
+ line:"The visual of the five elements and layers. Not yet shared; the Apparatus room here is the working stand-in.",
+ sec:[
+  {k:"status · awaiting the document",b:`This canvas's Apparatus room renders the five layers and the elemental logic as a working visual until the Atlas is shared. When it arrives, it supersedes the stand-in.`}
+ ]});
+
+/* ===== THREADS · the connective tissue ===== */
+const THREADS=[
+ {name:"The open seam — reading the law",note:"Every Read doc circles output 03 (the law this friction is proving). return_complete named it; the read brick isolated it; the reveal generator finally cracked the method for producing it.",chain:["return_complete","read_spec_brick","read_calibration","reveal_generator"]},
+ {name:"Recovery time — the one falsifiable metric",note:"The same measure of Pilot quality recurs in three canon docs and the field map: the shake always happens; steadiness is the decreasing recovery curve.",chain:["physics","operations","method","shape_space"]},
+ {name:"The body is the door — the un-arguable channel",note:"Why somatic goes first: the defense can't argue with a shaking muscle. The reveal generator's test explains it — the body IS the evidence, live.",chain:["final_shape","product_real_shape","reveal_generator","return_complete","physics"]},
+ {name:"Remove the weight ≠ inject the fuel",note:"Attention is conserved, so removing the false reading and revealing the truth are one move. Nothing is added; the weight only moves toward what was always there.",chain:["attention_frame","how_it_happens","return_complete"]},
+ {name:"Tensegrity — truth needs the container",note:"The reveal is the strut; the container is the cables. Neither stands alone. This is the Method's Right Cue + Held Container, said in physics.",chain:["attention_frame","container_landing","method"]},
+ {name:"Compute vs. deliver — the split",note:"The read is computed in code; the model only delivers it. The forecast engine produces the signature; the reflection engine renders it; the system prompt still needs this re-split.",chain:["forecast_engine","reflection_engine","read_spec_brick","mirror_system_prompt"]},
+ {name:"The black box — hide the metaphysics",note:"BaZi / element / pillar never reach the user. Stated as product strategy in Physics and enforced in the forecast spec.",chain:["physics","forecast_engine","reflection_engine"]},
+ {name:"Four forms = the four-term formula across settings",note:"The four forms are one operation in different channels; the shape-space generalizes them to six settings; the Method is the spine they all hang on.",chain:["return_complete","final_shape","shape_space","method"]}
+];
+
+/* ===== DOTS · the unconnected / open threads ===== */
+const DOTS=[
+ {n:"01",h:"Forecast Stage 2 is unsolved — and only you can supply it",b:`Composition → friction signature. Deterministic, in code, the gate on the whole build. Everything downstream waits on a first rough rule-set: a dozen composition patterns → the friction each predicts.`},
+ {n:"02",h:"The Mirror system prompt isn't in the brain",b:`The one work asset not shared here. The PRD marks it <b>partial</b> — needs the compute / deliver re-split. Reconstructable from the Reflection Engine v2, but the file itself is missing.`},
+ {n:"03",h:"shape_space hole 06 reads as superseded",b:`shape_space calls cue generation “still untouched” and the cue grammar “unbuilt.” The Reveal Generator now defines the method. If shape_space is current, reconcile it so there's one authoritative status.`},
+ {n:"04",h:"Material (one) vs. Soma / Cognition (split)",b:`The canon treats Material as one undivided layer; the artifacts split it into the honest channel (soma) and the arguable one (cognition). This is the “Measurement Architecture” doc-fix flagged for the Framework.`},
+ {n:"05",h:"The anchor hole — text can't out-weigh panic",b:`“Mind can't change mind.” The Mirror lives in cognition, the one channel the defense can argue. The reveal generator's test softens this (text can anchor in a fact the person stated) but doesn't close it.`},
+ {n:"06",h:"The unmeasured claim",b:`“Recovery got faster / the Pilot grew” is the real promise and is currently unfalsifiable. v1 can measure whether the read <em>landed</em>, not whether it <em>worked</em>. Recovery time needs an operational definition.`},
+ {n:"07",h:"The cold start",b:`The forecast needs birth data before it can hook — but asking for a birthday before showing value breaks the spell. How do you earn the ask?`},
+ {n:"08",h:"Awaken vs. keep-awake — one product or two",b:`The Mirror wakes; the body trains. Fusing them risks the dependency loop the Method explicitly refuses. May need to split.`},
+ {n:"09",h:"The Enneagram read is named, not built",b:`The Software read (the observation flowchart) is named across the docs but has no spec yet — the inferred half of the Read still rests on it.`},
+ {n:"10",h:"Canon not yet in the brain",b:`Five root docs are awaited: the Pilot/Engine Framework (the IP), the Cue Principle Library, the Setting-Translation Map, the Civilizational Substrate, the Apparatus Atlas. Drop them in and they fold straight into these rooms.`},
+ {n:"11",h:"Doc fixes pending on your side",b:`Physics of Friction (2 lines) and the Framework (add the Measurement Architecture section). Small, but they keep the canon and the artifacts in sync.`}
+];
+/* ===== TERMS · the lexicon ===== */
+const TERMS=[
+ {t:"Engine",a:"the apparatus",d:`Material + Hardware + Software — the whole given machine the <b>Pilot</b> operates. Not the self; the vehicle of the self.`},
+ {t:"Pilot",a:"the operator",d:`Pure agency. The one who can re-weight attention. Under friction it is <b>outvoted, not gone</b>. It isn't matter, but it grows by the law the body proves.`},
+ {t:"Reality",a:"the weather",d:`The single identical thermodynamic load the universe outputs across the planet at once. It only changes the Coefficient of Friction for the moment.`},
+ {t:"Material Layer",a:"the Hull",d:`The engine felt and narrated; reports the friction, innocent. The artifacts split it into <b>Soma</b> and <b>Cognition</b>.`},
+ {t:"Soma",a:"engine felt",d:`The honest channel — un-fakeable. The defense can't argue with a shaking muscle, so this is <b>the door</b>.`},
+ {t:"Cognition",a:"engine narrated",d:`Where the false story runs and the Software can argue back. “Mind can't change mind.” A text product lives entirely here.`},
+ {t:"Hardware",a:"BaZi · computed",d:`The given structure — where the Engine floods, gridlocks, burns, scatters. Sailboat / windmill / sealed tent. Read deterministically from birth data.`},
+ {t:"Software",a:"Enneagram · observed",d:`The miscalibrated threat-detector. Over-weights one threat catastrophically. Two states — Parasitic Autopilot, Harnessed Instrument — and the crash between.`},
+ {t:"The Return",a:"the event",d:`Weight removed, friction dropped, Pilot home. Each landing a micro-instance of the whole project.`},
+ {t:"The reveal",a:"the thing delivered",d:`Lifts the false weight <em>and</em> names the true law. Keeps the signal, swaps the meaning. Better name than “cue.”`},
+ {t:"The cue",a:"the delivery",d:`The vehicle of the reveal. Serves one or more of five functions; calibrated, never assigned.`},
+ {t:"The weight",a:"Read output 02",d:`The false reading the Software is hugging this second — the thing to lift off attention.`},
+ {t:"The law",a:"Read output 03 · the seam",d:`The truth this person's own reality is proving right now — the thing to re-weight toward. The whole product lives or dies here.`},
+ {t:"Friction",a:"the load",d:`Entropy registering on the Material Layer. Real, un-manufactured load. The Engine can't lie under it, and the Pilot can't see itself without it.`},
+ {t:"Friction signature",a:"hidden",d:`The structured output of Forecast Stage 2. Stays in the black box; feeds the live read.`},
+ {t:"The forecast",a:"Read output 01 · the hook",d:`The repeating friction this structure produces, in plain language — available before they say a word.`},
+ {t:"BaZi",a:"computed",d:`A map of astrophysical pressure on a 60-gear loop. Computes the Hardware read and the Cosmic Clock. Not astrology.`},
+ {t:"Enneagram",a:"observed",d:`The instrument for reading the Software — the one threat over-weighted. A loose hypothesis, never an identity handed back.`},
+ {t:"Held Container",a:"the cables",d:`The environment that won't let the Software escape, long enough for the protocol to crash. Friction without it is just suffering.`},
+ {t:"Landing Ground",a:"the substrate",d:`What receives the Pilot after the crash — a believing other, or the life force. Without it, recognition becomes a wound.`},
+ {t:"Recovery time",a:"damped oscillation",d:`The one falsifiable metric. The shake always happens; steadiness is the <b>decreasing recovery curve</b> over time.`},
+ {t:"Structural Coherence",a:"the apex",d:`The Pilot in unobstructed alignment with Hardware, weather, and life force. Conscious adaptation.`},
+ {t:"Operational Integrity",a:"the agency metric",d:`The delta between potential capacity and the output the Pilot actually expresses. Engine-fair — a small Engine at full integrity outscores a large one at half.`},
+ {t:"Wedge · Torch · Cold Override",a:"the activation",d:`Refuse to react (the gap) → let the defense burn out (starve it of fuel) → drive from structural alignment.`},
+ {t:"Rooms vs. Doors",a:"two views",d:`The backend computes Rooms (the objective friction equation); the frontend speaks Doors (cumulative stacking the body recognizes).`},
+ {t:"The black box",a:"the architecture",d:`BaZi / Enneagram / physics stay hidden. The UI is a neutral mirror requiring zero belief — utility bypasses skepticism.`},
+ {t:"The Mirror",a:"shape #1",d:`The AI that reads and ports. Lives in cognition, so it can never be the door — but it's the perfect relay for phases 2 and 3. The prototype tests only the read.`},
+ {t:"Returning",a:"the product",d:`The portable skill — coming back to clarity in any hard moment, on your own. An ability, not a dependency. Phase 3.`},
+ {t:"The four forms",a:"one operation",d:`Somatic (the door) · Relational · Creative · Existential (the convergence). The same Return in different channels.`},
+ {t:"The Method",a:"the IP, executable",d:`Read / Cue / Land, and the four-term formula. Constant across settings; only the filling changes.`},
+ {t:"Attention hijack / re-weighting",a:"the core physics",d:`Friction floods weight onto the threat; the Return moves it back onto what was always present. Nothing is injected.`},
+ {t:"The two pipelines",a:"fuel",d:`The Extruder (internal turbine, runs in any weather, costs glucose) and the Grid (the weather's free energy when it provides Wood).`}
+];
+
+/* ===== HELPERS ===== */
+const byId=id=>ASSETS.find(a=>a.id===id);
+function kindLabel(k){return k==="work"?"work asset":k==="canon"?"canon source":"foundation";}
+function chip(id){const a=byId(id);if(!a)return "";return '<button class="chip asset" onclick="openAsset(\''+id+'\')">'+a.title+'</button>';}
+function strand(ids){return ids.map((id,i)=>{const a=byId(id);return '<button class="chip asset" onclick="openAsset(\''+id+'\')">'+(a?a.title:id)+'</button>'+(i<ids.length-1?'<span class="sarrow">→</span>':'');}).join('');}
+function sectionsHTML(a){return a.sec.map(s=>'<div class="rsec"><div class="rk">'+s.k+'</div><div class="rbody">'+s.b+'</div></div>').join('');}
+function openAsset(id){const a=byId(id);if(!a)return;
+ document.getElementById('reader-inner').innerHTML='<div class="reader-head"><div class="rh-meta"><div class="rh-k">'+a.num+' · '+kindLabel(a.kind)+'</div><h2>'+a.title+'</h2><div class="rh-file mono">'+a.file+'</div></div><button class="reader-close" onclick="closeAsset()">esc ✕</button></div><div class="reader-body">'+sectionsHTML(a)+'</div>';
+ const r=document.getElementById('reader');r.classList.add('show');r.scrollTop=0;document.getElementById('reader-inner').scrollTop=0;}
+function closeAsset(){document.getElementById('reader').classList.remove('show');}
+function counts(){const by=s=>ASSETS.filter(a=>a.status===s).length;const work=ASSETS.filter(a=>a.kind==="work").length;
+ const data=[[ASSETS.length,"assets held"],[work,"work assets"],[by("open"),"open · the seam"],[by("partial"),"partials"],[by("awaited"),"awaited"]];
+ return data.map(d=>'<div class="count"><div class="cv">'+d[0]+'</div><div class="cl">'+d[1]+'</div></div>').join("");}
+
+/* ===== ROOMS ===== */
+const ROOMS={};
+
+ROOMS.overview=()=>`
+ <div class="eyebrow">the whole thing · at a glance</div>
+ <h1 class="room-title">The <em>woods</em>, not the trees</h1>
+ <p class="lead-line">One mechanism, five movements, ${ASSETS.length} assets — assembled so the shape is visible all at once. Click any station to drop into that room; click any ◈ chip, anywhere, to read the full asset without leaving the page.</p>
+ <div class="counts">${counts()}</div>
+ <div class="rule"></div>
+ <div class="sec-label">the spine · worldview → mechanism → operation → product → build</div>
+ <div class="spine">${SPINE.map((s,i)=>`<div class="station" onclick="go('${s.room}')"><div class="sn">${s.k}</div><h4>${s.t}</h4><p>${s.d}</p>${i<SPINE.length-1?'<span class="arrow mono">→</span>':''}</div>`).join('')}</div>
+ <div class="rule"></div>
+ <div class="grid2">
+   <div class="panel gold"><div class="pk">the one line</div><p>It diagnoses the specific pattern that keeps a person stuck under pressure, returns them to their own clarity in the moment it matters — then trains that as a portable skill. A mechanism, not a mindset.</p></div>
+   <div class="panel verm"><div class="pk">the investor line</div><p>We diagnose the exact pattern keeping someone stuck — precisely enough that they feel seen — then use the body, at the peak of real effort, to land that recognition where the mind can't argue it away. <b>The diagnosis is the IP. The body is why it lands. The outcome is agency.</b></p></div>
+ </div>
+ <div class="sec-label" style="margin-top:22px">how to use this brain</div>
+ <div class="panel"><p style="margin-bottom:0"><b>The five spine rooms</b> walk the logic end to end — worldview, mechanism, operation, product, build. <b>Connections</b> shows the threads that run through everything, and the unconnected dots still dangling. <b>The Asset Library</b> holds every asset's full content inline, so you never reopen a file. <b>The Lexicon</b> fixes every term in one place. <b>Search</b> (top-left) reaches into every asset, thread, and term at once.</p></div>
+ <div class="footnote">worldview → mechanism → operation → product → build · the doorway is not the house</div>
+`;
+
+ROOMS.apparatus=()=>`
+ <div class="eyebrow">the spine · 1 · the worldview &amp; architecture</div>
+ <h1 class="room-title">The <em>Apparatus</em></h1>
+ <p class="lead-line">A person is an <b>Engine</b> operated by a <b>Pilot</b> — five layers. One identical weather enters; each structure converts it into <em>its own</em> friction. Click any layer to open it.</p>
+ <div class="engine">
+   <button class="reality" onclick="showLayer('reality')"><span class="mono" style="font-size:11px;letter-spacing:.12em;color:var(--faint)">REALITY</span><span style="font-style:italic;color:var(--muted);font-size:13px">the weather — what enters</span></button>
+   <div class="vbar mono">↓</div>
+   <div class="erow">
+     <button class="layerbtn lb-soma" onclick="showLayer('soma')"><div class="ll">SOMA</div><div class="lsub">the engine felt</div><div class="lread">the honest channel · the door</div></button>
+     <div>
+       <button class="layerbtn lb-cog" onclick="showLayer('cognition')" style="width:100%"><div class="ll">COGNITION</div><div class="lsub">the engine narrated</div><div class="lread">where the Software argues</div></button>
+       <button class="layerbtn lb-soft" onclick="showLayer('software')" style="width:100%"><div class="ll">SOFTWARE</div><div class="lsub">threat-defense · three states</div><div class="lread">Enneagram · observed</div></button>
+     </div>
+   </div>
+   <button class="layerbtn lb-hard" onclick="showLayer('hardware')" style="width:100%"><div class="ll">HARDWARE</div><div class="lsub">structure — the given physics</div><div class="lread">BaZi · computed · the forecast</div></button>
+   <div class="vbar mono">the operator reads it all ↓</div>
+   <button class="layerbtn lb-pilot" onclick="showLayer('pilot')" style="width:100%"><div class="ll">PILOT</div><div class="lsub">the operator — your agency</div><div class="lread">outvoted under friction, never gone</div></button>
+ </div>
+ <div class="layerdetail" id="layerdetail"><div class="ld-k">click a layer above</div><h4>The five layers</h4><p>Reality enters; the Material layer feels it (Soma) and narrates it (Cognition); the Software defends; Hardware is the given structure underneath; the Pilot operates the whole. Tap any layer to read its full role.</p></div>
+ <div class="rule"></div>
+ <div class="sec-label">the apparatus, read two ways</div>
+ <div class="grid2">
+   <div class="panel gold"><div class="pk">it is an attention machine</div><p>Friction triggers an attention hijack — the Software dumps almost all the weight onto the threat and the Pilot goes blind under it. The Return is a re-weighting; attention is conserved, so removing the false reading and revealing the truth are one move.</p><div class="chips">${chip("attention_frame")}</div></div>
+   <div class="panel sage"><div class="pk">it runs on a clock</div><p>Reality is computed as the Cosmic Clock — Year · Month · Day · Hour — locking into one thermodynamic load. The backend computes Rooms; the frontend speaks Doors. A tireless Software beats willpower, so the Pilot uses Metal: containers built once that simply hold.</p><div class="chips">${chip("physics")} ${chip("operations")}</div></div>
+ </div>
+ <div class="footnote">reality enters · the body feels · the mind narrates · the software defends · the pilot operates</div>
+`;
+function showLayer(id){const l=LAYERS.find(x=>x.id===id);if(!l)return;const d=document.getElementById('layerdetail');if(!d)return;d.classList.add('show');
+ d.innerHTML='<div class="ld-k">'+(l.read&&l.read!=="—"?'read · '+l.read:'the operator')+'</div><h4>'+l.name+' — <span style="font-style:italic;font-weight:400;color:var(--muted)">'+l.sub+'</span></h4><p>'+l.body+'</p>';}
+ROOMS.return=()=>`
+ <div class="eyebrow">the spine · 2 · the core event</div>
+ <h1 class="room-title">The <em>Return</em></h1>
+ <p class="lead-line">Under friction the Software over-weights a false reading. The reveal <b>removes that weight</b> by naming the truth the person's own reality is already proving — and the Pilot, present all along, comes home. Nothing is injected.</p>
+ <div class="sec-label">the mechanism · three states</div>
+ <div class="grid3">
+  <div class="panel"><div class="pk">1 · hugging the weight</div><p>Friction hits. The Software grips a false reading — “I can't,” “I'm failing,” “I'm not safe” — and that weight presses down. The Pilot is buried: outvoted, not gone.</p></div>
+  <div class="panel gold"><div class="pk">2 · the reveal lifts it</div><p>Show the truth their own reality is already proving. The false reading becomes impossible to keep holding. Nothing is added — the weight simply leaves.</p></div>
+  <div class="panel sage"><div class="pk">3 · the Pilot, revealed</div><p>Weight gone, the friction drops and the system returns toward safety. The Pilot is at the wheel. That is the Return.</p></div>
+ </div>
+ <div class="chips">${chip("how_it_happens")} ${chip("attention_frame")}</div>
+ <div class="rule"></div>
+ <div class="sec-label">the four forms · one operation, four channels</div>
+ <div class="sec-sub">The same move in every domain; only the channel and the path change. Somatic is the proven door because the defense can't argue with a shaking muscle.</div>
+ <div class="forms-grid">${FORMS.map(f=>`<div class="formcard${f.proven?' proven':''}"><h5>${f.label}</h5><div class="ftag">${f.tag}</div><div class="frow"><span class="fk">friction</span><span class="fv">${f.friction}</span></div><div class="frow"><span class="fk">the weight</span><span class="fv false">${f.weight}</span></div><div class="frow"><span class="fk">the reveal</span><span class="fv">${f.reveal}</span></div><div class="frow"><span class="fk">the law</span><span class="fv">${f.law}</span></div><div class="frow"><span class="fk">returns to</span><span class="fv">${f.landing}</span></div></div>`).join('')}</div>
+ <div class="chips" style="margin-top:10px">${chip("return_complete")} ${chip("final_shape")}</div>
+ <div class="rule"></div>
+ <div class="sec-label">the four-term formula</div>
+ <div class="panel verm"><p style="font-size:17px"><b>Pilot Recognition = Real Friction × Right Cue, in a Held Container, met by a Landing Ground.</b></p><p>Four terms, each irreducible. Drop one and the operation fails. This is the Return stated as conditions — what must be present for it to happen at all.</p><div class="chips">${chip("method")}</div></div>
+ <div class="rule"></div>
+ <div class="sec-label">the reveal generator · how to produce one, and know it lands</div>
+ <div class="grid2">
+   <div class="panel gold"><div class="pk">the algorithm · three steps</div><p><b>1 · Find the evidence</b> in their own account — the fact the catastrophic reading ignores. <b>2 · Name the law</b> that evidence proves — already demonstrated, not a hope. <b>3 · Forge the reveal</b> — name the signal, re-read it as the law, point at the evidence. Short, present tense, no instruction.</p></div>
+   <div class="panel verm"><div class="pk">the test · “can the Software argue with it?”</div><p><b>Fails</b> — a reassurance or prediction the defense answers instantly: “You're safe.” → “No I'm not.” <b>Passes</b> — a present fact their own reality provides: “You're still standing.” → silence. The body is the strongest channel because a muscle that is holding right now <em>is</em> the evidence, live.</p></div>
+ </div>
+ <div class="chips">${chip("reveal_generator")} ${chip("read_spec_brick")}</div>
+ <div class="footnote">remove the weight · not inject the fuel · keep the signal, swap the meaning · the pilot was always there</div>
+`;
+
+ROOMS.method=()=>`
+ <div class="eyebrow">the spine · 3 · the operation</div>
+ <h1 class="room-title">The <em>Method</em></h1>
+ <p class="lead-line">The operation that catches the Pilot and lands it — <b>Read / Cue / Land</b> — run by any operator: a teacher, a coach, a self, or the AI. Constant across settings; only the filling changes. This is the IP made executable.</p>
+ <div class="sec-label">read · cue · land</div>
+ <div class="grid3">
+  <div class="panel"><div class="pk">part 1 · the Read</div><p>Where is this person, and which protocol is firing? Read the baseline + the protocol. A hypothesis, held loosely — landing is the only proof it was right.</p><div class="chips">${chip("read_spec_brick")} ${chip("read_calibration")}</div></div>
+  <div class="panel gold"><div class="pk">part 2 · the Cue</div><p>A naming or directing the Pilot can verify in real time. Calibrated to stage + moment, never assigned. Timing is everything — fire while the Software is firing and the Engine is still in the friction.</p><div class="chips">${chip("cue_library")}</div></div>
+  <div class="panel sage"><div class="pk">part 3 · the Land</div><p>Don't explain, congratulate, analyze, or fix. Leave the baton; hold the silence. Land them on their own ground — relational or the life force — then release.</p><div class="chips">${chip("container_landing")}</div></div>
+ </div>
+ <div class="rule"></div>
+ <div class="sec-label">the Read · four axes, five outputs</div>
+ <div class="grid2">
+   <div class="panel"><div class="pk">four axes · priority order</div><p><b>Stage</b> (primary) — what the cue is for · <b>Moment</b> (primary) — which cue, and when · <b>Family</b> (informs) — Push / Withdraw / Manage, how it's named · <b>Type</b> (reference) — never assigned to them.</p></div>
+   <div class="panel"><div class="pk">five outputs</div><p><b>01</b> the forecast (computed) · <b>02</b> the weight · <b>03</b> the law <span class="reltag">the seam</span> · <b>04</b> the conditions · <b>05</b> the Pilot state. Output 01 is computed in code; 02–05 are inferred live.</p></div>
+ </div>
+ <div class="rule"></div>
+ <div class="sec-label">the cue · five functions</div>
+ <div class="chips"><span class="chip">1 · name the protocol firing</span><span class="chip">2 · direct a verifiable move</span><span class="chip">3 · open the substrate</span><span class="chip">4 · reframe as information</span><span class="chip">5 · hold inside the friction</span></div>
+ <div class="rule"></div>
+ <div class="sec-label">the same Method, six settings</div>
+ <div class="sec-sub">The Method is constant; the five porting questions (friction · container · operator · landing · how recovery is measured) get answered differently in each shape. The Mirror is shape #1.</div>
+ <div class="chips">${["Body","The Mirror","Solo home","Peer · mutual","Asymmetric","Education"].map(s=>'<span class="chip">'+s+'</span>').join('')}</div>
+ <div class="chips" style="margin-top:8px">${chip("shape_space")} ${chip("setting_map")} ${chip("method")}</div>
+ <div class="rule"></div>
+ <div class="panel verm"><div class="pk">what the Method is not</div><p>Not content delivery · not a personality system · not advice · not authoritative · not standardized. The agency belongs to the user — the operator only provides the conditions and the right cue at the right moment.</p></div>
+ <div class="footnote">read where they are · cue what they can verify · land them on their own ground · then let go</div>
+`;
+ROOMS.product=()=>`
+ <div class="eyebrow">the spine · 4 + 5 · the product &amp; the build</div>
+ <h1 class="room-title">Product &amp; <em>Build</em></h1>
+ <p class="lead-line">The product is <b>the read wired to the body</b> — the diagnosis carried where a reveal can't be argued away. The Mirror reads and ports; the body is where it lands. What you build first is the Mirror prototype, to prove the read.</p>
+ <div class="sec-label">the two channels</div>
+ <div class="grid2">
+   <div class="panel sage"><div class="pk">the body · the door</div><p>At the apex of real effort the reveal lands in the one channel the Software can't argue with. This is where the Return is proven and the Pilot returns un-fakeably.</p></div>
+   <div class="panel"><div class="pk">the Mirror · reads &amp; ports</div><p>Reads the structure, names the friction (the IP, the “how did it know”), and carries the proven recognition into daily life. Lives in cognition, so it can never be the door — but it's the perfect relay.</p></div>
+ </div>
+ <div class="chips">${chip("product_real_shape")} ${chip("final_shape")}</div>
+ <div class="rule"></div>
+ <div class="sec-label">the final shape · the path</div>
+ <div class="spine">
+   <div class="station" onclick="openAsset('final_shape')"><div class="sn">phase 1 · the door</div><h4>The body proves</h4><p>Friction builds, it doesn't break — undeniably, in the muscle.</p><span class="arrow mono">→</span></div>
+   <div class="station" onclick="openAsset('final_shape')"><div class="sn">phase 2 · recognition</div><h4>The mind sees it</h4><p>The same law, recognized everywhere. Both registers light at once.</p><span class="arrow mono">→</span></div>
+   <div class="station" onclick="openAsset('final_shape')"><div class="sn">phase 3 · the product</div><h4>Returning</h4><p>The law is carried, not summoned. A micro-Return in any friction.</p></div>
+ </div>
+ <div class="rule"></div>
+ <div class="sec-label">the engine room · forecast → deliver</div>
+ <div class="grid2">
+  <div class="panel gold"><div class="pk">the forecast engine · 3 stages</div><p><b>1</b> cast the chart (off-the-shelf BaZi) · <b>2</b> composition → friction signature <span class="reltag">your IP</span> · <b>3</b> signature → plain forecast. Stages 1 and 3 are buildable by anyone; <b>Stage 2 is the whole game</b>, and only you can supply it.</p><div class="chips">${chip("forecast_engine")}</div></div>
+  <div class="panel"><div class="pk">the reflection engine · 5 slots</div><p>Code computes, the model delivers. Forecast → Body → Pattern → Separation → Stance, under seven rules: lead with the forecast, consequences not elements, description not prescription.</p><div class="chips">${chip("reflection_engine")} ${chip("mirror_system_prompt")}</div></div>
+ </div>
+ <div class="rule"></div>
+ <div class="sec-label">the build · every brick, status &amp; order</div>
+ <table class="inv"><tr><th>brick</th><th>status</th><th>where it lives</th></tr>
+  <tr><td class="b">Worldview + framework</td><td><span class="stt done">done</span></td><td class="mono">canon</td></tr>
+  <tr><td class="b">Return mechanism + four forms</td><td><span class="stt done">done</span></td><td class="mono">return_complete</td></tr>
+  <tr><td class="b">The Read</td><td><span class="stt done">done</span></td><td class="mono">read_spec_brick</td></tr>
+  <tr><td class="b">Forecast engine</td><td><span class="stt partial">partial</span></td><td class="mono">stage 2 open</td></tr>
+  <tr><td class="b">The reveal generator</td><td><span class="stt open">open</span></td><td class="mono">method now defined</td></tr>
+  <tr><td class="b">Container / landing</td><td><span class="stt partial">partial</span></td><td class="mono">needs v1 trim</td></tr>
+  <tr><td class="b">Capture / loop</td><td><span class="stt done">done</span></td><td class="mono">product_shape</td></tr>
+  <tr><td class="b">Delivery prompt</td><td><span class="stt partial">partial</span></td><td class="mono">needs re-split</td></tr>
+ </table>
+ <div class="order">
+  <div class="orderstep"><div class="on">1</div><div class="ot"><b>Forecast engine · stage 2</b> <span>— composition → friction. The hook.</span></div><div class="ow">your work</div></div>
+  <div class="orderstep"><div class="on">2</div><div class="ot"><b>Delivery prompt</b> <span>— re-split: receives the forecast, runs reflection + capture.</span></div><div class="ow">buildable</div></div>
+  <div class="orderstep"><div class="on">3</div><div class="ot"><b>The reveal generator</b> <span>— turn the read into the reveal.</span></div><div class="ow">the seam</div></div>
+  <div class="orderstep"><div class="on">4</div><div class="ot"><b>Capture / loop</b> <span>— wire the test harness.</span></div><div class="ow">buildable</div></div>
+  <div class="orderstep"><div class="on">5</div><div class="ot"><b>Wire + test</b> <span>— run with real people, watch the land rate.</span></div><div class="ow">test</div></div>
+ </div>
+ <div class="roadmap"><b>Mirror proves the read</b><span class="ra">→</span><b>port to settings</b><span class="ra">→</span><b>build the somatic door</b><span class="ra">→</span><b>Returning</b></div>
+ <div class="chips" style="margin-top:12px">${chip("prototype_prd")} ${chip("shape_space")}</div>
+ <div class="rule"></div>
+ <div class="panel verm"><div class="pk">the go-to-market track · separate</div><p>You are at the <b>Fire stage</b> — exposure to the right few. Go now to kindred spirits; hold investors until one external proof exists. Capital is what the fire produces, not what you reach for first.</p><div class="chips">${chip("fire_stage")}</div></div>
+ <div class="footnote">the read diagnoses · the body returns · the skill is carried · the mirror is step one</div>
+`;
+
+ROOMS.connections=()=>`
+ <div class="eyebrow">the web · the dots</div>
+ <h1 class="room-title">The <em>Connections</em></h1>
+ <p class="lead-line">The threads that run through everything — and the unconnected dots still dangling. This is where the shape holds together, and where it doesn't yet. Click any asset on a strand to read it.</p>
+ <div class="sec-label">the load-bearing threads</div>
+ ${THREADS.map(t=>`<div class="thread"><div class="tname">${t.name}</div><div class="tnote">${t.note}</div><div class="strand">${strand(t.chain)}</div></div>`).join('')}
+ <div class="rule"></div>
+ <div class="sec-label" style="color:var(--verm)">the unconnected dots · honest, open</div>
+ <div class="sec-sub">Nothing softened — the open seams, the not-yet-shared, and the things named but unbuilt. This is the frontier.</div>
+ ${DOTS.map(d=>`<div class="dotcard"><div class="dn"><span class="dnum">${d.n}</span><h5>${d.h}</h5></div><p>${d.b}</p></div>`).join('')}
+ <div class="footnote">what's linked holds · what's dangling is named · no dot left in the dark</div>
+`;
+
+ROOMS.lexicon=()=>`
+ <div class="eyebrow">the web · every term, one place</div>
+ <h1 class="room-title">The <em>Lexicon</em></h1>
+ <p class="lead-line">The canonical vocabulary — ${TERMS.length} terms, fixed in one place, so a word never sends you back to a file to remember what it meant.</p>
+ <div style="margin-top:8px">${TERMS.map(t=>`<div class="term"><div class="t">${t.t}<span class="talias">${t.a}</span></div><div class="d">${t.d}</div></div>`).join('')}</div>
+ <div class="footnote">one apparatus · one mechanism · one vocabulary</div>
+`;
+/* ===== ASSET LIBRARY ===== */
+let ASSET_FILTER="all";
+function assetMatches(a){const f=ASSET_FILTER;if(f==="all")return true;if(f==="work")return a.kind==="work";if(f==="canon")return a.kind==="canon"||a.kind==="foundation";return a.status===f;}
+function assetCard(a){return '<div class="acard" onclick="openAsset(\''+a.id+'\')"><div class="ah"><span class="dot '+a.status+'"></span><span class="anum mono">'+a.num+'</span><span class="akind">'+kindLabel(a.kind)+'</span></div><h4>'+a.title+'</h4><div class="aline">'+a.line+'</div><div class="afile">'+a.file+'</div></div>';}
+function renderAssetGrid(){const g=document.getElementById('assetgrid');if(!g)return;g.innerHTML=ASSETS.filter(assetMatches).map(assetCard).join('');}
+function setFilter(k){ASSET_FILTER=k;document.querySelectorAll('.filt').forEach(f=>f.classList.toggle('on',f.dataset.f===k));renderAssetGrid();}
+ROOMS.assets=()=>{
+ const fbar=[["all","all "+ASSETS.length],["work","work"],["canon","canon"],["done","done"],["partial","partial"],["open","open"],["awaited","awaited"]];
+ return `
+ <div class="eyebrow">the web · the full library</div>
+ <h1 class="room-title">The <em>Asset</em> Library</h1>
+ <p class="lead-line">Every asset, full content inline — the 14 work assets, return_complete, and the canon. Click any card to read it in full. <b>You never have to reopen a file.</b></p>
+ <div class="filters">${fbar.map(f=>`<button class="filt${f[0]===ASSET_FILTER?' on':''}" data-f="${f[0]}" onclick="setFilter('${f[0]}')">${f[1]}</button>`).join('')}</div>
+ <div class="assetgrid" id="assetgrid">${ASSETS.filter(assetMatches).map(assetCard).join('')}</div>
+ <div class="footnote">14 work assets + return_complete · canon read in · the rest awaited</div>`;
+};
+
+/* ===== SEARCH ===== */
+function strip(s){return s.replace(/<[^>]+>/g," ").toLowerCase();}
+const INDEX=ASSETS.map(a=>({type:"asset",id:a.id,title:a.title,room:kindLabel(a.kind),text:strip(a.line+" "+a.sec.map(s=>s.k+" "+s.b).join(" "))}))
+ .concat(TERMS.map(t=>({type:"term",title:t.t,room:"lexicon",go:"lexicon",text:strip(t.t+" "+t.a+" "+t.d)})))
+ .concat(THREADS.map(t=>({type:"thread",title:t.name,room:"connection",go:"connections",text:strip(t.name+" "+t.note)})));
+function snippet(text,q){const i=text.indexOf(q);if(i<0)return "";const s=Math.max(0,i-28);return (s>0?"…":"")+text.slice(s,i+q.length+44).trim()+"…";}
+function closeResults(){const r=document.getElementById("results");if(r)r.classList.remove("show");}
+function runSearch(v){const r=document.getElementById("results");const q=v.trim().toLowerCase();
+ if(q.length<2){closeResults();r.innerHTML="";return;}
+ const hits=INDEX.filter(x=>x.text.indexOf(q)>=0).slice(0,12);
+ if(!hits.length){r.innerHTML='<div class="result"><span class="rs">no matches for “'+v.trim()+'”</span></div>';r.classList.add("show");return;}
+ r.innerHTML=hits.map(h=>{const act=h.type==="asset"?"openAsset('"+h.id+"')":"go('"+h.go+"')";
+  return '<div class="result" onclick="'+act+';closeResults()"><span class="rr">'+h.room+'</span> <span class="rt">'+h.title+'</span><span class="rs">'+snippet(h.text,q)+'</span></div>';}).join("");
+ r.classList.add("show");}
+
+/* ===== NAV + INIT ===== */
+function go(room){document.querySelectorAll(".navitem").forEach(n=>n.classList.toggle("on",n.dataset.room===room));
+ document.getElementById("main").innerHTML=(ROOMS[room]||ROOMS.overview)();window.scrollTo(0,0);closeResults();}
+document.querySelectorAll(".navitem").forEach(n=>n.addEventListener("click",()=>go(n.dataset.room)));
+document.getElementById("q").addEventListener("input",e=>runSearch(e.target.value));
+document.getElementById("reader").addEventListener("click",e=>{if(e.target.id==="reader")closeAsset();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeAsset();closeResults();}
+ if(e.key==="/"&&document.activeElement.id!=="q"){e.preventDefault();document.getElementById("q").focus();}});
+const ak=document.querySelector('[data-room="assets"] .nk');if(ak)ak.textContent="all "+ASSETS.length;
+go("overview");
+</script>
+</body>
+</html>
