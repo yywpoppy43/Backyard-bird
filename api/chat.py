@@ -8,15 +8,19 @@ Responsibilities:
      the model is handed ONLY qualities, never the animal/element names, so it
      cannot echo names it never received.
   3. Build the system prompt around that translated profile.
-  4. Call Claude (Anthropic API) and return the read as JSON.
+  4. Call the chosen engine — Claude (Anthropic) or Gemini (Google) — and return
+     the read as JSON. The frontend toggle picks the engine per request.
 
-The Anthropic API key is read from the ANTHROPIC_API_KEY environment variable
-and never leaves the server. The browser only ever talks to this endpoint.
+API keys are read from environment variables (ANTHROPIC_API_KEY, GEMINI_API_KEY)
+and never leave the server. The browser only ever talks to this endpoint.
 """
 
 from http.server import BaseHTTPRequestHandler
 import json
 import os
+import socket
+import urllib.request
+import urllib.error
 
 import sxtwl
 import anthropic
@@ -161,45 +165,44 @@ def translate_profile(pillars):
 # --- The system prompt (Part 2 — CURRENT brain; reads the translated profile) -
 
 # Everything up to and including the translated-profile block.
-PROMPT_HEAD = """You are a hardware read engine.
+PROMPT_HEAD = """You are a hardware read engine. The READ is the main event — the analysis. Your job is to explain, in plain and direct language, why this person's friction happens, from how they're built, so they understand their own baseline.
 
-Your one job: show a person **how friction happens in their nature** — the structural friction their build repeats the moment they show up, before any reaction kicks in. You do not read how they defend once friction hits; that's a separate layer you never touch.
+You receive a translated profile: CORE, STRONG, ABSENT, FAULT LINES. You never receive or mention any element, animal, or system — only qualities. Read the core, then reason out how the strong and absent forces, and any fault lines, create friction around it.
 
-You receive a translated profile of their build: CORE, STRONG, ABSENT, FAULT LINES. You never receive or mention any element, animal, or system — only qualities. Read the core, then read how the strong and absent forces create friction around it.
+You are not a coach or a therapist. You explain how they actually run, accurately enough that they recognize it. Precision is the point.
 
-You are not a coach or a therapist. Those produce *heard*. You produce *seen* — and a person can't argue with an accurate picture of the weather they live in. Precision is the warmth.
+### HARD RULES — read first
 
-### HARD RULES — read these first
+- **Direct and literal.** Clear, plain sentences. Say what you mean in denotative language — the literal meaning of words, not connotation or evocation. Get to the essence and state it.
+- **No analogy.** Do not lean on metaphor or imagery to carry the read. Describe the actual mechanism. (A simple, concrete comparison is allowed only if it genuinely makes a mechanism clearer — never as decoration, and rarely.)
+- **No "not X, but Y" framing.** Do not write "this isn't a discipline problem, it's structural" or "not weakness — your nature." State the cause directly: "this comes from how you process: [mechanism]." Avoid contrapositive and negation-based framing entirely.
+- **Analysis, not just questions.** This is a read machine. Explain the why; don't only ask. Questions come after and on top of the analysis, never instead of it.
+- **Black box.** Never name any animal, element, system, "chart," or "reading."
+- **Mirror, not verdict.** What you describe is how they're built and how they run — not a box they live in, not a label for anyone else. Close by returning the read to them as something they can see and work with.
 
-- **Black box.** Never name any animal, element, system, "chart," "reading," or where this comes from. You only ever speak in plain images and mechanics. If a system word is about to appear, it's a failure — rewrite.
-- **Short and sharp.** The opening read is at most 2–3 short paragraphs, ~150 words, ONE central image — not a cascade of metaphors. Every turn after is a few sentences, then a question. Never a wall of text.
-- **Lead with questions.** After the hook, your job is to get them talking about a specific real moment — not to lecture. Mostly questions from there.
-- **Mirror, not verdict.** Everything is machinery they run, never a box they live in, never a label for anyone else. Hand the wheel back.
+Weak vs strong:
+- Weak (analogy + contrapositive): "You're a river with no banks, so you flood. This isn't a flaw — it's your nature."
+- Strong (direct, literal, analytical): "You produce ideas much faster than you can act on them, and you don't have a built-in way to turn that surge into one ordered task. So the energy stays unspent and you scatter — fifteen tabs open, pacing. Outside structure, like a deadline or someone waiting on you, settles this quickly, because it supplies the ordering you don't generate on your own. This is a baseline trait of how you're built."
 
-### THE OPENING — sharp hook, then turn to them
+### THE OPENING — deliver the read, then turn to them
 
-1. One or two short paragraphs: who they're built as (the core, as a single image + its mechanism) and the single biggest friction that build repeats. Then one line that lifts the likely false verdict — "this is how you're built, not a discipline problem / a character flaw." Under ~150 words. No list of parts, no pile of images.
-2. Then immediately turn to them with ONE pointed question: name the single most likely place this bites in real life and ask if it happens. "Here's where I'd bet this shows up — [one specific scene]. Does that happen to you?"
+A few tight, plain paragraphs: state how they're built, then explain the chain of why that produces their characteristic friction. State the cause directly. You may note plainly that this is their baseline wiring. Then ask one pointed question: name the single most likely place this shows up in real life and ask if it happens.
 
-### THE DIG — mostly questions, one thread at a time, your curiosity
+### THE DIG — analysis in every turn
 
-- Lead by curiosity, never an interrogation. A few sentences, then a question. Stay on one thread.
-- Ask for a *very specific* real moment: "tell me exactly what happened and how you ran." The more specific, the better — specifics are where the read proves out.
-- Hold every read as a hypothesis out loud: "here's my guess — does that hold? when does it NOT show up?" Invite the pushback; follow where it breaks. The read sharpens when they correct it.
-- Drill the why their structure raises, then the next — and stir their own inquiry, nudging them to ask "why do I feel this way?" rather than handing the whole answer.
-- Connect each specific moment back to the mechanism, so they leave with a reusable lens, not a fixed label.
+Lead by curiosity, one thread at a time, but always read. When they bring a friction, explain it through their build first — the why, directly — then ask the next question. Never ask without explaining.
+
+- Ask for a specific real moment: "tell me exactly what happened and how you handled it."
+- Hold each read as a hypothesis: "here's why I think this happens — does that hold? when does it not show up?" Follow where it breaks.
+- Connect each moment back to the mechanism, so they leave understanding how they run.
 
 ### FRICTION IS NOT A VERDICT
 
-When another person comes up, read friction as **mechanics, never incompatibility**. Two systems can grind hard and still work — the move is learning the other's gears, not deciding anyone is broken. Friction is physics, and real. Incompatibility is a verdict, and you don't issue verdicts. Always return to the person in front of you.
+When another person comes up, read friction as mechanics, not incompatibility. Two systems can run very differently and still work; the question is how each is built, not who is right. Do not issue verdicts about anyone.
 
-### CLOSE — hand back the wheel
+### CLOSE
 
-This is machinery, not who they are. They're the one who can see it now and choose how to drive. End there, every time.
-
-### VOICE
-
-Image plus mechanism — one image, then the plain cause-and-effect of why it produces that friction. Vivid but true, specific not vague (vagueness reads as a cold horoscope; precision is the authority). You may signal this is their fixed wiring — "the way you've been built since birth" — to ground it. Second person, present tense.
+Return the read to them plainly: this is how you're built and how you run, and now you can see it.
 
 THE PERSON'S TRANSLATED PROFILE:
 {{CORE}}
@@ -208,7 +211,7 @@ THE PERSON'S TRANSLATED PROFILE:
 {{FAULT_LINES}}"""
 
 # The closing instruction (used for the initial read and every follow-up).
-PROMPT_TAIL = """Open with the hook directly — your first words are an image of who they are, never a list of parts. Keep it short. Then turn to them with a question."""
+PROMPT_TAIL = """Open with the read directly — state who they are and why their friction happens, in plain language. No naming of parts, no analogy, no "not X but Y." Then one question."""
 
 
 def build_system_prompt(pillars):
@@ -221,8 +224,53 @@ def build_system_prompt(pillars):
     return head + "\n\n" + PROMPT_TAIL
 
 
-MODEL = "claude-sonnet-4-6"
+# --- Engines -----------------------------------------------------------------
+
+CLAUDE_MODEL = "claude-sonnet-4-6"
+# Gemini model id is env-overridable so it can be corrected without a code change
+# if Google's exact identifier differs from the default below.
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.1-pro")
+GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 MAX_TOKENS = 2000
+
+
+def call_claude(system_prompt, api_messages, api_key):
+    client = anthropic.Anthropic(api_key=api_key, timeout=50.0)
+    resp = client.messages.create(
+        model=CLAUDE_MODEL,
+        max_tokens=MAX_TOKENS,
+        system=system_prompt,
+        messages=api_messages,
+    )
+    return "".join(b.text for b in resp.content if b.type == "text").strip()
+
+
+def call_gemini(system_prompt, api_messages, api_key):
+    # Gemini uses role "model" (not "assistant") and a separate system_instruction.
+    contents = [
+        {"role": ("user" if m["role"] == "user" else "model"),
+         "parts": [{"text": m["content"]}]}
+        for m in api_messages
+    ]
+    body = {
+        "system_instruction": {"parts": [{"text": system_prompt}]},
+        "contents": contents,
+        "generationConfig": {"maxOutputTokens": MAX_TOKENS},
+    }
+    url = GEMINI_ENDPOINT.format(model=GEMINI_MODEL)
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(body).encode("utf-8"),
+        headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=50.0) as resp:
+        payload = json.loads(resp.read().decode("utf-8"))
+    candidates = payload.get("candidates") or []
+    if not candidates:
+        return ""
+    parts = (candidates[0].get("content") or {}).get("parts") or []
+    return "".join(p.get("text", "") for p in parts).strip()
 
 
 class handler(BaseHTTPRequestHandler):
@@ -253,6 +301,11 @@ class handler(BaseHTTPRequestHandler):
         except Exception:
             return self._send(400, {"error": "That date couldn't be read. Please check it and try again."})
 
+        # --- which engine? (frontend toggle; defaults to Claude) ---
+        engine = str(data.get('engine') or 'claude').lower()
+        if engine not in ('claude', 'gemini'):
+            engine = 'claude'
+
         # --- sanitize the conversation history ---
         client_messages = data.get('messages') or []
         history = []
@@ -271,20 +324,16 @@ class handler(BaseHTTPRequestHandler):
 
         system_prompt = build_system_prompt(pillars)
 
-        # --- call Claude ---
+        if engine == 'gemini':
+            return self._run_gemini(system_prompt, api_messages)
+        return self._run_claude(system_prompt, api_messages)
+
+    def _run_claude(self, system_prompt, api_messages):
         api_key = os.environ.get('ANTHROPIC_API_KEY')
         if not api_key:
             return self._send(503, {"error": "The reading engine isn't connected yet. (The API key hasn't been set.)"})
-
         try:
-            client = anthropic.Anthropic(api_key=api_key, timeout=50.0)
-            resp = client.messages.create(
-                model=MODEL,
-                max_tokens=MAX_TOKENS,
-                system=system_prompt,
-                messages=api_messages,
-            )
-            text = "".join(b.text for b in resp.content if b.type == "text").strip()
+            text = call_claude(system_prompt, api_messages, api_key)
             if not text:
                 text = "The read didn't come through clearly this time. Try once more."
             return self._send(200, {"reply": text})
@@ -298,6 +347,28 @@ class handler(BaseHTTPRequestHandler):
             return self._send(502, {"error": "The reading engine is busy right now. Give it a moment and try again."})
         except Exception:
             return self._send(500, {"error": "Something went wrong producing the read. Please try again in a moment."})
+
+    def _run_gemini(self, system_prompt, api_messages):
+        api_key = os.environ.get('GEMINI_API_KEY')
+        if not api_key:
+            return self._send(503, {"error": "Gemini isn't connected yet. (The GEMINI_API_KEY hasn't been set in the server settings.)"})
+        try:
+            text = call_gemini(system_prompt, api_messages, api_key)
+            if not text:
+                text = "The read didn't come through clearly this time. Try once more."
+            return self._send(200, {"reply": text})
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403):
+                return self._send(401, {"error": "Gemini couldn't authenticate. (The GEMINI_API_KEY may be wrong.)"})
+            if e.code == 404:
+                return self._send(502, {"error": "That Gemini model name wasn't found. (Check the GEMINI_MODEL setting.)"})
+            if e.code == 429:
+                return self._send(429, {"error": "A lot of reads are coming through at once. Wait a few seconds and try again."})
+            return self._send(502, {"error": "Gemini is busy right now. Give it a moment and try again."})
+        except (socket.timeout, TimeoutError):
+            return self._send(504, {"error": "The read is taking too long right now. Give it a moment and try again."})
+        except Exception:
+            return self._send(502, {"error": "Couldn't reach Gemini right now. Give it a moment and try again."})
 
     def do_GET(self):
         # Simple health check.

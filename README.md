@@ -43,9 +43,15 @@ This is what lets the app talk to Claude.
 
 ### 3. Add your API key to Vercel
 1. In your new project, open **Settings → Environment Variables**.
-2. Add one variable:
+2. Add the Claude key:
    - **Name:** `ANTHROPIC_API_KEY`
    - **Value:** the `sk-ant-…` key you copied
+
+   To also enable the **Gemini** toggle, add a second variable:
+   - **Name:** `GEMINI_API_KEY`
+   - **Value:** your Google Gemini API key
+   - (Optional `GEMINI_MODEL` — defaults to `gemini-3.1-pro`; set this only to
+     change the Gemini model without touching code.)
 3. Save.
 4. Go to the **Deployments** tab → open the latest one → **Redeploy** so it
    picks up the key.
