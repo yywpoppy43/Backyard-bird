@@ -50,8 +50,9 @@ This is what lets the app talk to Claude.
    To also enable the **Gemini** toggle, add a second variable:
    - **Name:** `GEMINI_API_KEY`
    - **Value:** your Google Gemini API key
-   - (Optional `GEMINI_MODEL` — defaults to `gemini-3.1-pro`; set this only to
-     change the Gemini model without touching code.)
+   - (Optional `GEMINI_MODEL` — defaults to `gemini-3.1-pro-preview`; set this
+     only to change the Gemini model without touching code. Pro models require
+     a paid/billing-enabled Google AI plan.)
 3. Save.
 4. Go to the **Deployments** tab → open the latest one → **Redeploy** so it
    picks up the key.

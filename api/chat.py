@@ -229,7 +229,7 @@ def build_system_prompt(pillars):
 CLAUDE_MODEL = "claude-sonnet-4-6"
 # Gemini model id is env-overridable so it can be corrected without a code change
 # if Google's exact identifier differs from the default below.
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.1-pro")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.1-pro-preview")
 GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 MAX_TOKENS = 2000
 
