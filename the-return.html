@@ -190,6 +190,54 @@ a{color:inherit;text-decoration:none}
 
 /* apparatus svg text helpers handled inline */
 
+/* ---- generic viz components ---- */
+.vgrid{display:grid;gap:11px}
+.vg-2{grid-template-columns:1fr 1fr}.vg-3{grid-template-columns:repeat(3,1fr)}.vg-4{grid-template-columns:repeat(4,1fr)}
+.vcard{border:1px solid var(--line);border-top:3px solid var(--zc,var(--gold));border-radius:8px;padding:12px 13px;background:var(--paper);display:flex;flex-direction:column;gap:6px}
+.vcard h6{font-size:14.5px;font-weight:600;margin:0;line-height:1.15}
+.vcard .vk{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--gold-d)}
+.vcard p{font-size:13px;color:var(--ink-soft);line-height:1.46;margin:0}
+.vcard .vcue{font-size:13px;color:var(--verm);border-top:1px solid var(--line);padding-top:7px;margin-top:auto;line-height:1.4}
+.vcard .vtag{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:30px;align-self:flex-start}
+.vtag.proven{color:#fff;background:var(--sage)} .vtag.cand{color:var(--muted);border:1px solid var(--line-2)}
+.vflow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+.vstep{flex:1;min-width:130px;border:1px solid var(--line);border-top:3px solid var(--zc,var(--gold));border-radius:8px;padding:11px 12px;background:var(--paper)}
+.vstep .vk{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--gold-d);margin-bottom:4px}
+.vstep h6{font-size:15px;font-weight:600;margin:0 0 4px}
+.vstep p{font-size:12.5px;color:var(--ink-soft);line-height:1.45;margin:0}
+.varrow{display:flex;align-items:center;justify-content:center;color:var(--gold);font-family:var(--mono);padding:0 7px;font-size:16px}
+.vsplit{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vcmp{border:1px solid var(--line);border-radius:8px;padding:13px 14px}
+.vcmp .vk{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.vcmp p{font-size:13.5px;color:var(--ink-soft);line-height:1.5;margin:0}
+.vcmp.bad{border-left:3px solid var(--verm);background:color-mix(in srgb,var(--verm) 5%,var(--paper))}
+.vcmp.good{border-left:3px solid var(--sage);background:color-mix(in srgb,var(--sage) 7%,var(--paper))}
+.vcmp.bad .vk{color:var(--verm)} .vcmp.good .vk{color:#5a7548}
+.vmatrix{width:100%;border-collapse:collapse;font-size:12px}
+.vmatrix th,.vmatrix td{border:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top}
+.vmatrix th{font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--gold-d);background:var(--paper2);font-weight:500}
+.vmatrix td.rk{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--ink);text-transform:uppercase;background:var(--paper2)}
+.vmatrix td.built{background:color-mix(in srgb,var(--sage) 9%,var(--paper))}
+.vmatrix tr.rsv td{color:var(--muted)} .vmatrix .hard{font-style:italic;color:var(--verm)}
+.vmatrix .wrap{overflow-x:auto}
+.veq{display:flex;align-items:stretch;flex-wrap:wrap;gap:8px;align-items:center}
+.veq .term{flex:1;min-width:120px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;text-align:center;background:var(--paper)}
+.veq .term.strut{border-color:var(--verm);border-width:1px 1px 1px 3px}
+.veq .term.cable{border-color:var(--sage)}
+.veq .term .tk{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.veq .term .tv{font-size:14px;font-weight:600;color:var(--ink)}
+.veq .op{font-family:var(--mono);font-size:15px;color:var(--gold);align-self:center}
+.vlegend{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:11px}
+.vlegend span{display:inline-flex;align-items:center;gap:6px}
+.vlegend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.vmeter{height:10px;border-radius:6px;background:var(--paper2);border:1px solid var(--line);overflow:hidden;margin-top:7px}
+.vmeter b{display:block;height:100%}
+@media(max-width:580px){
+  .vg-3,.vg-4{grid-template-columns:1fr 1fr}.vsplit{grid-template-columns:1fr}
+  .varrow{transform:rotate(90deg);padding:5px 0;width:100%}
+}
+@media(max-width:430px){.vg-2,.vg-3,.vg-4{grid-template-columns:1fr}}
+
 #docs{display:none}
 
 /* ============ RESPONSIVE ============ */
@@ -2075,13 +2123,17 @@ DOCS.forEach(d=>{
 });
 
 /* ---------- home ---------- */
+function vizBadge(id){
+  const s=(typeof VIZ_MAP!=='undefined')?VIZ_MAP[id]:null; const n=s?s.length:0;
+  if(!n) return '';
+  return '<span class="viz-badge">'+(n>1?(n+' visuals'):'visual')+'</span>';
+}
 function tileHTML(d){
   const z=zoneCls[d.zone];
-  const badge = d.viz ? '<span class="viz-badge">visual</span>' : '';
   return '<a class="tile '+z.cls+'" href="#/doc/'+d.id+'">'+
     '<div class="tile-name">'+escapeHtml(d.title)+'</div>'+
     '<div class="tile-blurb">'+escapeHtml(d.blurb)+'</div>'+
-    '<div class="tile-foot">'+badge+'</div></a>';
+    '<div class="tile-foot">'+vizBadge(d.id)+'</div></a>';
 }
 function zoneHTML(key, colCls){
   const z=zoneCls[key];
@@ -2114,6 +2166,7 @@ function buildHome(){
           '<div class="anchor-badge">Anchor</div>'+
           '<div class="tile-name">'+escapeHtml(anchor.title)+'</div>'+
           '<div class="tile-blurb">'+escapeHtml(anchor.blurb)+'</div>'+
+          '<div class="tile-foot" style="justify-content:center">'+vizBadge('master-frame')+'</div>'+
         '</a>'+
         '<div class="connector lbl">conforms to</div>'+
         zoneHTML('pool','cols-3')+
@@ -2395,14 +2448,503 @@ function stagesFigure(){
   return f;
 }
 
+/* --- master-frame: the three-layer frame --- */
+function frameFigure(){
+  const f=fig('Visualization','the frame — only the middle surfaces');
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vflow">'+
+      '<div class="vstep" style="--zc:var(--verm)"><div class="vk">left · the destination</div><h6>The operator</h6><p>Human agency — the self we free and strengthen. The whole point.</p></div>'+
+      '<div class="varrow">·</div>'+
+      '<div class="vstep" style="--zc:var(--gold)"><div class="vk">middle · surfaces</div><h6>The material layer</h6><p>Body &amp; brain on physics. Measurable, non-arguable. <b style="color:var(--gold-d)">The only layer we show the world.</b></p></div>'+
+      '<div class="varrow">·</div>'+
+      '<div class="vstep" style="--zc:var(--muted);border-style:dashed"><div class="vk">right · black box</div><h6>The read-in</h6><p>The diagnostic dialects. <b>Never surface</b> — how we read, not what we say.</p></div>'+
+    '</div>'+
+    '<figcaption>Friction crosses all three. The work translates everything <b>down into the material layer</b> — the one floor that is universally true because it is measurable — and surfaces only that. The lens shows the problem; the source code stays in the black box.</figcaption>';
+  return f;
+}
+
+/* --- structural-law: the recurring two-faces pattern set --- */
+function dualitiesFigure(){
+  const f=fig('Visualization','one structure, two faces — recurring');
+  const G={
+    teng:'<svg viewBox="0 0 64 44"><g stroke="#B8442B" stroke-width="3" stroke-linecap="round"><line x1="12" y1="30" x2="28" y2="14"/><line x1="36" y1="30" x2="52" y2="14"/></g><g stroke="#6F8A5E" stroke-width="1"><line x1="12" y1="30" x2="36" y2="30"/><line x1="28" y1="14" x2="52" y2="14"/><line x1="12" y1="30" x2="28" y2="14"/><line x1="36" y1="30" x2="52" y2="14"/></g></svg>',
+    yin:'<svg viewBox="0 0 64 44"><circle cx="32" cy="22" r="16" fill="none" stroke="#211A10" stroke-width="1.2"/><path d="M32,6 a8,8 0 0 1 0,16 a8,8 0 0 0 0,16 a16,16 0 0 1 0,-32" fill="#211A10"/><circle cx="32" cy="14" r="2.4" fill="#FBF7EE"/><circle cx="32" cy="30" r="2.4" fill="#211A10"/></svg>',
+    wave:'<svg viewBox="0 0 64 44"><line x1="6" y1="30" x2="58" y2="30" stroke="#6F8A5E" stroke-width="1.4"/><path d="M6,22 q8,-14 16,0 t16,0 t16,0" fill="none" stroke="#B8442B" stroke-width="1.8"/></svg>',
+    fig:'<svg viewBox="0 0 64 44"><rect x="10" y="8" width="44" height="30" fill="none" stroke="#6F8A5E" stroke-width="1.2"/><circle cx="32" cy="23" r="10" fill="#B8442B"/></svg>',
+    field:'<svg viewBox="0 0 64 44"><g fill="#A99B80"><circle cx="14" cy="12" r="1.3"/><circle cx="28" cy="12" r="1.3"/><circle cx="42" cy="12" r="1.3"/><circle cx="50" cy="12" r="1.3"/><circle cx="14" cy="32" r="1.3"/><circle cx="28" cy="32" r="1.3"/><circle cx="42" cy="32" r="1.3"/><circle cx="50" cy="32" r="1.3"/><circle cx="20" cy="22" r="1.3"/><circle cx="44" cy="22" r="1.3"/></g><circle cx="32" cy="22" r="5.5" fill="#B8442B"/></svg>',
+    myc:'<svg viewBox="0 0 64 44"><path d="M24,26 h16 a2,2 0 0 0 2,-3 a10,10 0 0 0 -20,0 a2,2 0 0 0 2,3" fill="#B8442B"/><rect x="29" y="26" width="6" height="8" fill="#9A8A5E"/><g stroke="#6F8A5E" stroke-width="1" fill="none"><path d="M32,34 q-10,3 -18,8"/><path d="M32,34 q-3,5 -4,9"/><path d="M32,34 q10,3 18,8"/><path d="M32,34 q4,5 6,9"/></g></svg>',
+  };
+  const items=[
+    ['Tensegrity','bones (compression) ⟷ fascia (tension)',G.teng],
+    ['Yin &amp; yang','two phases generating each other',G.yin],
+    ['Wave &amp; medium','the wave ⟷ the ocean it moves through',G.wave],
+    ['Figure &amp; ground','neither seen without the other',G.fig],
+    ['Particle &amp; field','localized ⟷ everywhere at once',G.field],
+    ['Mycelium &amp; mushroom','the fruiting body ⟷ the network',G.myc],
+  ];
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vgrid vg-3">'+items.map(it=>
+      '<div class="vcard" style="--zc:var(--cog);align-items:center;text-align:center">'+
+      '<div style="width:64px;height:44px">'+it[2]+'</div>'+
+      '<h6 style="font-size:13.5px">'+it[0]+'</h6><p>'+it[1]+'</p></div>').join('')+
+    '</div>'+
+    '<figcaption>Not analogies decorating an idea — the <b>same architecture recurring</b>, which is the evidence it is structural. The individuated and the continuous are two views of one process: remove the tension and the struts collapse; remove the struts and the tension has nothing to hold.</figcaption>';
+  return f;
+}
+
+/* --- pilot-engine: tensegrity (reveal + container) --- */
+function tensegrityFigure(){
+  const f=fig('Visualization','the reveal and its container are one structure');
+  f.querySelector('.viz-body').innerHTML=
+  '<svg viewBox="0 0 620 230" role="img" aria-label="A bare strut snaps; a strut held by cables stands">'+
+   '<g font-family="\'JetBrains Mono\',monospace" font-size="10" letter-spacing="1">'+
+   '<text x="150" y="20" fill="#B8442B" text-anchor="middle">THE REVEAL ALONE</text>'+
+   '<text x="150" y="210" fill="#8A7E68" text-anchor="middle" font-family="Spectral,serif" font-style="italic" font-size="11">a bare strut snaps — truth with nothing holding it is a wound</text>'+
+   '<line x1="60" y1="180" x2="240" y2="180" stroke="#211A10" stroke-opacity="0.25"/>'+
+   '<g stroke="#B8442B" stroke-width="5" stroke-linecap="round"><line x1="150" y1="178" x2="120" y2="120"/><line x1="120" y1="118" x2="150" y2="70" stroke-dasharray="2 7"/></g>'+
+   '<text x="92" y="120" fill="#B8442B" font-size="13">⚡</text>'+
+   '<line x1="320" y1="40" x2="320" y2="190" stroke="#211A10" stroke-opacity="0.12"/>'+
+   '<text x="470" y="20" fill="#5a7548" text-anchor="middle">THE REVEAL + ITS CONTAINER</text>'+
+   '<text x="470" y="210" fill="#8A7E68" text-anchor="middle" font-family="Spectral,serif" font-style="italic" font-size="11">cables in tension are what let the strut stand</text>'+
+   '<line x1="380" y1="180" x2="560" y2="180" stroke="#211A10" stroke-opacity="0.25"/>'+
+   '<g stroke="#6F8A5E" stroke-width="1.3"><line x1="470" y1="80" x2="390" y2="178"/><line x1="470" y1="80" x2="550" y2="178"/><line x1="470" y1="80" x2="470" y2="178" stroke-dasharray="3 4"/></g>'+
+   '<line x1="470" y1="178" x2="470" y2="80" stroke="#B8442B" stroke-width="5" stroke-linecap="round"/>'+
+   '<circle cx="470" cy="80" r="5" fill="#B8442B"/>'+
+   '<text x="478" y="74" fill="#B8442B" font-size="9">the truth</text>'+
+   '<text x="392" y="150" fill="#5a7548" font-size="9">held safety</text>'+
+   '</g></svg>'+
+   '<figcaption>The truth is a <b>rigid strut</b>: it cuts through the panic and pulls the weight — but a bare strut snaps. The held container is the <b>cables in tension</b>: the safety, the acceptance of the struggle. <b>Neither holds without the other</b> — which is why "show the truth and let go" is the worst case.</figcaption>';
+  return f;
+}
+
+/* --- pilot-engine: the four doors --- */
+function doorsFigure(){
+  const f=fig('Visualization','one proven door, three candidate families');
+  const items=[
+    ['Interrupt','loud','Flood a channel with so much undeniable signal the Software’s bandwidth is stolen.','The somatic shake lives here.','proven','The somatic shake — proven'],
+    ['Attrition','loud','Hold the friction in a container with no exit until the defense burns its fuel and torches itself.','',' cand','Candidate'],
+    ['Redirect','quiet','Light a circuit the Software can’t run alongside its defense — care, awe, flow in a matched domain.','',' cand','Candidate'],
+    ['Release','quiet','Stop feeding the grip — softening, rhythm, naming the mechanism out loud.','',' cand','Candidate'],
+  ];
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vgrid vg-2">'+items.map(it=>{
+      const proven=it[4]==='proven';
+      return '<div class="vcard" style="--zc:'+(proven?'var(--sage)':'var(--line-2)')+'">'+
+        '<span class="vtag '+(proven?'proven':'cand')+'">'+it[5]+'</span>'+
+        '<h6>'+it[0]+' <span style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em">· '+it[1]+' way</span></h6>'+
+        '<p>'+it[2]+(it[3]?(' <b style="color:#5a7548">'+it[3]+'</b>'):'')+'</p></div>';
+    }).join('')+'</div>'+
+    '<figcaption>Every path does one thing: <b>load a channel the Software can’t weaponize → its grip breaks → a gap opens → the operator takes the wheel.</b> Only the <b>somatic shake</b> is proven (thousands of repetitions); the rest are predicted by the mechanism, not yet run. The <b>quiet way</b> (Redirect, Release) is likely the true spine; the loud way is the emergency tool.</figcaption>';
+  return f;
+}
+
+/* --- pilot-engine: software three states --- */
+function softwareStatesFigure(){
+  const f=fig('Visualization','one component, three states — set by who holds the wheel');
+  const items=[
+    ['Dormant','baseline','var(--sage)','Operator driving. The Software is online but quiet — light background scans. Safety is present.'],
+    ['Autopilot','the default failure','var(--verm)','Friction reads as threat; the Software takes the wheel, floods cognition, narrates on a loop. The operator is <b>outvoted, not gone.</b>'],
+    ['Harnessed','trained','var(--gold)','Operator at the wheel. Same code, now an instrument: force → drive, vigilance → awareness, intensity → range.'],
+  ];
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vgrid vg-3">'+items.map(it=>
+      '<div class="vcard" style="--zc:'+it[2]+'"><div class="vk">'+it[1]+'</div><h6>'+it[0]+'</h6><p>'+it[3]+'</p></div>').join('')+'</div>'+
+    '<figcaption>The Software is not a villain to kill — it is permanent. The misalignment between operator and Software was always the problem, never the Software. <b>The work never removes anything; it changes who holds the wheel.</b></figcaption>';
+  return f;
+}
+
+/* --- physics II: identical pressure, different structure --- */
+function pressureFigure(){
+  const f=fig('Visualization','the same wind, three structures');
+  const boat='<svg viewBox="0 0 80 60"><path d="M14,46 h52 l-8,10 h-36 z" fill="#9A8A5E"/><line x1="40" y1="10" x2="40" y2="46" stroke="#211A10" stroke-width="1.5"/><path d="M40,12 l20,28 h-20 z" fill="#B8442B" fill-opacity="0.7"/></svg>';
+  const mill='<svg viewBox="0 0 80 60"><rect x="36" y="30" width="8" height="26" fill="#9A8A5E"/><g stroke="#211A10" stroke-width="1.5"><line x1="40" y1="30" x2="40" y2="8"/><line x1="40" y1="30" x2="62" y2="30"/><line x1="40" y1="30" x2="40" y2="52"/><line x1="40" y1="30" x2="18" y2="30"/></g><circle cx="40" cy="30" r="3" fill="#B8442B"/></svg>';
+  const tent='<svg viewBox="0 0 80 60"><path d="M40,12 l26,44 h-52 z" fill="none" stroke="#211A10" stroke-width="1.5"/><line x1="40" y1="12" x2="40" y2="56" stroke="#211A10" stroke-width="1"/><path d="M44,30 l8,-4 m-8,9 l9,-3" stroke="#B8442B" stroke-width="1.5"/><text x="40" y="40" font-size="13" fill="#B8442B" text-anchor="middle">↯</text></svg>';
+  const items=[['Sailboat',boat,'must steer — turns the wind into direction'],['Windmill',mill,'stores it as work'],['Sealed tent',tent,'builds internal pressure until it tears']];
+  f.querySelector('.viz-body').innerHTML=
+    '<div style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--gold-d);text-align:center;margin-bottom:8px">›››  THE SAME GUST OF WIND  ›››</div>'+
+    '<div class="vgrid vg-3">'+items.map(it=>
+      '<div class="vcard" style="--zc:var(--gold);align-items:center;text-align:center"><div style="width:80px;height:60px">'+it[1]+'</div><h6 style="font-size:14px">'+it[0]+'</h6><p>'+it[2]+'</p></div>').join('')+'</div>'+
+    '<figcaption>The wind is identical. <b>The structure decides what friction the wind becomes.</b> This is why two people in the same situation suffer completely differently — the suffering is not a verdict on the situation, it is information about the structure meeting it.</figcaption>';
+  return f;
+}
+
+/* --- physics III: physics of safety + mirror/blanket --- */
+function safetyFigure(){
+  const f=fig('Visualization','the physics of safety');
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vflow">'+
+      '<div class="vstep" style="--zc:var(--verm)"><div class="vk">friction hits</div><h6>Simulations fire</h6><p>The defense runs dozens of high-speed simulations on data it doesn’t have. Load climbs.</p></div>'+
+      '<div class="varrow">→</div>'+
+      '<div class="vstep" style="--zc:var(--gold)"><div class="vk">precise reflection</div><h6>Nothing to run on</h6><p>An undeniable reflection of the actual situation terminates the simulations.</p></div>'+
+      '<div class="varrow">→</div>'+
+      '<div class="vstep" style="--zc:var(--sage)"><div class="vk">load drops</div><h6>The release is safety</h6><p>The freed energy <i>is</i> the felt sensation of safety.</p></div>'+
+    '</div>'+
+    '<div class="vsplit" style="margin-top:12px">'+
+      '<div class="vcmp bad"><div class="vk">✕ Blanket</div><p>Validates the story, seals the person in the loop. Load keeps climbing. A closed system tending toward stillness — the failure mode of most self-soothing tools.</p></div>'+
+      '<div class="vcmp good"><div class="vk">✓ Mirror</div><p>Reflects the situation precisely; the simulations collapse, the operator surfaces, the freed energy points back into the world. An open system. Never the destination.</p></div>'+
+    '</div>'+
+    '<figcaption><b>Safety is not the absence of friction — it is the sudden, confirmed alignment between internal perception and external reality.</b> Precision is the warmth: a precise reflection lands as <i>being seen</i>; generic empathy lands as merely <i>being heard</i>, and being heard changes nothing.</figcaption>';
+  return f;
+}
+
+/* --- physics V: willpower internal vs external --- */
+function willpowerFigure(){
+  const f=fig('Visualization','two boundaries, opposite fuel');
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vsplit">'+
+      '<div class="vcmp bad"><div class="vk">Internal — exhaustible</div><p>The boundary held by the mind: <i>not now, stay on task.</i> Runs on glucose; the tank is small; and it is the <b>first system offline under stress</b> — failing exactly when it is most needed.</p>'+
+        '<div class="vmeter"><b style="width:22%;background:linear-gradient(90deg,var(--verm-br),var(--verm))"></b></div>'+
+        '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px">fuel left under stress</div></div>'+
+      '<div class="vcmp good"><div class="vk">External — non-exhaustible</div><p>The boundary built into the environment: the app deleted, the door locked, the class that starts anyway. You aren’t the one maintaining it, so it spends none of your fuel. <b>It holds itself.</b></p>'+
+        '<div class="vmeter"><b style="width:100%;background:linear-gradient(90deg,#7d9a6c,var(--sage))"></b></div>'+
+        '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px">holds regardless of capacity</div></div>'+
+    '</div>'+
+    '<figcaption>The operator does not <i>will</i> the apparatus through friction. It <b>builds the external boundary once</b> and lets the apparatus meet friction inside it. This is a requirement, not a preference: the work cannot deliver as a cognitive tool run on willpower, because that is the boundary that fails under the exact friction the work is for.</figcaption>';
+  return f;
+}
+
+/* --- physics VI: two states of cognition --- */
+function cognitionFigure(){
+  const f=fig('Visualization','flow is the baseline turned off, not up');
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vsplit">'+
+      '<div class="vcmp" style="border-left:3px solid var(--cog)"><div class="vk" style="color:#3c5a72">Baseline / source mode</div><p>The internally-directed resting state — associative, generative, ranging freely. The wellspring of ideation. <b>Left running during a task that needs focus, it is the source of distraction</b> — attention that cannot land.</p></div>'+
+      '<div class="vcmp" style="border-left:3px solid var(--gold)"><div class="vk" style="color:var(--gold-d)">Execution / flow mode</div><p>Focus requires the resting network to <b>switch off</b> — a salience mechanism suppresses the wandering so action can happen.</p></div>'+
+    '</div>'+
+    '<figcaption>They are <b>opposite states, not the same state intensified.</b> A system whose baseline runs hot and won’t suppress on demand <i>floods</i> — it generates in all directions and cannot land, because the network that should quiet stays on.</figcaption>';
+  return f;
+}
+
+/* --- physics VII / method: the recovery curve --- */
+function recoveryFigure(){
+  const f=fig('Visualization','the apex is the decreasing recovery curve');
+  f.querySelector('.viz-body').innerHTML=
+   '<svg viewBox="0 0 640 220" role="img" aria-label="A recovery curve whose dips recover faster each time">'+
+    '<g font-family="\'JetBrains Mono\',monospace" font-size="9" fill="#8A7E68">'+
+    '<line x1="40" y1="70" x2="620" y2="70" stroke="#211A10" stroke-dasharray="2 4" stroke-opacity="0.4"/>'+
+    '<text x="44" y="64">equilibrium</text>'+
+    '<line x1="40" y1="40" x2="40" y2="195" stroke="#211A10" stroke-opacity="0.25"/>'+
+    '<line x1="40" y1="195" x2="620" y2="195" stroke="#211A10" stroke-opacity="0.25"/>'+
+    '<text x="600" y="208" text-anchor="end">time →</text>'+
+    '<path d="M40,70 L120,70 L150,175 L300,70 L340,70 L362,150 L470,70 L500,70 L518,128 L600,70 L620,70" fill="none" stroke="#8A6014" stroke-width="2.2"/>'+
+    '<g fill="#B8442B"><circle cx="150" cy="175" r="3.5"/><circle cx="362" cy="150" r="3.5"/><circle cx="518" cy="128" r="3.5"/></g>'+
+    '<text x="150" y="190" fill="#B8442B" text-anchor="middle">off 10</text>'+
+    '<text x="362" y="166" fill="#B8442B" text-anchor="middle">off 8</text>'+
+    '<text x="518" y="144" fill="#B8442B" text-anchor="middle">off 6</text>'+
+    '<text x="232" y="58" fill="#5a7548" text-anchor="middle">back in 6</text>'+
+    '<text x="423" y="58" fill="#5a7548" text-anchor="middle">in 5</text>'+
+    '<text x="560" y="58" fill="#5a7548" text-anchor="middle">in 3</text>'+
+    '</g></svg>'+
+    '<figcaption>The shake always happens — a system in real exchange with the world will be moved by it. <b>The operator is not the absence of being knocked over; it is the decreasing recovery curve.</b> Underneath the faster return is the real event: the system actually grew stronger by passing through friction it used to be unable to hold. The same curve tells growth from dependency — shortening over months is growth; flat or lengthening is dependency.</figcaption>';
+  return f;
+}
+
+/* --- method: the four-term formula --- */
+function formulaFigure(){
+  const f=fig('Visualization','four terms, one tensegrity');
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="veq">'+
+      '<div class="term"><div class="tk">must be real</div><div class="tv">Real friction</div></div>'+
+      '<div class="op">×</div>'+
+      '<div class="term strut"><div class="tk">the strut</div><div class="tv">The right cue</div></div>'+
+      '<div class="op">inside</div>'+
+      '<div class="term cable"><div class="tk">a cable</div><div class="tv">A held container</div></div>'+
+      '<div class="op">met by</div>'+
+      '<div class="term cable"><div class="tk">a cable</div><div class="tv">A landing ground</div></div>'+
+    '</div>'+
+    '<figcaption>Operator recognition = the four terms together. The cue’s truth is the <b>rigid strut</b>; the held container and the landing are the <b>cables in tension</b>. The strut alone snaps. <b>Drop any one term and the operation fails.</b></figcaption>';
+  return f;
+}
+
+/* --- method: Read / Cue / Land --- */
+function operationFigure(){
+  const f=fig('Visualization','the three-part operation');
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vflow">'+
+      '<div class="vstep" style="--zc:var(--cog)"><div class="vk">part 1</div><h6>Read</h6><p>Coarse → precise, a hypothesis not a verdict. Produces the forecast, the weight, the law, the conditions.</p></div>'+
+      '<div class="varrow">→</div>'+
+      '<div class="vstep" style="--zc:var(--verm)"><div class="vk">part 2</div><h6>Cue</h6><p>Forge the reveal: find the evidence → name the law → forge it short and present-tense → run the argue-test.</p></div>'+
+      '<div class="varrow">→</div>'+
+      '<div class="vstep" style="--zc:var(--sage)"><div class="vk">part 3</div><h6>Land</h6><p>Leave the baton. Don’t narrate the catch. Land them on their own ground and release.</p></div>'+
+    '</div>'+
+    '<figcaption>The same operation in any setting. The <b>argue-test</b> is the quality bar: if the person can argue with it ("you’re safe" → "no I’m not"), it bounces; a present fact from their own reality ("you’re still standing" → silence) lands.</figcaption>';
+  return f;
+}
+
+/* --- cue-principle-library: the lever --- */
+function leverFigure(){
+  const f=fig('Visualization','a cue is a lever for attention-weight');
+  f.querySelector('.viz-body').innerHTML=
+   '<svg viewBox="0 0 620 200" role="img" aria-label="A lever moving weight from cognition to soma">'+
+    '<g font-family="\'JetBrains Mono\',monospace" font-size="10">'+
+    '<rect x="40" y="40" width="240" height="44" rx="6" fill="#4F7390" fill-opacity="0.1" stroke="#4F7390" stroke-opacity="0.5"/>'+
+    '<text x="160" y="60" text-anchor="middle" fill="#3c5a72">COGNITION · narrated</text>'+
+    '<text x="160" y="74" text-anchor="middle" fill="#8A7E68" font-family="Spectral,serif" font-style="italic" font-size="9">where the defense edits</text>'+
+    '<rect x="340" y="40" width="240" height="44" rx="6" fill="#B07D22" fill-opacity="0.12" stroke="#B07D22" stroke-opacity="0.55"/>'+
+    '<text x="460" y="60" text-anchor="middle" fill="#8A6014">SOMA · felt</text>'+
+    '<text x="460" y="74" text-anchor="middle" fill="#8A7E68" font-family="Spectral,serif" font-style="italic" font-size="9">honest, upstream of the edit</text>'+
+    '<polygon points="310,150 300,170 320,170" fill="#211A10"/>'+
+    '<line x1="120" y1="160" x2="500" y2="120" stroke="#211A10" stroke-width="3" stroke-linecap="round"/>'+
+    '<circle cx="470" cy="127" r="13" fill="#B8442B"/><text x="470" y="131" text-anchor="middle" fill="#fff" font-size="9">wt</text>'+
+    '<path d="M150,150 q40,-30 90,-20" fill="none" stroke="#6F8A5E" stroke-width="1.4" marker-end="url(#ar)"/>'+
+    '<defs><marker id="ar" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#6F8A5E"/></marker></defs>'+
+    '<text x="300" y="190" text-anchor="middle" fill="#8A7E68" font-family="Spectral,serif" font-style="italic" font-size="11">the shift is the cue’s work; the words are only the lever-arm</text>'+
+    '</g></svg>'+
+    '<figcaption>A cue does not hand cognition something to dispute — it <b>moves attention-weight</b> out of the narrated layer (where the defense is fluent) and back into the felt one (the honest channel). It is an <b>operation, not a transmission</b>: measured only by whether the weight moved, never by whether the words were "right."</figcaption>';
+  return f;
+}
+
+/* --- cue-principle-library: the five functions --- */
+function fiveFunctionsFigure(){
+  const f=fig('Visualization','the five functions a cue performs');
+  const items=[
+    ['1 · Naming the pattern','Makes the defense’s firing visible from outside.','"Your shoulders are up by your ears."'],
+    ['2 · Directing a verifiable move','One physical or attentional move, verified by doing.','"Drop the smile."'],
+    ['3 · Opening the substrate','Points at the coherence already there.','"You’ve been here before."'],
+    ['4 · Reframing the firing','Reattributes the meaning; the sensation stays.','"The sensation is temporary; the strength will stay."'],
+    ['5 · Holding inside the friction','Refuses the escape without coercion.','"Just stay."'],
+  ];
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vgrid vg-2">'+items.map((it,i)=>
+      '<div class="vcard'+(i===4?'" style="grid-column:1/-1;--zc:var(--verm)':'" style="--zc:var(--gold)')+'"><h6 style="font-size:13.5px">'+it[0]+'</h6><p>'+it[1]+'</p><div class="vcue">'+it[2]+'</div></div>').join('')+'</div>'+
+    '<figcaption>Each is a way the cue performs the <b>reveal</b> — lifting the false weight off attention, naming the truth, or both. A cue that serves a function but violates its internal principles lands badly or not at all.</figcaption>';
+  return f;
+}
+
+/* --- civilizational: the third position --- */
+function thirdPositionFigure(){
+  const f=fig('Visualization','the third position');
+  f.querySelector('.viz-body').innerHTML=
+   '<svg viewBox="0 0 620 230" role="img" aria-label="Two base positions and the operator above them">'+
+    '<g font-family="\'JetBrains Mono\',monospace" font-size="10">'+
+    '<line x1="310" y1="64" x2="150" y2="170" stroke="#211A10" stroke-opacity="0.3"/>'+
+    '<line x1="310" y1="64" x2="470" y2="170" stroke="#211A10" stroke-opacity="0.3"/>'+
+    '<rect x="40" y="168" width="220" height="52" rx="7" fill="#FBF7EE" stroke="#6F8A5E" stroke-opacity="0.6"/>'+
+    '<text x="150" y="190" text-anchor="middle" fill="#5a7548">READS THE WHOLE</text>'+
+    '<text x="150" y="205" text-anchor="middle" font-family="Spectral,serif" font-style="italic" font-size="10" fill="#5B5040">the field, the system’s physics</text>'+
+    '<rect x="360" y="168" width="220" height="52" rx="7" fill="#FBF7EE" stroke="#B8442B" stroke-opacity="0.55"/>'+
+    '<text x="470" y="190" text-anchor="middle" fill="#B8442B">READS THE PART</text>'+
+    '<text x="470" y="205" text-anchor="middle" font-family="Spectral,serif" font-style="italic" font-size="10" fill="#5B5040">the bounded self, its defenses</text>'+
+    '<rect x="200" y="20" width="220" height="52" rx="7" fill="#B07D22" fill-opacity="0.1" stroke="#B07D22"/>'+
+    '<text x="310" y="42" text-anchor="middle" fill="#8A6014" font-weight="500">THE THIRD POSITION</text>'+
+    '<text x="310" y="57" text-anchor="middle" font-family="Spectral,serif" font-style="italic" font-size="10" fill="#5B5040">the operator: holds both, collapses into neither</text>'+
+    '</g></svg>'+
+    '<figcaption>Two traditions each mapped one face of the one structure cleanly and went blind to the other. The third position is <b>not between them — it is above any division of the structure into a privileged half.</b> It reads the field and reads the unit, holds both as instruments, and stays in the seat.</figcaption>';
+  return f;
+}
+
+/* --- body-container: the method's body jacket --- */
+function bodyJacketFigure(){
+  const f=fig('Visualization','every term, an un-fakeable physical form');
+  const rows=[
+    ['Real friction','physical load — the shake at the muscle’s threshold, the moment before form breaks'],
+    ['Held container','the class, the session — inherited from the room, not manufactured'],
+    ['Operator','the body (delivers the friction) and the instructor (delivers the cue)'],
+    ['Landing','the proof in the tissue — <i>I held it</i> — the person’s own ground'],
+    ['Recovery','the felt return curve, with literal muscle growth as a measurable correlate'],
+  ];
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="wrap"><table class="vmatrix"><thead><tr><th>Universal term</th><th>Body form</th></tr></thead><tbody>'+
+    rows.map(r=>'<tr><td class="rk">'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+
+    '</tbody></table></div>'+
+    '<figcaption>This is why the body container is the cleanest instance of the universal work: <b>every abstract term has an un-fakeable physical correlate.</b> A shaking muscle that is right now holding is the most un-arguable fact there is.</figcaption>';
+  return f;
+}
+
+/* --- body-container: reading the body, three protocols --- */
+function protocolsFigure(){
+  const f=fig('Visualization','reading which protocol is firing');
+  const items=[
+    ['Push','sympathetic','var(--verm)','Drives aggressively <i>into</i> the friction — armoring up, racing ahead, fidgeting to leave. High tension, rapid chest breathing.'],
+    ['Withdraw','dorsal','var(--cog)','Goes limp or heavy — detaching, numbing out, collapsing. Decelerated heart rate, loss of muscle tone, glazed gaze.'],
+    ['Manage','ventral','var(--gold)','Performs control under strain — clenching to perfect form, tracking the instructor, micro-shifting. Erratic HRV, darting eyes.'],
+  ];
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vgrid vg-3">'+items.map(it=>
+      '<div class="vcard" style="--zc:'+it[2]+'"><div class="vk">'+it[1]+'</div><h6>'+it[0]+'</h6><p>'+it[3]+'</p></div>').join('')+'</div>'+
+    '<figcaption>The operator reads the tell, infers the path, and calibrates from there — held loosely, since people are mixtures. The path is <b>one input, not an assignment</b>: the specific cue is computed by the calibration engine, not looked up from the path.</figcaption>';
+  return f;
+}
+
+/* --- cue-bank: the bank index --- */
+function bankIndexFigure(){
+  const f=fig('Visualization','the bank — 20 universal cues, no type assignments');
+  const stages=[
+    ['I · Baseline','var(--earth,#9a8a5e)','014 The Observation · 019 The Structural Truth · 020 The Grounding'],
+    ['II · Intention','var(--cog)','002 The Gaze · 003 The Length · 006 The Space · 007 The Completeness · 011 The Allocation · 016 The Verification'],
+    ['III · Encounter','var(--verm)','001 The Shake · 004 The Breath · 012 The Momentum · 013 The Reciprocity · 015 The Capability · 017 The Sensation'],
+    ['IV · Growth','var(--sage)','005 The Resistance Band · 008 The Pause · 009 The Edge · 010 The Intensification · 018 The Latency'],
+  ];
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vgrid vg-2">'+stages.map(s=>
+      '<div class="vcard" style="--zc:'+s[1]+'"><h6 style="font-size:13.5px">'+s[0]+'</h6><p style="font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--ink-soft)">'+s[2]+'</p></div>').join('')+'</div>'+
+    '<div class="vlegend"><span><i style="background:var(--paper2);border:1px solid var(--line-2)"></i>data model:</span><span>System State</span>·<span>Engine Friction</span>·<span>Physical Command</span>·<span>Cognitive Yield</span></div>'+
+    '<figcaption>Each cue is defined by the <b>physical mechanism it meets</b>, not the type it is "for." The earlier type→cue mapping was the wrong direction and is retired; this bank deliberately carries no type assignments, so it is the clean universal input the calibration engine trains on.</figcaption>';
+  return f;
+}
+
+/* --- readme: pool / tunnel / container --- */
+function zonesFigure(){
+  const f=fig('Visualization','one test — how universal is it?');
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vflow">'+
+      '<div class="vstep" style="--zc:var(--cog)"><div class="vk">copy anywhere, unchanged</div><h6>Pool</h6><p>The universal IP. Source-code quality, no setting attached.</p></div>'+
+      '<div class="varrow">→</div>'+
+      '<div class="vstep" style="--zc:var(--gold)"><div class="vk">re-languaged for a setting</div><h6>Tunnel</h6><p>A pool relation processed toward a setting — the same essence with a jacket on.</p></div>'+
+      '<div class="varrow">→</div>'+
+      '<div class="vstep" style="--zc:var(--verm)"><div class="vk">finished inside one setting</div><h6>Container</h6><p>The landed form. Physical exercise, first.</p></div>'+
+    '</div>'+
+    '<figcaption>Sort by <b>layer, not by file</b> — one document can span zones. The pool is the kitchen; each container is a dish; the tunnel is the plating. <i>(Going out to the world is a fourth thing: public-face.)</i></figcaption>';
+  return f;
+}
+
+/* --- master-handoff: mirror vs blanket --- */
+function mirrorBlanketFigure(){
+  const f=fig('Visualization','mirror, not blanket');
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vsplit">'+
+      '<div class="vcmp bad"><div class="vk">✕ Blanket — closed system</div><p>Validates the narrative; traps the system in a closed loop. Internal load keeps climbing toward entropy. The failure mode of most self-care tools.</p></div>'+
+      '<div class="vcmp good"><div class="vk">✓ Mirror — open system</div><p>Reflects reality precisely; the simulations collapse, the operator surfaces, the freed energy is sent back into the world. And it never becomes the destination.</p></div>'+
+    '</div>'+
+    '<figcaption>Whatever the container, it must <b>mirror, not blanket</b>. Precision is the warmth — accuracy itself produces safety. Growth happens in the exchange with the real world, not in the mirror.</figcaption>';
+  return f;
+}
+
+/* --- workflow: research / canon / spec --- */
+function pipelineFigure(){
+  const f=fig('Visualization','inside the build');
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vflow">'+
+      '<div class="vstep" style="--zc:var(--cog)"><div class="vk">verify the relation</div><h6>Research</h6><p>Establish or verify the universal relation. Verify load-bearing claims before they go load-bearing.</p></div>'+
+      '<div class="varrow">→</div>'+
+      '<div class="vstep" style="--zc:var(--gold)"><div class="vk">write it into the pool</div><h6>Canon</h6><p>Hold truth; make no product decisions. Supersede in place; flag contradictions rather than smoothing them.</p></div>'+
+      '<div class="varrow">→</div>'+
+      '<div class="vstep" style="--zc:var(--verm)"><div class="vk">extract to a container</div><h6>Spec</h6><p>Through the tunnel into a build — where it gets a setting and a jacket.</p></div>'+
+    '</div>'+
+    '<figcaption>The order matters: <b>skipping a step bakes in contradictions.</b></figcaption>';
+  return f;
+}
+
+/* --- operating-structure: four modes + reservoir --- */
+function reservoirFigure(){
+  const f=fig('Visualization','the pool is a reservoir, not a pipeline');
+  f.querySelector('.viz-body').innerHTML=
+   '<svg viewBox="0 0 620 250" role="img" aria-label="Four modes flowing in and out of a central reservoir">'+
+    '<g font-family="\'JetBrains Mono\',monospace" font-size="10">'+
+    '<ellipse cx="310" cy="125" rx="92" ry="56" fill="#4F7390" fill-opacity="0.1" stroke="#4F7390" stroke-opacity="0.5"/>'+
+    '<text x="310" y="120" text-anchor="middle" fill="#3c5a72" font-weight="500">THE POOL</text>'+
+    '<text x="310" y="135" text-anchor="middle" font-family="Spectral,serif" font-style="italic" font-size="10" fill="#5B5040">reservoir</text>'+
+    '<g stroke="#B07D22" stroke-width="1.2" fill="none" marker-end="url(#a2)" marker-start="url(#a2s)">'+
+    '<path d="M180,55 q60,30 110,40"/><path d="M440,55 q-60,30 -110,40"/><path d="M180,195 q60,-30 110,-40"/><path d="M440,195 q-60,-30 -110,-40"/></g>'+
+    '<defs><marker id="a2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#B07D22"/></marker>'+
+    '<marker id="a2s" markerWidth="7" markerHeight="7" refX="1" refY="3" orient="auto"><path d="M6,0 L0,3 L6,6 z" fill="#B07D22"/></marker></defs>'+
+    '<g text-anchor="middle">'+
+    '<text x="120" y="44" fill="#211A10">Explore</text>'+
+    '<text x="500" y="44" fill="#211A10">Build the container</text>'+
+    '<text x="120" y="214" fill="#211A10">Refine the pool</text>'+
+    '<text x="500" y="214" fill="#211A10">Public-face / Book</text></g>'+
+    '</g></svg>'+
+    '<figcaption>Four modes, moved between in <b>any direction</b> — not a pipeline. Work can start anywhere and flow any way; most often right now: build in the container, harvest back to the pool. The pool is a reservoir things flow <b>into and out of</b>. Every mode ends with a concrete handoff.</figcaption>';
+  return f;
+}
+
+/* --- how-to-talk: spearhead / moat / black box --- */
+function spearheadFigure(){
+  const f=fig('Visualization','lead with the thing, protect the IP');
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vflow">'+
+      '<div class="vstep" style="--zc:var(--verm)"><div class="vk">most people meet this first</div><h6>The spearhead</h6><p>The body container — the specific, demonstrable thing you can picture and want.</p></div>'+
+      '<div class="varrow">←</div>'+
+      '<div class="vstep" style="--zc:var(--gold)"><div class="vk">for those buying the thinking</div><h6>The moat</h6><p>The framework — the depth behind the spearhead; brought forward only for kindred thinkers.</p></div>'+
+      '<div class="varrow">←</div>'+
+      '<div class="vstep" style="--zc:var(--muted);border-style:dashed"><div class="vk">never explained</div><h6>The black box</h6><p>The read itself — the diagnosis. You name <i>that</i> it exists; never <i>how</i> it works.</p></div>'+
+    '</div>'+
+    '<figcaption>This mirrors the architecture exactly: <b>show the container, protect the source code.</b> Match the lead to the audience — body container by default; framework depth only for those who want the mind behind it.</figcaption>';
+  return f;
+}
+
+/* --- setting-translation-map: the matrix --- */
+function settingMatrixFigure(){
+  const f=fig('Visualization','one Method, dressed for each room');
+  const rows=[
+    ['Body','built','physical load','the class / session','body + instructor','proof in the tissue','return curve + strength gain'],
+    ['Relational','reserved','the conflict','a relationship that doesn’t break','each, for the other','the other’s steady presence','—'],
+    ['Education','reserved','learning at the edge','the class / school day','the teacher as gardener','the teacher’s belief','—'],
+    ['Solo','reserved','whatever they’re in','a designed practice','the self / a system','recognition in the substrate','—'],
+    ['Text / AI','reserved','the read reflected','must be manufactured','an AI operator','—','—'],
+  ];
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="wrap"><table class="vmatrix"><thead><tr><th>Setting</th><th>Friction</th><th>Container</th><th>Operator</th><th>Landing</th><th>Recovery</th></tr></thead><tbody>'+
+    rows.map(r=>'<tr class="'+(r[1]==='reserved'?'rsv':'')+'"><td class="rk">'+r[0]+(r[1]==='built'?' <span class="vtag proven" style="font-size:7.5px">built</span>':'')+'</td>'+
+      '<td'+(r[1]==='built'?' class="built"':'')+'>'+r[2]+'</td><td'+(r[1]==='built'?' class="built"':'')+'>'+r[3]+'</td><td'+(r[1]==='built'?' class="built"':'')+'>'+r[4]+'</td><td'+(r[1]==='built'?' class="built"':'')+'>'+r[5]+'</td><td'+(r[1]==='built'?' class="built"':'')+'>'+r[6]+'</td></tr>').join('')+
+    '</tbody></table></div>'+
+    '<figcaption>The Method is the constant; what changes is the filling of its terms. <b>One room is built</b> (the body, where every term has an un-fakeable form); the rest are <b>reserved — marked open</b>, waiting for the body container to prove the operation before any is forged real.</figcaption>';
+  return f;
+}
+
+/* --- earlier-explorations: parked, findings kept --- */
+function reservedFigure(){
+  const f=fig('Visualization','parked — the one finding kept from each');
+  f.querySelector('.viz-body').innerHTML=
+    '<div class="vsplit">'+
+      '<div class="vcard" style="--zc:var(--muted);border-style:dashed"><span class="vtag cand">parked</span><h6 style="font-size:13.5px">The text/AI "Mirror" prompt</h6><p>A working delivery prompt, built before the body doorway was chosen.</p><div class="vcue" style="color:#5a7548">kept: the delivery mechanism <b>can be specified</b> as a working prompt.</div></div>'+
+      '<div class="vcard" style="--zc:var(--muted);border-style:dashed"><span class="vtag cand">parked</span><h6 style="font-size:13.5px">Cognitive / relational sketches</h6><p>Early brainstorming toward other doorways.</p><div class="vcue" style="color:#5a7548">kept: real <b>future-container candidates</b>, consistent with soil / forest.</div></div>'+
+    '</div>'+
+    '<figcaption>The door was real, the work was real, and one finding from each is kept. <b>The scaffolding is released; nothing active depends on any of it.</b></figcaption>';
+  return f;
+}
+
+/* ---- placement registry ---- */
+const VIZ_MAP = {
+  'master-frame':[{after:'the-frame', fn:frameFigure}],
+  'structural-law':[{after:'the-pattern-across-every-domain', fn:dualitiesFigure}],
+  'pilot-engine':[
+    {after:'the-parts', fn:apparatusFigure},
+    {after:'the-conserved-attention-model-what-is-actually-moving', fn:attentionFigure},
+    {after:'the-reveal-is-one-structure-with-its-container-the-tensegrity', fn:tensegrityFigure},
+    {after:'the-proven-door-and-the-candidate-doors', fn:doorsFigure},
+    {after:'the-software-in-three-states', fn:softwareStatesFigure},
+  ],
+  'physics-of-friction':[
+    {after:'ii-how-identical-pressure-becomes-individual-friction', fn:pressureFigure},
+    {after:'iii-the-physics-of-safety-the-central-mechanism', fn:safetyFigure},
+    {after:'v-why-willpower-fails-and-what-replaces-it', fn:willpowerFigure},
+    {after:'vi-the-two-states-of-cognition-under-load-the-corrected-picture', fn:cognitionFigure},
+    {after:'vii-the-apex-what-the-operator-is-working-toward', fn:recoveryFigure},
+  ],
+  'method':[
+    {after:'1-the-formula', fn:formulaFigure},
+    {after:'2-the-three-part-operation', fn:operationFigure},
+  ],
+  'cue-principle-library':[
+    {after:'part-0-what-a-cue-is', fn:leverFigure},
+    {after:'part-ii-the-five-functions', fn:fiveFunctionsFigure},
+  ],
+  'civilizational-position':[{after:'1-the-thesis-the-third-position', fn:thirdPositionFigure}],
+  'body-container':[
+    {after:'2-how-the-universal-method-wears-its-body-jacket', fn:bodyJacketFigure},
+    {after:'3-the-four-stage-journey', fn:stagesFigure},
+    {after:'4-reading-the-body-which-protocol-is-firing', fn:protocolsFigure},
+  ],
+  'cue-bank':[{top:true, fn:bankIndexFigure}],
+  'readme':[{after:'the-structure-three-zones', fn:zonesFigure}],
+  'master-handoff':[{after:'3-the-mechanism-load-bearing-container-agnostic', fn:mirrorBlanketFigure}],
+  'workflow':[{after:'inside-the-build-research-canon-spec', fn:pipelineFigure}],
+  'operating-structure':[{after:'four-modes-of-work-non-linear', fn:reservoirFigure}],
+  'how-to-talk':[{after:'0-the-strategic-spine-lead-with-the-thing-protect-the-ip', fn:spearheadFigure}],
+  'setting-translation-map':[{after:'the-five-questions-every-setting-answers', fn:settingMatrixFigure}],
+  'earlier-explorations':[{top:true, fn:reservedFigure}],
+};
+
+function placeTop(body, node){
+  const h1=body.querySelector('h1');
+  if(h1){ const sub=h1.nextElementSibling; const ref=(sub&&sub.classList.contains('doc-subtitle'))?sub:h1; ref.parentNode.insertBefore(node, ref.nextSibling); }
+  else body.insertBefore(node, body.firstChild);
+}
 /* attach the right visualization(s) to a document */
 function attachViz(id, body){
-  if(id==='pilot-engine'){
-    insertAfterHeading(body,'the-parts', apparatusFigure());
-    insertAfterHeading(body,'the-conserved-attention-model-what-is-actually-moving', attentionFigure());
-  } else if(id==='body-container'){
-    insertAfterHeading(body,'3-the-four-stage-journey', stagesFigure());
-  }
+  const specs=VIZ_MAP[id]; if(!specs) return;
+  specs.forEach(s=>{ const node=s.fn(); if(s.top) placeTop(body,node); else insertAfterHeading(body, s.after, node); });
 }
 
 /* ---------- boot ---------- */
