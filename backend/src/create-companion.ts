@@ -1,0 +1,70 @@
+/**
+ * Convenience factory that wires the engine to sensible default adapters. Pass
+ * overrides to swap in real adapters (cloud TTS, a wearable telemetry source) or
+ * test doubles (ManualClock, RecordingTTS, MockTelemetrySource).
+ *
+ * Note on tuning: lifecycle + recalibration tuning is read from
+ * `SessionConfig.tuning` at `engine.start()`. Biometric *detection* thresholds
+ * live on the {@link BiometricTrigger} and are fixed at construction; pass
+ * `biometricTuning` here to override them.
+ */
+
+import type { Clock } from './ports/clock.ts';
+import type { TTS } from './ports/tts.ts';
+import type { EventBus } from './ports/event-bus.ts';
+import type { TelemetrySource } from './ports/telemetry-source.ts';
+import { resolveTuning, type EngineTuning } from './domain/session.ts';
+import { SystemClock } from './adapters/system-clock.ts';
+import { ConsoleTTS } from './adapters/console-tts.ts';
+import { MemoryEventBus } from './adapters/memory-event-bus.ts';
+import { TemporalTrigger } from './triggers/temporal-trigger.ts';
+import { BiometricTrigger } from './triggers/biometric-trigger.ts';
+import { CueBank } from './cue-bank/cue-bank.ts';
+import { createSeedCueBank } from './cue-bank/seed-cues.ts';
+import { SessionEngine } from './engine/session-engine.ts';
+
+export interface CreateCompanionOptions {
+  clock?: Clock;
+  tts?: TTS;
+  bus?: EventBus;
+  cueBank?: CueBank;
+  /** Biometric source; supplying it (or `withBiometrics`) builds a BiometricTrigger. */
+  telemetry?: TelemetrySource;
+  /** Force-build the biometric trigger even without supplying a telemetry source. */
+  withBiometrics?: boolean;
+  /** Overrides for biometric detection thresholds. */
+  biometricTuning?: Partial<EngineTuning>;
+}
+
+export interface Companion {
+  engine: SessionEngine;
+  bus: EventBus;
+  clock: Clock;
+  cueBank: CueBank;
+  temporal: TemporalTrigger;
+  biometric: BiometricTrigger | undefined;
+}
+
+export function createCompanion(options: CreateCompanionOptions = {}): Companion {
+  const clock = options.clock ?? new SystemClock();
+  const bus = options.bus ?? new MemoryEventBus();
+  const tts = options.tts ?? new ConsoleTTS();
+  const cueBank = options.cueBank ?? createSeedCueBank();
+  const temporal = new TemporalTrigger(clock);
+  const biometric =
+    options.withBiometrics || options.telemetry
+      ? new BiometricTrigger(clock, resolveTuning(options.biometricTuning))
+      : undefined;
+
+  const engine = new SessionEngine({
+    clock,
+    tts,
+    bus,
+    cueBank,
+    temporal,
+    biometric,
+    telemetry: options.telemetry,
+  });
+
+  return { engine, bus, clock, cueBank, temporal, biometric };
+}

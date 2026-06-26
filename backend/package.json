@@ -1,0 +1,30 @@
+{
+  "name": "friction-companion-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Active Friction Voice Companion — backend Behavioral Physics Engine (Friction State Machine + temporal/biometric trigger listeners). No UI.",
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "node --test",
+    "test:watch": "node --test --watch",
+    "demo:temporal": "node src/examples/runTemporalSession.ts",
+    "demo:biometric": "node src/examples/runBiometricSession.ts"
+  },
+  "keywords": [
+    "state-machine",
+    "audio-companion",
+    "biometrics",
+    "telemetry",
+    "behavioral"
+  ],
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}
