@@ -43,9 +43,11 @@ import type { EventBus } from '../ports/event-bus.ts';
 import type { TTS } from '../ports/tts.ts';
 import type { TelemetrySource, BiometricSample } from '../ports/telemetry-source.ts';
 import type { Trigger, TriggerSignal, TriggerArmContext, TriggerSource } from '../triggers/trigger.ts';
-import type { BiometricTrigger } from '../triggers/biometric-trigger.ts';
+import type { BiometricListener } from '../triggers/biometric-trigger.ts';
 import type { CueSelector, SelectionContext } from '../ports/cue-selector.ts';
 import type { CueCalibrator } from '../ports/cue-calibrator.ts';
+import type { CueGenerator } from '../ports/cue-generator.ts';
+import type { FrictionCondition } from '../domain/friction-condition.ts';
 import { StabilizationDetector, type StabilizationOutcome } from './stabilization.ts';
 
 /** Source attribution for a cue: a proactive lifecycle cue, or a trigger fire. */
@@ -61,10 +63,13 @@ export interface SessionEngineDeps {
   /** Cue-wording seam. Defaults to an identity pass-through; a personalization
    *  layer can supply a calibrator to reword/tone a cue for a specific user. */
   calibrator?: CueCalibrator;
+  /** Generative seam (PRD Phase 2). When the selector returns no cue for a
+   *  state, the engine asks this generator (an LLM) for one. Optional. */
+  cueGenerator?: CueGenerator;
   /** The temporal (V1) trigger — always present. */
   temporal: Trigger;
   /** The biometric (V2) trigger — required to use `enableBiometrics`. */
-  biometric?: BiometricTrigger;
+  biometric?: BiometricListener;
   /** The biometric telemetry source — required to use `enableBiometrics`. */
   telemetry?: TelemetrySource;
 }
@@ -83,8 +88,9 @@ export class SessionEngine {
   private readonly bus: EventBus;
   private readonly cueSelector: CueSelector;
   private readonly calibrator: CueCalibrator;
+  private readonly cueGenerator: CueGenerator | undefined;
   private readonly temporal: Trigger;
-  private readonly biometric: BiometricTrigger | undefined;
+  private readonly biometric: BiometricListener | undefined;
   private readonly telemetry: TelemetrySource | undefined;
 
   private running = false;
@@ -97,6 +103,7 @@ export class SessionEngine {
 
   private currentIntensity: Unit = 0;
   private currentSource: CueSource = 'INIT';
+  private currentFrictionCondition: FrictionCondition | undefined;
   private lastCue: Cue | null = null;
   private lastCueId: string | null = null;
   private recentCueIds: string[] = [];
@@ -118,6 +125,7 @@ export class SessionEngine {
     this.cueSelector = deps.cueSelector;
     // Default cue-wording seam: identity pass-through (no external dependency).
     this.calibrator = deps.calibrator ?? { calibrate: (cue) => cue };
+    this.cueGenerator = deps.cueGenerator;
     this.temporal = deps.temporal;
     this.biometric = deps.biometric;
     this.telemetry = deps.telemetry;
@@ -150,6 +158,7 @@ export class SessionEngine {
     this.sessionStartedAt = this.clock.now();
     this.currentIntensity = intensityAt(config.curve, 0);
     this.currentSource = 'INIT';
+    this.currentFrictionCondition = undefined;
     this.lastCue = null;
     this.lastCueId = null;
     this.recentCueIds = [];
@@ -227,12 +236,14 @@ export class SessionEngine {
 
     this.currentIntensity = signal.intensity;
     this.currentSource = signal.source;
+    this.currentFrictionCondition = signal.frictionCondition;
     this.consecutiveDestabilizations = 0;
     this.emit({
       type: 'TIPPING_POINT',
       source: signal.source,
       intensity: signal.intensity,
       reason: signal.reason,
+      frictionCondition: signal.frictionCondition,
       round: this.round,
       at: this.now(),
     });
@@ -380,8 +391,38 @@ export class SessionEngine {
       lastSpokenAt: this.lastSpokenAt,
     };
 
+    // Shared cancellation for generation + transmission; end() aborts it.
+    this.ttsAbort = new AbortController();
+
     // Cue-SELECTION seam: which cue fires (default = deterministic CueBank).
-    const selected = this.cueSelector.select(ctx);
+    let selected = this.cueSelector.select(ctx);
+    let origin: 'database' | 'generated' = 'database';
+
+    // Generative seam (PRD Phase 2): if the static corpus has no cue for this
+    // state, ask the LLM generator for one. Static remains the default source.
+    if (!selected && this.cueGenerator) {
+      try {
+        const generated = await this.cueGenerator.generate(
+          { state, source, intensity, round: this.round, frictionCondition: this.currentFrictionCondition },
+          this.ttsAbort.signal,
+        );
+        if (!this.running) return;
+        if (generated) {
+          selected = generated;
+          origin = 'generated';
+        }
+      } catch (err) {
+        if (!this.running) return;
+        this.emit({
+          type: 'ERROR',
+          scope: 'cue-generator',
+          message: err instanceof Error ? err.message : String(err),
+          recoverable: true,
+          at: this.now(),
+        });
+      }
+    }
+
     if (!selected) {
       this.emit({
         type: 'ERROR',
@@ -397,9 +438,8 @@ export class SessionEngine {
     // Cue-WORDING seam: how the cue is phrased/toned (default = identity).
     const cue = this.calibrator.calibrate(selected, { state, source, intensity, round: this.round });
 
-    this.emit({ type: 'CUE_SELECTED', cue, state, round: this.round, at: this.now() });
+    this.emit({ type: 'CUE_SELECTED', cue, state, origin, round: this.round, at: this.now() });
 
-    this.ttsAbort = new AbortController();
     try {
       const result = await this.tts.speak(
         { cueId: cue.CueID, text: cue.AudioTranscript, tone: cue.DeliveryTone },

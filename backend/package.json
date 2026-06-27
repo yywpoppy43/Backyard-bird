@@ -13,7 +13,8 @@
     "test": "node --test",
     "test:watch": "node --test --watch",
     "demo:temporal": "node src/examples/runTemporalSession.ts",
-    "demo:biometric": "node src/examples/runBiometricSession.ts"
+    "demo:biometric": "node src/examples/runBiometricSession.ts",
+    "demo:generative": "node src/examples/runGenerativeSession.ts"
   },
   "keywords": [
     "state-machine",

@@ -15,6 +15,7 @@ import type { EventBus } from './ports/event-bus.ts';
 import type { TelemetrySource } from './ports/telemetry-source.ts';
 import type { CueSelector } from './ports/cue-selector.ts';
 import type { CueCalibrator } from './ports/cue-calibrator.ts';
+import type { CueGenerator } from './ports/cue-generator.ts';
 import { resolveTuning, type EngineTuning } from './domain/session.ts';
 import { SystemClock } from './adapters/system-clock.ts';
 import { ConsoleTTS } from './adapters/console-tts.ts';
@@ -34,6 +35,9 @@ export interface CreateCompanionOptions {
   cueSelector?: CueSelector;
   /** Cue-wording seam override (a personalization layer). Defaults to identity. */
   calibrator?: CueCalibrator;
+  /** Generative fallback (e.g. AnthropicCueGenerator). When set, the engine
+   *  generates a cue if the corpus has none for a state. Off by default. */
+  cueGenerator?: CueGenerator;
   /** Trigger-timing seam override (a personalization layer). Defaults to V1 timing. */
   tippingPersonalization?: TippingPersonalization;
   /** Biometric source; supplying it (or `withBiometrics`) builds a BiometricTrigger. */
@@ -70,6 +74,7 @@ export function createCompanion(options: CreateCompanionOptions = {}): Companion
     bus,
     cueSelector: options.cueSelector ?? cueBank,
     calibrator: options.calibrator,
+    cueGenerator: options.cueGenerator,
     temporal,
     biometric,
     telemetry: options.telemetry,

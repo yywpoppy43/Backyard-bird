@@ -17,6 +17,7 @@ export * from './domain/session.ts';
 export * from './domain/events.ts';
 export * from './domain/relational.ts';
 export * from './domain/personalization.ts';
+export * from './domain/friction-condition.ts';
 
 // ── Ports (interfaces / seams) ────────────────────────────────────────────
 export * from './ports/clock.ts';
@@ -25,6 +26,7 @@ export * from './ports/tts.ts';
 export * from './ports/telemetry-source.ts';
 export * from './ports/cue-selector.ts';
 export * from './ports/cue-calibrator.ts';
+export * from './ports/cue-generator.ts';
 
 // ── Triggers ──────────────────────────────────────────────────────────────
 export * from './triggers/trigger.ts';
@@ -39,6 +41,11 @@ export * from './cue-bank/cue-database.ts';
 // ── Engine ────────────────────────────────────────────────────────────────
 export * from './engine/stabilization.ts';
 export * from './engine/session-engine.ts';
+
+// ── Generative (LLM) ──────────────────────────────────────────────────────
+export * from './generative/system-prompt.ts';
+export * from './generative/output-vocabulary.ts';
+export * from './generative/anthropic-cue-generator.ts';
 
 // ── Adapters ──────────────────────────────────────────────────────────────
 export * from './adapters/system-clock.ts';

@@ -12,6 +12,7 @@ import type { FrictionState } from './friction-state.ts';
 import type { Cue } from './cue.ts';
 import type { SessionConfig } from './session.ts';
 import type { TriggerSource } from '../triggers/trigger.ts';
+import type { FrictionCondition } from './friction-condition.ts';
 import type { TtsResult } from '../ports/tts.ts';
 
 export type EngineEvent =
@@ -20,9 +21,18 @@ export type EngineEvent =
   /** A Friction State Machine transition occurred. */
   | { type: 'STATE_CHANGED'; from: FrictionState; to: FrictionState; cause: string; round: number; at: Millis }
   /** A tipping point was detected (PRD §5 "Intervene"). */
-  | { type: 'TIPPING_POINT'; source: TriggerSource; intensity: Unit; reason: string; round: number; at: Millis }
-  /** A cue was selected from the Cue Bank for the current state. */
-  | { type: 'CUE_SELECTED'; cue: Cue; state: FrictionState; round: number; at: Millis }
+  | {
+      type: 'TIPPING_POINT';
+      source: TriggerSource;
+      intensity: Unit;
+      reason: string;
+      frictionCondition?: FrictionCondition;
+      round: number;
+      at: Millis;
+    }
+  /** A cue was selected (from the Cue Bank) or generated (LLM fallback) for the
+   *  current state. `origin` distinguishes the two. */
+  | { type: 'CUE_SELECTED'; cue: Cue; state: FrictionState; origin: 'database' | 'generated'; round: number; at: Millis }
   /** A cue finished transmitting via TTS (PRD §5 "Transmit"). */
   | { type: 'CUE_SPOKEN'; cueId: string; result: TtsResult; round: number; at: Millis }
   /** Recalibration resolved (PRD §5 "Recalibrate"). `stabilized` distinguishes

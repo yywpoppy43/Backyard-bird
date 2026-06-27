@@ -135,6 +135,7 @@ npm install          # dev-only deps: typescript, @types/node (zero runtime deps
 
 npm run demo:temporal    # V1: a 20-minute session, simulated end-to-end instantly
 npm run demo:biometric   # V2: a heart-rate spike triggers the intervention
+npm run demo:generative  # LLM fallback: a missing-state cue is generated on the fly
 npm test                 # node --test (deterministic, virtual-time)
 npm run typecheck        # tsc --noEmit
 npm run build            # emit dist/ (tsc, rewrites .ts→.js specifiers)
@@ -180,6 +181,10 @@ For V2, pass a `telemetry` adapter implementing `TelemetrySource` and set
 | §5 Recalibrate (stabilization detection) | `engine/stabilization.ts` |
 | §5 Transmit (TTS port) | `ports/tts.ts` (+ `adapters/console-tts.ts`) |
 | UI/mobile contract (events) | `domain/events.ts` + `ports/event-bus.ts` |
+| Phase 2 generative cue engine (LLM fallback) | `ports/cue-generator.ts` + `generative/anthropic-cue-generator.ts` |
+| Phase 2 strict system prompt (YAML) | `generative/system-prompt.ts` |
+| Phase 2 spoken-vocabulary guard (code seal) | `generative/output-vocabulary.ts` |
+| Friction typology (Velocity/Resource/Alignment/Tension) | `domain/friction-condition.ts` |
 
 ---
 
@@ -224,6 +229,53 @@ passed through, never inspected). A `TippingPlanner` receives the profile plus a
 `computeDefault()` thunk, so a future module can either nudge the default points
 *or* feed the computation itself — neither requires an engine change. All three
 seams accept the same opaque `PersonalizationProfile` (`domain/personalization.ts`).
+
+**Live-biometric-reactive timing** (timing that responds to the body mid-session,
+not just the profile up front) rides on the existing biometric trigger: the engine
+depends on the **`BiometricListener`** interface (`Trigger` + `ingest(sample)`),
+not the concrete `BiometricTrigger`. A future module supplies its own
+`BiometricListener` whose firing adapts to live signal + profile, injected by
+composition — no engine change.
+
+## Generative cue engine (LLM fallback — PRD Phase 2)
+
+When the static corpus has no cue for a state, the engine asks an injected
+**`CueGenerator`** (`ports/cue-generator.ts`) for one — the static database stays
+the default source. The default implementation,
+[`AnthropicCueGenerator`](src/generative/anthropic-cue-generator.ts), calls the
+Anthropic Messages API over `fetch` (no SDK dependency), forcing a single
+structured cue via tool use. Enable it explicitly:
+
+```ts
+import { createCompanion, AnthropicCueGenerator } from './src/index.ts';
+const { engine } = createCompanion({
+  cueGenerator: new AnthropicCueGenerator(), // reads ANTHROPIC_API_KEY
+});
+```
+
+- **Strict system prompt:** the YAML spec is set verbatim as the system prompt
+  ([`generative/system-prompt.ts`](src/generative/system-prompt.ts)). Its
+  highest-priority directive, `Output_Vocabulary_Rule`, lets the model *reason*
+  with internal vocabulary (apparatus, Engine, Pilot, operator…) but **never
+  speak it** — spoken output is plain somatic language only.
+- **Double-sealed:** every generated `AudioTranscript` is re-checked in code by
+  `findForbiddenVocabulary` ([`generative/output-vocabulary.ts`](src/generative/output-vocabulary.ts)).
+  If an internal term or generic-motivation phrase leaks, the generator
+  regenerates; after `maxAttempts` it returns `null` rather than ever speaking a
+  leaky cue. The engine then emits a recoverable `ERROR` and continues.
+- **Constrained, never generic:** `tool_choice` forces the cue schema, low
+  temperature keeps it on-matrix, and `PrimaryState` is set from the request (the
+  model never picks the state). Generated cues are interchangeable with database
+  cues downstream; `CUE_SELECTED.origin` is `'generated'` vs `'database'`.
+- **Model:** defaults to `claude-haiku-4-5` (lowest-latency tier — generation
+  must fire near the friction moment). Override via `new AnthropicCueGenerator({ model })`;
+  temperature is auto-omitted for models that reject sampling params (Opus 4.7+/Fable).
+- **Friction typology:** the request carries an optional `frictionCondition`
+  (Velocity/Resource/Alignment/Tension) so the LLM targets the matching cue. The
+  biometric trigger tags fires with a rough condition (HR spike → Resource, HRV
+  drop → Tension); it's optional everywhere and additive to the PRD.
+- **Provider-agnostic:** to use OpenAI instead, implement `CueGenerator` against
+  that API — the engine depends only on the port.
 
 ### Implementation note
 

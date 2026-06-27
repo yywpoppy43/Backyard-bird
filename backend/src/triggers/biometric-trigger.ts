@@ -21,6 +21,7 @@ import { clamp01 } from '../domain/units.ts';
 import type { Clock } from '../ports/clock.ts';
 import type { BiometricSample } from '../ports/telemetry-source.ts';
 import type { EngineTuning } from '../domain/session.ts';
+import { FrictionCondition } from '../domain/friction-condition.ts';
 import {
   TriggerSource,
   type Trigger,
@@ -36,7 +37,20 @@ export interface IngestResult {
   reason?: string;
 }
 
-export class BiometricTrigger implements Trigger {
+/**
+ * A {@link Trigger} that is also fed raw samples via {@link ingest}. This is the
+ * seam for live-biometric-reactive behaviour: the engine forwards every sample
+ * to `ingest` and the trigger decides when to fire. A future personalization
+ * layer can supply its own `BiometricListener` (e.g. one whose thresholds adapt
+ * to a profile and live signal) by composition — the engine depends on this
+ * interface, not the concrete {@link BiometricTrigger}, so no engine change is
+ * needed.
+ */
+export interface BiometricListener extends Trigger {
+  ingest(sample: BiometricSample): IngestResult;
+}
+
+export class BiometricTrigger implements BiometricListener {
   readonly source = TriggerSource.BIOMETRIC;
 
   private handler: ((signal: TriggerSignal) => void) | null = null;
@@ -159,10 +173,14 @@ export class BiometricTrigger implements Trigger {
 
     this.lastTipAt = now;
     this.breachStreak = 0;
+    // Rough classification (intentionally imprecise — V1): an HR spike reads as a
+    // breath/oxygen redline (RESOURCE); an HRV drop reads as systemic bracing (TENSION).
+    const frictionCondition = hrSpike ? FrictionCondition.RESOURCE : FrictionCondition.TENSION;
     this.handler?.({
       source: TriggerSource.BIOMETRIC,
       intensity,
       reason: hrSpike ? 'HR_SPIKE' : 'HRV_DROP',
+      frictionCondition,
       at: now,
     });
     return { fired: true, rejected: false, reason: hrSpike ? 'HR_SPIKE' : 'HRV_DROP' };

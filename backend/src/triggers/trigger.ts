@@ -16,6 +16,7 @@
 
 import type { Millis, Unit } from '../domain/units.ts';
 import type { SessionConfig } from '../domain/session.ts';
+import type { FrictionCondition } from '../domain/friction-condition.ts';
 
 export const TriggerSource = {
   TEMPORAL: 'TEMPORAL',
@@ -31,6 +32,8 @@ export interface TriggerSignal {
   intensity: Unit;
   /** Human-readable cause, e.g. "wall@0.85" or "HR_SPIKE". */
   reason: string;
+  /** Optional finer friction classification (PRD typology addition). */
+  frictionCondition?: FrictionCondition;
   /** When it fired (clock ms). */
   at: Millis;
 }
