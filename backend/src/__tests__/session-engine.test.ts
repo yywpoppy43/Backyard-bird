@@ -28,11 +28,16 @@ test('a V1 session runs the full PRD §5 loop and visits every state', async () 
     assert.ok(states.has(s as never), `visited ${s}`);
   }
 
-  const spoken = tts.spokenCueIds;
-  assert.ok(spoken.some((id) => id.startsWith('baseline')), 'spoke a BASELINE cue');
-  assert.ok(spoken.some((id) => id.startsWith('intention')), 'spoke an INTENTION cue');
-  assert.ok(spoken.some((id) => id.startsWith('encounter')), 'spoke an ENCOUNTER cue');
-  assert.ok(spoken.some((id) => id.startsWith('growth')), 'spoke a GROWTH cue');
+  // Every cue pulled matches the state it was selected for, and all four states
+  // produced a cue (the default corpus is the master database).
+  const selected = bus.ofType('CUE_SELECTED');
+  for (const e of selected) {
+    assert.equal(e.cue.PrimaryState, e.state, `cue ${e.cue.CueID} matches state ${e.state}`);
+  }
+  const cuedStates = new Set(selected.map((e) => e.state));
+  for (const s of ['BASELINE', 'INTENTION', 'ENCOUNTER', 'GROWTH']) {
+    assert.ok(cuedStates.has(s as never), `pulled a ${s} cue`);
+  }
 });
 
 test('a V2 session is triggered by a biometric redline', async () => {
@@ -69,7 +74,15 @@ test('a V2 session is triggered by a biometric redline', async () => {
 test('the session recovers from a TTS failure without stranding', async () => {
   const clock = new ManualClock();
   const bus = new MemoryEventBus();
-  const tts = new RecordingTTS({ failOn: (r) => r.cueId.startsWith('baseline') });
+  // Fail the first utterance (the BASELINE anchor) regardless of corpus.
+  let failedFirst = false;
+  const tts = new RecordingTTS({
+    failOn: () => {
+      if (failedFirst) return false;
+      failedFirst = true;
+      return true;
+    },
+  });
   const { engine } = createCompanion({ clock, bus, tts });
 
   engine.start({ lengthMs: 60_000, curve: { kind: 'linear' }, maxRounds: 1 });

@@ -9,7 +9,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && node -e \"require('fs').copyFileSync('src/cue-bank/cue-database.json','dist/cue-bank/cue-database.json')\"",
     "test": "node --test",
     "test:watch": "node --test --watch",
     "demo:temporal": "node src/examples/runTemporalSession.ts",

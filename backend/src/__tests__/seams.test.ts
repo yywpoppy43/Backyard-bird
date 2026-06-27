@@ -57,7 +57,13 @@ test('cue-WORDING seam: a custom calibrator rewords cues, preserving CueID', asy
   const clock = new ManualClock();
   const bus = new MemoryEventBus();
   const tts = new RecordingTTS();
-  const { engine } = createCompanion({ clock, bus, tts, calibrator: new SuffixCalibrator() });
+  const { engine } = createCompanion({
+    clock,
+    bus,
+    tts,
+    cueBank: createSeedCueBank(),
+    calibrator: new SuffixCalibrator(),
+  });
   engine.start(cfg);
   await driveUntilEnded(clock, bus, { stepMs: 500, maxMs: 120_000 });
 

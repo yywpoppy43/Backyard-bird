@@ -66,6 +66,13 @@ randomized motivation". There is zero `Math.random` in `src/` (enforced by a
 test). Tiers: relational lever overlap (weighted by the state's emphasis) →
 delivery-tone matrix (state × intensity band) → freshness → `CueID` tie-break.
 
+The **default corpus is the Master Engine Database** — the 20 foundational cues
+in [`cue-bank/cue-database.json`](src/cue-bank/cue-database.json), loaded and
+**validated on load** via `createDatabaseCueBank()` (→ `CueBank.fromJson` →
+`loadCues`). When the engine enters a state it pulls a cue of that state from
+this store (entering ENCOUNTER pulls an ENCOUNTER cue). A smaller hand-written
+`seed-cues.ts` corpus also exists for examples/tests.
+
 ### Trigger modalities (PRD §4)
 
 | | Modality | Module | How it fires |
@@ -165,7 +172,8 @@ For V2, pass a `telemetry` adapter implementing `TelemetrySource` and set
 | §2 Friction State Machine (4 states + transitions) | `domain/friction-state.ts` |
 | §3 Cue Object schema (exact fields) | `domain/cue.ts` |
 | §3 Strict relational selection matrix | `domain/relational.ts` + `cue-bank/cue-bank.ts` |
-| Seed cue corpus | `cue-bank/seed-cues.ts` |
+| Master cue database (default corpus, validated on load) | `cue-bank/cue-database.json` + `cue-bank/cue-database.ts` |
+| Seed cue corpus (examples/tests) | `cue-bank/seed-cues.ts` |
 | §4 V1 Temporal Friction Mapping | `triggers/temporal-trigger.ts` |
 | §4 V2 Biometric Telemetry hook | `triggers/biometric-trigger.ts` + `ports/telemetry-source.ts` |
 | §5 Execution loop (Initialize→…→Recalibrate) | `engine/session-engine.ts` |
@@ -177,10 +185,12 @@ For V2, pass a `telemetry` adapter implementing `TelemetrySource` and set
 
 ## Extending
 
-* **Add cues**: append PRD-shaped objects to `cue-bank/seed-cues.ts` (or load
-  JSON via `CueBank.fromJson`). Lever phrasings should use the controlled
-  vocabulary in `domain/relational.ts` so the relational matrix differentiates
-  them. The corpus is validated at construction.
+* **Add cues**: edit the JSON store `cue-bank/cue-database.json` (the default
+  corpus, validated on load via `createDatabaseCueBank` → `CueBank.fromJson`), or
+  load your own JSON with `CueBank.fromJson(...)`. To make the *relational*
+  ranking differentiate cues, draw lever phrasings from the controlled vocabulary
+  in `domain/relational.ts`; otherwise selection still works deterministically
+  via the tone matrix, freshness, and `CueID` tie-break.
 * **Real TTS / wearable**: implement `TTS` / `TelemetrySource` and pass them to
   `createCompanion` or `new SessionEngine(...)`.
 * **Tune behaviour**: every threshold/window/weight lives in `EngineTuning`
@@ -198,7 +208,7 @@ V1 runs unchanged until something is injected.
 |---|---|---|---|
 | **Which cue is chosen** | `CueSelector` (`ports/cue-selector.ts`) | `CueBank` (relational matrix) | inject a selector (e.g. a decorator wrapping the `CueBank`, built with the profile) |
 | **How the cue is worded** | `CueCalibrator` (`ports/cue-calibrator.ts`) | `IdentityCueCalibrator` (no-op) | inject a calibrator that rewords/tones the chosen cue for the user (must keep `CueID`) |
-| **When tipping points fire** | `Trigger` (`triggers/trigger.ts`) | `TemporalTrigger` / `BiometricTrigger` | inject or decorate the temporal `Trigger` to shift tipping-point timing |
+| **When tipping points fire** | `Trigger` (`triggers/trigger.ts`) + the `TippingPersonalization` hook in `computeTippingPoints` | `TemporalTrigger` / `BiometricTrigger`; no planner (V1 timing) | supply a `TippingPlanner` (via `createCompanion({ tippingPersonalization })` or `new TemporalTrigger(clock, { profile, planner })`) that either **nudges** the default tips or **feeds the computation** from the profile |
 
 The selection/calibration seams receive a `SelectionContext` / `CalibrationContext`
 carrying the full situational signal — state, **trigger source**, intensity,
@@ -206,6 +216,14 @@ round, history — so neither is coupled to biometric state alone. The engine
 depends only on these interfaces; it never references a concrete cue bank or
 calibrator. Wire overrides via `createCompanion({ cueSelector, calibrator })` or
 the `SessionEngine` constructor.
+
+For timing, the hook is deliberately the **deep** one: `computeTippingPoints`
+accepts an optional `TippingPersonalization { profile?, planner? }`. With no
+planner it returns **exactly today's tipping points** (the opaque profile is
+passed through, never inspected). A `TippingPlanner` receives the profile plus a
+`computeDefault()` thunk, so a future module can either nudge the default points
+*or* feed the computation itself — neither requires an engine change. All three
+seams accept the same opaque `PersonalizationProfile` (`domain/personalization.ts`).
 
 ### Implementation note
 

@@ -1,0 +1,182 @@
+[
+  {
+    "CueID": "entry-001-the-shake",
+    "PrimaryState": "ENCOUNTER",
+    "PhysicalLever": "Lock joint geometry at the threshold of the tremor.",
+    "EnergeticVector": "Neuromuscular failure threshold. The muscle trembles as it depletes primary energy stores. The internal Software panics and generates the impulse to drop the posture.",
+    "StructuralYield": "Realization that discomfort is unfinished architecture.",
+    "AudioTranscript": "Feel that shake? Stay in it.",
+    "DeliveryTone": "Sharp, commanding"
+  },
+  {
+    "CueID": "entry-002-the-gaze",
+    "PrimaryState": "INTENTION",
+    "PhysicalLever": "Lift chin and elevate ocular focus.",
+    "EnergeticVector": "Under fatigue or fear, the physical gaze drops. Biomechanically, this collapses the chest cavity and restricts oxygen flow.",
+    "StructuralYield": "Reorienting cognitive architecture toward possibility.",
+    "AudioTranscript": "Don't look at the ground. Put your eyesight ahead of you.",
+    "DeliveryTone": "Steady, affirming"
+  },
+  {
+    "CueID": "entry-003-the-length",
+    "PrimaryState": "INTENTION",
+    "PhysicalLever": "Extend through the heel/crown; stop lifting.",
+    "EnergeticVector": "The Engine attempts to force an outcome (e.g., kicking a leg higher) by sacrificing structural integrity.",
+    "StructuralYield": "Mastery of process over outcome.",
+    "AudioTranscript": "Focus on the length, not the height. The height will come.",
+    "DeliveryTone": "Steady, affirming"
+  },
+  {
+    "CueID": "entry-004-the-breath",
+    "PrimaryState": "ENCOUNTER",
+    "PhysicalLever": "Force the respiratory cycle; do not hold breath.",
+    "EnergeticVector": "Under maximum mechanical strain, the autonomic nervous system triggers the Valsalva maneuver (holding the breath to brace). This cuts off the oxygen pipeline and spikes systemic panic.",
+    "StructuralYield": "Regulation under maximum pressure.",
+    "AudioTranscript": "When you curl, don't forget to breathe.",
+    "DeliveryTone": "Sharp, commanding"
+  },
+  {
+    "CueID": "entry-005-the-resistance-band",
+    "PrimaryState": "GROWTH",
+    "PhysicalLever": "Press actively into the external block.",
+    "EnergeticVector": "The Engine encounters an external block and instinctually shrinks its range of motion to avoid the pull.",
+    "StructuralYield": "Re-architecting relationship with obstacles.",
+    "AudioTranscript": "Use the resistance band. Make the resistance bigger.",
+    "DeliveryTone": "Direct, expansive"
+  },
+  {
+    "CueID": "entry-006-the-space",
+    "PrimaryState": "INTENTION",
+    "PhysicalLever": "Maximize physical geometry before contraction.",
+    "EnergeticVector": "When faced with pressure, the physical apparatus defaults to contraction. The posture shrinks and muscles cramp to protect the center.",
+    "StructuralYield": "Expanding the internal container.",
+    "AudioTranscript": "Space creates strength. Find your length, work from there.",
+    "DeliveryTone": "Steady, affirming"
+  },
+  {
+    "CueID": "entry-007-the-completeness",
+    "PrimaryState": "INTENTION",
+    "PhysicalLever": "Engage braking muscles on the downward motion.",
+    "EnergeticVector": "The Engine prefers the \"glory\" of the upward push but abandons effort on the way down, letting gravity take over to save energy.",
+    "StructuralYield": "Architecture of grace under decline.",
+    "AudioTranscript": "Full circle in every motion. The push up and the controlled descent—both are the work.",
+    "DeliveryTone": "Steady, affirming"
+  },
+  {
+    "CueID": "entry-008-the-pause",
+    "PrimaryState": "GROWTH",
+    "PhysicalLever": "Freeze geometry at top/bottom of movement.",
+    "EnergeticVector": "The mind hates stillness because it feels like a lack of productivity. Under strain, the Engine wants to rush through reps.",
+    "StructuralYield": "Cementing structural changes through integration.",
+    "AudioTranscript": "The pause is part of the power. It isn't stopping; it's where integration happens.",
+    "DeliveryTone": "Direct, expansive"
+  },
+  {
+    "CueID": "entry-009-the-edge",
+    "PrimaryState": "GROWTH",
+    "PhysicalLever": "Aim one inch past perceived physical limit.",
+    "EnergeticVector": "The Software references historical data to set a hard limit on capability (\"I can only go this far because that is all I could do yesterday\").",
+    "StructuralYield": "Shattering cognitive limits via physical proof.",
+    "AudioTranscript": "Reach beyond what you think you can touch. Your edge is moving.",
+    "DeliveryTone": "Direct, expansive"
+  },
+  {
+    "CueID": "entry-010-the-intensification",
+    "PrimaryState": "GROWTH",
+    "PhysicalLever": "Increase demand on the capable side.",
+    "EnergeticVector": "When one side of the body is highly capable, the Engine seeks the path of least resistance to coast.",
+    "StructuralYield": "Refusal of complacency.",
+    "AudioTranscript": "Keep adding the weight to the side that's working.",
+    "DeliveryTone": "Direct, expansive"
+  },
+  {
+    "CueID": "entry-011-the-allocation",
+    "PrimaryState": "INTENTION",
+    "PhysicalLever": "Release secondary muscle groups (jaw, shoulders).",
+    "EnergeticVector": "Parasitic tension. The apparatus borrows energy from uninvolved muscle groups (locking the jaw, elevating the shoulders) to compensate for primary muscle fatigue.",
+    "StructuralYield": "Precise resource allocation.",
+    "AudioTranscript": "Relax your shoulders. Relax your face. Keep the tension where it needs to be.",
+    "DeliveryTone": "Steady, affirming"
+  },
+  {
+    "CueID": "entry-012-the-momentum",
+    "PrimaryState": "ENCOUNTER",
+    "PhysicalLever": "Reduce magnitude but maintain kinetic rhythm.",
+    "EnergeticVector": "Total system fatigue. The operator attempts to halt the exercise completely because they can no longer maintain the original magnitude.",
+    "StructuralYield": "Maintaining agency in severe depletion.",
+    "AudioTranscript": "It’s ok if the movement is smaller. Keep it sharp. Keep moving.",
+    "DeliveryTone": "Sharp, commanding"
+  },
+  {
+    "CueID": "entry-013-the-reciprocity",
+    "PrimaryState": "ENCOUNTER",
+    "PhysicalLever": "Hold structural geometry without fighting the burn.",
+    "EnergeticVector": "The system perceives intense physical strain as a threat to its structural integrity, triggering an emotional abort protocol.",
+    "StructuralYield": "Re-architecting relationship to stress.",
+    "AudioTranscript": "Let the intensity challenge you. Later, it will support you.",
+    "DeliveryTone": "Sharp, commanding"
+  },
+  {
+    "CueID": "entry-014-the-observation",
+    "PrimaryState": "BASELINE",
+    "PhysicalLever": "Execute movement on the weaker side without forcing range.",
+    "EnergeticVector": "The system detects a physical imbalance (a weaker side) and immediately assigns a negative emotional narrative to it, rushing to overcompensate.",
+    "StructuralYield": "Uncoupling data from judgment.",
+    "AudioTranscript": "Notice the difference between sides. This is not a bad thing.",
+    "DeliveryTone": "Clinical, grounding"
+  },
+  {
+    "CueID": "entry-015-the-capability",
+    "PrimaryState": "ENCOUNTER",
+    "PhysicalLever": "Maintain physical hold through peak resistance.",
+    "EnergeticVector": "Maximum cognitive and physical load. The internal defense mechanism insists the user was \"not made for this\" as an excuse to break form.",
+    "StructuralYield": "Dismantling the narrative of incapability.",
+    "AudioTranscript": "You are born to do difficult things.",
+    "DeliveryTone": "Sharp, commanding"
+  },
+  {
+    "CueID": "entry-016-the-verification",
+    "PrimaryState": "INTENTION",
+    "PhysicalLever": "Release rigid cognitive grip on the joint.",
+    "EnergeticVector": "Cognitive over-management. The operator attempts to intellectually control every micro-movement, leading to rigid execution.",
+    "StructuralYield": "Surrender of ego-driven control.",
+    "AudioTranscript": "Your body knows what to do. Let it teach you.",
+    "DeliveryTone": "Steady, affirming"
+  },
+  {
+    "CueID": "entry-017-the-sensation",
+    "PrimaryState": "ENCOUNTER",
+    "PhysicalLever": "Scan for mechanical pain vs. muscular fatigue.",
+    "EnergeticVector": "The nervous system conflates intense muscular exertion with actual injury, mislabeling \"hard work\" as \"danger.\"",
+    "StructuralYield": "Untangling objective data from fear narrative.",
+    "AudioTranscript": "Read the sensation truly.",
+    "DeliveryTone": "Sharp, commanding"
+  },
+  {
+    "CueID": "entry-018-the-latency",
+    "PrimaryState": "GROWTH",
+    "PhysicalLever": "Maintain cadence despite lack of visible physical change.",
+    "EnergeticVector": "The operator demands immediate, visible confirmation of effort. When results do not manifest instantly, the impulse is to quit.",
+    "StructuralYield": "Tolerance for delayed structural adaptation.",
+    "AudioTranscript": "Trust the process, even when you can’t see progress.",
+    "DeliveryTone": "Direct, expansive"
+  },
+  {
+    "CueID": "entry-019-the-structural-truth",
+    "PrimaryState": "BASELINE",
+    "PhysicalLever": "Reset posture and stack skeletal structure before load.",
+    "EnergeticVector": "The operator attempts to bypass a lack of foundational strength by compensating with momentum or poor posture.",
+    "StructuralYield": "Submission to objective reality.",
+    "AudioTranscript": "The body doesn't argue. It shows.",
+    "DeliveryTone": "Clinical, grounding"
+  },
+  {
+    "CueID": "entry-020-the-grounding",
+    "PrimaryState": "BASELINE",
+    "PhysicalLever": "Stand in fully grounded posture and register mass.",
+    "EnergeticVector": "The system is entirely focused on the deficit—what it cannot do yet—creating physiological stress before the work even begins.",
+    "StructuralYield": "Anchoring growth in achieved facts.",
+    "AudioTranscript": "Honor what you have built.",
+    "DeliveryTone": "Clinical, grounding"
+  }
+]

@@ -16,6 +16,7 @@ export * from './domain/cue.ts';
 export * from './domain/session.ts';
 export * from './domain/events.ts';
 export * from './domain/relational.ts';
+export * from './domain/personalization.ts';
 
 // ── Ports (interfaces / seams) ────────────────────────────────────────────
 export * from './ports/clock.ts';
@@ -33,6 +34,7 @@ export * from './triggers/biometric-trigger.ts';
 // ── Cue Bank ──────────────────────────────────────────────────────────────
 export * from './cue-bank/cue-bank.ts';
 export * from './cue-bank/seed-cues.ts';
+export * from './cue-bank/cue-database.ts';
 
 // ── Engine ────────────────────────────────────────────────────────────────
 export * from './engine/stabilization.ts';

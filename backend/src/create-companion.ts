@@ -19,10 +19,10 @@ import { resolveTuning, type EngineTuning } from './domain/session.ts';
 import { SystemClock } from './adapters/system-clock.ts';
 import { ConsoleTTS } from './adapters/console-tts.ts';
 import { MemoryEventBus } from './adapters/memory-event-bus.ts';
-import { TemporalTrigger } from './triggers/temporal-trigger.ts';
+import { TemporalTrigger, type TippingPersonalization } from './triggers/temporal-trigger.ts';
 import { BiometricTrigger } from './triggers/biometric-trigger.ts';
 import { CueBank } from './cue-bank/cue-bank.ts';
-import { createSeedCueBank } from './cue-bank/seed-cues.ts';
+import { createDatabaseCueBank } from './cue-bank/cue-database.ts';
 import { SessionEngine } from './engine/session-engine.ts';
 
 export interface CreateCompanionOptions {
@@ -34,6 +34,8 @@ export interface CreateCompanionOptions {
   cueSelector?: CueSelector;
   /** Cue-wording seam override (a personalization layer). Defaults to identity. */
   calibrator?: CueCalibrator;
+  /** Trigger-timing seam override (a personalization layer). Defaults to V1 timing. */
+  tippingPersonalization?: TippingPersonalization;
   /** Biometric source; supplying it (or `withBiometrics`) builds a BiometricTrigger. */
   telemetry?: TelemetrySource;
   /** Force-build the biometric trigger even without supplying a telemetry source. */
@@ -55,8 +57,8 @@ export function createCompanion(options: CreateCompanionOptions = {}): Companion
   const clock = options.clock ?? new SystemClock();
   const bus = options.bus ?? new MemoryEventBus();
   const tts = options.tts ?? new ConsoleTTS();
-  const cueBank = options.cueBank ?? createSeedCueBank();
-  const temporal = new TemporalTrigger(clock);
+  const cueBank = options.cueBank ?? createDatabaseCueBank();
+  const temporal = new TemporalTrigger(clock, options.tippingPersonalization);
   const biometric =
     options.withBiometrics || options.telemetry
       ? new BiometricTrigger(clock, resolveTuning(options.biometricTuning))

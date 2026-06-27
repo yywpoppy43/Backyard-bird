@@ -14,6 +14,7 @@
 
 import type { Millis, Unit } from '../domain/units.ts';
 import type { Clock, TimerHandle } from '../ports/clock.ts';
+import type { PersonalizationProfile } from '../domain/personalization.ts';
 import {
   intensityAt,
   DEFAULT_DIFFICULTY_THRESHOLDS,
@@ -36,6 +37,25 @@ export interface TipPoint {
   reason: string;
 }
 
+/**
+ * Trigger-timing seam (the deep hook). A planner can either NUDGE the default
+ * tips (call `computeDefault()` then shift/add/remove) or FEED the computation
+ * itself from the profile (ignore `computeDefault` and return its own tips) —
+ * both without any engine change.
+ */
+export type TippingPlanner = (
+  input: { config: SessionConfig; profile: PersonalizationProfile | undefined },
+  computeDefault: () => TipPoint[],
+) => TipPoint[];
+
+/** Optional personalization of tipping-point computation. */
+export interface TippingPersonalization {
+  /** Opaque user profile forwarded to the planner. */
+  profile?: PersonalizationProfile;
+  /** Strategy that shapes the tips. If absent, timing is exactly V1. */
+  planner?: TippingPlanner;
+}
+
 const WALK_STEPS = 1000;
 /** Hysteresis: a threshold re-arms once intensity falls this far back below it. */
 const REARM_HYSTERESIS = 0.02;
@@ -43,14 +63,32 @@ const REARM_HYSTERESIS = 0.02;
 const WALL_DEDUP_FRACTION = 0.03;
 
 /**
- * Compute the ordered tipping points for a session. Pure: no clock, no I/O.
+ * Compute the ordered tipping points for a session.
+ *
+ * With no `personalization` (or no `planner`), this returns exactly the V1
+ * timing. When a planner is supplied it drives the result, receiving the opaque
+ * profile plus a `computeDefault` thunk so it can nudge or fully replace the
+ * default tips. The default computation itself remains pure (no clock, no I/O).
+ */
+export function computeTippingPoints(
+  config: SessionConfig,
+  personalization?: TippingPersonalization,
+): TipPoint[] {
+  const computeDefault = (): TipPoint[] => computeDefaultTippingPoints(config);
+  const planner = personalization?.planner;
+  if (!planner) return computeDefault();
+  return planner({ config, profile: personalization?.profile }, computeDefault);
+}
+
+/**
+ * The default tipping-point computation. Pure: no clock, no I/O.
  *
  * Walks the curve at 0.1%-progress resolution detecting upward crossings of each
  * difficulty threshold (re-arming after the curve dips, so interval curves yield
  * one tip per hump), then injects the end-wall tip unless a crossing already sits
  * within {@link WALL_DEDUP_FRACTION} of it.
  */
-export function computeTippingPoints(config: SessionConfig): TipPoint[] {
+function computeDefaultTippingPoints(config: SessionConfig): TipPoint[] {
   const { lengthMs, curve } = config;
   const thresholds = [...(config.difficultyThresholds ?? DEFAULT_DIFFICULTY_THRESHOLDS)].sort(
     (a, b) => a - b,
@@ -101,9 +139,11 @@ export class TemporalTrigger implements Trigger {
   private armed = false;
   private timers: TimerHandle[] = [];
   private readonly clock: Clock;
+  private readonly personalization: TippingPersonalization | undefined;
 
-  constructor(clock: Clock) {
+  constructor(clock: Clock, personalization?: TippingPersonalization) {
     this.clock = clock;
+    this.personalization = personalization;
   }
 
   onTip(handler: (signal: TriggerSignal) => void): void {
@@ -114,7 +154,7 @@ export class TemporalTrigger implements Trigger {
     this.disarm();
     this.armed = true;
     if (this.tips.length === 0) {
-      this.tips = computeTippingPoints(ctx.config);
+      this.tips = computeTippingPoints(ctx.config, this.personalization);
     }
     if (this.cursor >= this.tips.length) return; // all temporal tips consumed
 
