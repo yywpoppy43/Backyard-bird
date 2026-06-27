@@ -9,7 +9,11 @@
  *     model to pick the state),
  *   - re-checks the spoken transcript with {@link findForbiddenVocabulary} and
  *     regenerates if any internal vocabulary leaks (the code-level "double seal"),
- *   - returns `null` after `maxAttempts` rather than ever speaking a leaky cue.
+ *   - retries transient network/API failures with exponential back-off, and
+ *   - never throws: it returns a {@link GenerationOutcome} describing what
+ *     happened (ok / rejected / error, with attempt + retry counts) so the engine
+ *     can fall back to a static cue rather than ever speaking a leaky cue or
+ *     going quiet at a tipping point.
  *
  * To use OpenAI (or any other provider) instead, implement {@link CueGenerator}
  * the same way against that API — the engine depends only on the port.
@@ -17,7 +21,7 @@
 
 import type { Cue } from '../domain/cue.ts';
 import { isCue } from '../domain/cue.ts';
-import type { CueGenerator, CueGenerationRequest } from '../ports/cue-generator.ts';
+import type { CueGenerator, CueGenerationRequest, GenerationOutcome } from '../ports/cue-generator.ts';
 import { GENERATIVE_SYSTEM_PROMPT } from './system-prompt.ts';
 import { findForbiddenVocabulary } from './output-vocabulary.ts';
 
@@ -26,6 +30,46 @@ export type FetchLike = (
   url: string,
   init: { method: string; headers: Record<string, string>; body: string; signal?: AbortSignal },
 ) => Promise<{ ok: boolean; status: number; text(): Promise<string>; json(): Promise<unknown> }>;
+
+/** Injectable delay (so tests run instantly and deterministically). */
+export type SleepLike = (ms: number, signal?: AbortSignal) => Promise<void>;
+
+/** Transient HTTP statuses worth retrying (timeouts, rate limits, 5xx). */
+const RETRYABLE_STATUSES: ReadonlySet<number> = new Set([408, 425, 429, 500, 502, 503, 504]);
+
+function isRetryableStatus(status: number): boolean {
+  return RETRYABLE_STATUSES.has(status);
+}
+
+/** True for the DOMException/Error fetch raises when an AbortSignal fires. */
+function isAbortError(err: unknown): boolean {
+  return typeof err === 'object' && err !== null && (err as { name?: unknown }).name === 'AbortError';
+}
+
+/** Default sleep: a cancellable timer. Resolves (does not reject) on abort so the
+ *  caller's loop re-checks the signal and exits cleanly. */
+const defaultSleep: SleepLike = (ms, signal) =>
+  new Promise<void>((resolve) => {
+    if (signal?.aborted) {
+      resolve();
+      return;
+    }
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(timer);
+        resolve();
+      },
+      { once: true },
+    );
+  });
+
+/** The outcome of a single transport call (one or more network tries). */
+type CallResult =
+  | { status: 'ok'; json: unknown; networkRetries: number }
+  | { status: 'error'; reason: string; networkRetries: number }
+  | { status: 'aborted'; networkRetries: number };
 
 export interface AnthropicCueGeneratorOptions {
   /** API key. Defaults to `process.env.ANTHROPIC_API_KEY`. */
@@ -39,12 +83,20 @@ export interface AnthropicCueGeneratorOptions {
   maxTokens?: number;
   /** Regeneration attempts if a transcript leaks forbidden vocabulary. */
   maxAttempts?: number;
+  /** Network retries per attempt on transient errors. Defaults to 2 ("a couple"). */
+  maxNetworkRetries?: number;
+  /** Base back-off delay in ms; doubles each retry (250 → 500 → …). */
+  backoffBaseMs?: number;
+  /** Ceiling for the back-off delay in ms. */
+  backoffMaxMs?: number;
   /** API base URL. */
   baseUrl?: string;
   /** anthropic-version header. */
   anthropicVersion?: string;
   /** Injectable fetch (defaults to global fetch). */
   fetchImpl?: FetchLike;
+  /** Injectable sleep (defaults to a cancellable setTimeout). */
+  sleepImpl?: SleepLike;
 }
 
 /** The lowest-latency model — generation must fire near the friction moment. */
@@ -63,9 +115,13 @@ export class AnthropicCueGenerator implements CueGenerator {
   private readonly temperature: number | null;
   private readonly maxTokens: number;
   private readonly maxAttempts: number;
+  private readonly maxNetworkRetries: number;
+  private readonly backoffBaseMs: number;
+  private readonly backoffMaxMs: number;
   private readonly baseUrl: string;
   private readonly anthropicVersion: string;
   private readonly fetchImpl: FetchLike;
+  private readonly sleepImpl: SleepLike;
   private counter = 0;
 
   constructor(options: AnthropicCueGeneratorOptions = {}) {
@@ -74,11 +130,15 @@ export class AnthropicCueGenerator implements CueGenerator {
     this.temperature = options.temperature === undefined ? 0.4 : options.temperature;
     this.maxTokens = options.maxTokens ?? 400;
     this.maxAttempts = Math.max(1, options.maxAttempts ?? 2);
+    this.maxNetworkRetries = Math.max(0, options.maxNetworkRetries ?? 2);
+    this.backoffBaseMs = Math.max(0, options.backoffBaseMs ?? 250);
+    this.backoffMaxMs = Math.max(this.backoffBaseMs, options.backoffMaxMs ?? 2000);
     this.baseUrl = options.baseUrl ?? 'https://api.anthropic.com';
     this.anthropicVersion = options.anthropicVersion ?? '2023-06-01';
     const f = options.fetchImpl ?? (globalThis as { fetch?: FetchLike }).fetch;
     if (!f) throw new Error('AnthropicCueGenerator: no fetch implementation available');
     this.fetchImpl = f;
+    this.sleepImpl = options.sleepImpl ?? defaultSleep;
   }
 
   /** Build the Messages API request body. Pure — unit-testable without network. */
@@ -135,30 +195,112 @@ export class AnthropicCueGenerator implements CueGenerator {
     );
   }
 
-  async generate(request: CueGenerationRequest, signal?: AbortSignal): Promise<Cue | null> {
+  async generate(request: CueGenerationRequest, signal?: AbortSignal): Promise<GenerationOutcome> {
     const body = this.buildRequestBody(request);
+    let attempts = 0;
+    let networkRetries = 0;
+    let lastReason = 'no usable cue produced';
+
+    // Outer loop: regenerate if the model leaks forbidden vocabulary or returns
+    // a malformed cue. (A transient *network* failure is handled inside
+    // callWithBackoff, below, and never burns a regeneration attempt.)
     for (let attempt = 0; attempt < this.maxAttempts; attempt++) {
-      const res = await this.fetchImpl(`${this.baseUrl}/v1/messages`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-api-key': this.apiKey,
-          'anthropic-version': this.anthropicVersion,
-        },
-        body: JSON.stringify(body),
-        signal,
-      });
-      if (!res.ok) {
-        throw new Error(`Anthropic API error ${res.status}: ${await res.text()}`);
+      attempts += 1;
+      const call = await this.callWithBackoff(body, signal);
+      networkRetries += call.networkRetries;
+
+      if (call.status === 'aborted') {
+        return { cue: null, status: 'error', attempts, networkRetries, reason: 'aborted' };
       }
-      const json = await res.json();
-      const cue = this.toCue(parseToolInput(json), request);
-      if (cue && findForbiddenVocabulary(cue.AudioTranscript).length === 0) {
-        return cue;
+      if (call.status === 'error') {
+        // Transport failure persisted through retries — terminal for this cue.
+        return { cue: null, status: 'error', attempts, networkRetries, reason: call.reason };
       }
-      // Otherwise: malformed or leaked internal vocabulary — try again.
+
+      const cue = this.toCue(parseToolInput(call.json), request);
+      if (!cue) {
+        lastReason = 'malformed model output';
+        continue;
+      }
+      const leaked = findForbiddenVocabulary(cue.AudioTranscript);
+      if (leaked.length === 0) {
+        return { cue, status: 'ok', attempts, networkRetries };
+      }
+      lastReason = `forbidden vocabulary: ${leaked.join(', ')}`;
+      // Leaked internal vocabulary — never speak it; regenerate.
     }
-    return null;
+
+    // The model responded but no attempt produced a clean cue: a content failure.
+    return { cue: null, status: 'rejected', attempts, networkRetries, reason: lastReason };
+  }
+
+  /**
+   * One logical API call, retrying transient transport failures (network errors
+   * and 408/425/429/5xx) with exponential back-off. Back-off is jitter-free to
+   * keep behaviour deterministic, and `Retry-After` is intentionally not honoured
+   * — a tipping-point cue is real-time, so we bound latency over politeness.
+   */
+  private async callWithBackoff(body: Record<string, unknown>, signal?: AbortSignal): Promise<CallResult> {
+    let networkRetries = 0;
+    for (let i = 0; ; i++) {
+      if (signal?.aborted) return { status: 'aborted', networkRetries };
+
+      let res: Awaited<ReturnType<FetchLike>>;
+      try {
+        res = await this.fetchImpl(`${this.baseUrl}/v1/messages`, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'x-api-key': this.apiKey,
+            'anthropic-version': this.anthropicVersion,
+          },
+          body: JSON.stringify(body),
+          signal,
+        });
+      } catch (err) {
+        // fetch threw: a network-level failure (DNS, reset, timeout) or an abort.
+        if (isAbortError(err) || signal?.aborted) return { status: 'aborted', networkRetries };
+        if (i < this.maxNetworkRetries) {
+          networkRetries += 1;
+          await this.sleepImpl(this.backoffDelay(i), signal);
+          continue;
+        }
+        return {
+          status: 'error',
+          reason: `network error: ${err instanceof Error ? err.message : String(err)}`,
+          networkRetries,
+        };
+      }
+
+      if (res.ok) {
+        try {
+          return { status: 'ok', json: await res.json(), networkRetries };
+        } catch (err) {
+          return {
+            status: 'error',
+            reason: `unparseable response body: ${err instanceof Error ? err.message : String(err)}`,
+            networkRetries,
+          };
+        }
+      }
+
+      // Non-2xx. Retry only transient statuses; otherwise surface the error.
+      if (isRetryableStatus(res.status) && i < this.maxNetworkRetries) {
+        networkRetries += 1;
+        await this.sleepImpl(this.backoffDelay(i), signal);
+        continue;
+      }
+      return {
+        status: 'error',
+        reason: `Anthropic API error ${res.status}: ${await res.text()}`,
+        networkRetries,
+      };
+    }
+  }
+
+  /** Exponential back-off, capped. `retryIndex` is 0-based (0 → base, 1 → 2×base…). */
+  private backoffDelay(retryIndex: number): number {
+    return Math.min(this.backoffMaxMs, this.backoffBaseMs * 2 ** retryIndex);
   }
 
   /** Assemble a validated Cue from the model's tool input, or null if malformed. */

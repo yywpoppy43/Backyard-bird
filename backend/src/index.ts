@@ -37,6 +37,7 @@ export * from './triggers/biometric-trigger.ts';
 export * from './cue-bank/cue-bank.ts';
 export * from './cue-bank/seed-cues.ts';
 export * from './cue-bank/cue-database.ts';
+export * from './cue-bank/safe-defaults.ts';
 
 // ── Engine ────────────────────────────────────────────────────────────────
 export * from './engine/stabilization.ts';

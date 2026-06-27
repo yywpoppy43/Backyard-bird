@@ -30,9 +30,35 @@ export type EngineEvent =
       round: number;
       at: Millis;
     }
-  /** A cue was selected (from the Cue Bank) or generated (LLM fallback) for the
-   *  current state. `origin` distinguishes the two. */
-  | { type: 'CUE_SELECTED'; cue: Cue; state: FrictionState; origin: 'database' | 'generated'; round: number; at: Millis }
+  /** A cue was selected for the current state. `origin` records where it came
+   *  from: the static Cue Bank (`database`), the LLM (`generated`), or the
+   *  hand-authored last-resort `fallback` used when neither could supply one. */
+  | {
+      type: 'CUE_SELECTED';
+      cue: Cue;
+      state: FrictionState;
+      origin: 'database' | 'generated' | 'fallback';
+      round: number;
+      at: Millis;
+    }
+  /** A generative attempt completed (the LLM fallback path). Emitted whenever the
+   *  engine asked the generator for a cue, whatever the result — so a consumer
+   *  can measure how often generation succeeds, regenerates (see `attempts`),
+   *  retries the network (see `networkRetries`), or fails (`status`). This is the
+   *  observability hook for tuning the generative layer. */
+  | {
+      type: 'CUE_GENERATION';
+      state: FrictionState;
+      status: 'ok' | 'rejected' | 'error';
+      /** Total model attempts (a regeneration on a vocabulary leak counts here). */
+      attempts: number;
+      /** Network retries spent on transient errors during this generation. */
+      networkRetries: number;
+      /** Reason when `status` is not `ok`. */
+      reason?: string;
+      round: number;
+      at: Millis;
+    }
   /** A cue finished transmitting via TTS (PRD §5 "Transmit"). */
   | { type: 'CUE_SPOKEN'; cueId: string; result: TtsResult; round: number; at: Millis }
   /** Recalibration resolved (PRD §5 "Recalibrate"). `stabilized` distinguishes

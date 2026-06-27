@@ -14,7 +14,8 @@
     "test:watch": "node --test --watch",
     "demo:temporal": "node src/examples/runTemporalSession.ts",
     "demo:biometric": "node src/examples/runBiometricSession.ts",
-    "demo:generative": "node src/examples/runGenerativeSession.ts"
+    "demo:generative": "node src/examples/runGenerativeSession.ts",
+    "smoke:live": "node --env-file-if-exists=.env src/examples/liveSmoke.ts"
   },
   "keywords": [
     "state-machine",

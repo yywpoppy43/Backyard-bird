@@ -18,23 +18,28 @@ import { MemoryEventBus } from '../adapters/memory-event-bus.ts';
 import { CueBank } from '../cue-bank/cue-bank.ts';
 import { SEED_CUES } from '../cue-bank/seed-cues.ts';
 import { FrictionState } from '../domain/friction-state.ts';
-import type { Cue } from '../domain/cue.ts';
-import type { CueGenerator, CueGenerationRequest } from '../ports/cue-generator.ts';
+import type { CueGenerator, CueGenerationRequest, GenerationOutcome } from '../ports/cue-generator.ts';
 import type { EngineEvent } from '../domain/events.ts';
 
 const tick = (): Promise<void> => new Promise((resolve) => setImmediate(resolve));
 
-// Stand-in for AnthropicCueGenerator so the demo runs with no network/key.
+// Stand-in for AnthropicCueGenerator so the demo runs with no network/key. Like
+// the real generator, it returns a GenerationOutcome (never throws).
 const demoGenerator: CueGenerator = {
-  async generate(req: CueGenerationRequest): Promise<Cue> {
+  async generate(req: CueGenerationRequest): Promise<GenerationOutcome> {
     return {
-      CueID: `gen-${req.state.toLowerCase()}`,
-      PrimaryState: req.state,
-      PhysicalLever: 'Press one inch past the edge.',
-      EnergeticVector: 'Send the breath into the push.',
-      StructuralYield: 'The capacity is yours now — take more.',
-      AudioTranscript: 'You held. Now reach past it. One inch more, and breathe.',
-      DeliveryTone: 'Direct, expansive',
+      cue: {
+        CueID: `gen-${req.state.toLowerCase()}`,
+        PrimaryState: req.state,
+        PhysicalLever: 'Press one inch past the edge.',
+        EnergeticVector: 'Send the breath into the push.',
+        StructuralYield: 'The capacity is yours now — take more.',
+        AudioTranscript: 'You held. Now reach past it. One inch more, and breathe.',
+        DeliveryTone: 'Direct, expansive',
+      },
+      status: 'ok',
+      attempts: 1,
+      networkRetries: 0,
     };
   },
 };
@@ -43,6 +48,10 @@ function describe(e: EngineEvent): string | null {
   switch (e.type) {
     case 'STATE_CHANGED':
       return `  ↪ ${e.from} → ${e.to}  [round ${e.round}]`;
+    case 'CUE_GENERATION':
+      return `  ⚙ generation ${e.status} [attempts ${e.attempts}, net-retries ${e.networkRetries}]${
+        e.reason ? ` — ${e.reason}` : ''
+      }`;
     case 'CUE_SELECTED':
       return `  • cue ${e.cue.CueID} [${e.origin}] for ${e.state}`;
     case 'SESSION_ENDED':

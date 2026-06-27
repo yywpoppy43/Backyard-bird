@@ -46,7 +46,8 @@ import type { Trigger, TriggerSignal, TriggerArmContext, TriggerSource } from '.
 import type { BiometricListener } from '../triggers/biometric-trigger.ts';
 import type { CueSelector, SelectionContext } from '../ports/cue-selector.ts';
 import type { CueCalibrator } from '../ports/cue-calibrator.ts';
-import type { CueGenerator } from '../ports/cue-generator.ts';
+import type { CueGenerator, GenerationOutcome } from '../ports/cue-generator.ts';
+import { safeDefaultCue } from '../cue-bank/safe-defaults.ts';
 import type { FrictionCondition } from '../domain/friction-condition.ts';
 import { StabilizationDetector, type StabilizationOutcome } from './stabilization.ts';
 
@@ -392,47 +393,50 @@ export class SessionEngine {
     };
 
     // Shared cancellation for generation + transmission; end() aborts it.
-    this.ttsAbort = new AbortController();
+    const abort = new AbortController();
+    this.ttsAbort = abort;
 
     // Cue-SELECTION seam: which cue fires (default = deterministic CueBank).
     let selected = this.cueSelector.select(ctx);
-    let origin: 'database' | 'generated' = 'database';
+    let origin: 'database' | 'generated' | 'fallback' = 'database';
 
     // Generative seam (PRD Phase 2): if the static corpus has no cue for this
     // state, ask the LLM generator for one. Static remains the default source.
     if (!selected && this.cueGenerator) {
-      try {
-        const generated = await this.cueGenerator.generate(
-          { state, source, intensity, round: this.round, frictionCondition: this.currentFrictionCondition },
-          this.ttsAbort.signal,
-        );
-        if (!this.running) return;
-        if (generated) {
-          selected = generated;
-          origin = 'generated';
-        }
-      } catch (err) {
-        if (!this.running) return;
-        this.emit({
-          type: 'ERROR',
-          scope: 'cue-generator',
-          message: err instanceof Error ? err.message : String(err),
-          recoverable: true,
-          at: this.now(),
-        });
+      const outcome = await this.generateSafely(state, source, intensity, abort.signal);
+      if (!this.running) return;
+      // Always surface what generation did (ok / regenerated / failed) so the
+      // generative layer is observable for tuning.
+      this.emit({
+        type: 'CUE_GENERATION',
+        state,
+        status: outcome.status,
+        attempts: outcome.attempts,
+        networkRetries: outcome.networkRetries,
+        reason: outcome.reason,
+        round: this.round,
+        at: this.now(),
+      });
+      if (outcome.cue) {
+        selected = outcome.cue;
+        origin = 'generated';
       }
     }
 
+    // Last resort: never go quiet at a cue point. If neither the corpus nor the
+    // generator produced a cue, speak the hand-authored safe default for the
+    // state and surface it as a recoverable error for observability/tuning.
     if (!selected) {
+      const fallback = safeDefaultCue(state);
       this.emit({
         type: 'ERROR',
-        scope: 'cue-bank',
-        message: `no cue available for state ${state}`,
+        scope: 'cue-fallback',
+        message: `no cue available for state ${state}; using safe default ${fallback.CueID}`,
         recoverable: true,
         at: this.now(),
       });
-      after();
-      return;
+      selected = fallback;
+      origin = 'fallback';
     }
 
     // Cue-WORDING seam: how the cue is phrased/toned (default = identity).
@@ -443,7 +447,7 @@ export class SessionEngine {
     try {
       const result = await this.tts.speak(
         { cueId: cue.CueID, text: cue.AudioTranscript, tone: cue.DeliveryTone },
-        this.ttsAbort.signal,
+        abort.signal,
       );
       if (!this.running) return;
       this.recordSpoken(cue);
@@ -459,6 +463,41 @@ export class SessionEngine {
       });
     }
     after();
+  }
+
+  /**
+   * Call the generator without ever letting it throw into the lifecycle. A
+   * well-behaved generator already returns a {@link GenerationOutcome}; this also
+   * converts an unexpected throw (a misbehaving custom generator) into an `error`
+   * outcome, so the engine has exactly one shape to handle and always reaches the
+   * safe-default fallback rather than stranding the session.
+   */
+  private async generateSafely(
+    state: FrictionState,
+    source: CueSource,
+    intensity: Unit,
+    signal: AbortSignal,
+  ): Promise<GenerationOutcome> {
+    try {
+      return await this.cueGenerator!.generate(
+        {
+          state,
+          source,
+          intensity,
+          round: this.round,
+          frictionCondition: this.currentFrictionCondition,
+        },
+        signal,
+      );
+    } catch (err) {
+      return {
+        cue: null,
+        status: 'error',
+        attempts: 0,
+        networkRetries: 0,
+        reason: `generator threw: ${err instanceof Error ? err.message : String(err)}`,
+      };
+    }
   }
 
   private recordSpoken(cue: Cue): void {
