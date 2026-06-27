@@ -17,11 +17,13 @@ export * from './domain/session.ts';
 export * from './domain/events.ts';
 export * from './domain/relational.ts';
 
-// ── Ports (interfaces) ────────────────────────────────────────────────────
+// ── Ports (interfaces / seams) ────────────────────────────────────────────
 export * from './ports/clock.ts';
 export * from './ports/event-bus.ts';
 export * from './ports/tts.ts';
 export * from './ports/telemetry-source.ts';
+export * from './ports/cue-selector.ts';
+export * from './ports/cue-calibrator.ts';
 
 // ── Triggers ──────────────────────────────────────────────────────────────
 export * from './triggers/trigger.ts';
@@ -43,6 +45,7 @@ export * from './adapters/console-tts.ts';
 export * from './adapters/recording-tts.ts';
 export * from './adapters/mock-telemetry.ts';
 export * from './adapters/memory-event-bus.ts';
+export * from './adapters/identity-cue-calibrator.ts';
 
 // ── Factory ───────────────────────────────────────────────────────────────
 export * from './create-companion.ts';

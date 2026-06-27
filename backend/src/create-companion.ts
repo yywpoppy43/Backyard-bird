@@ -13,6 +13,8 @@ import type { Clock } from './ports/clock.ts';
 import type { TTS } from './ports/tts.ts';
 import type { EventBus } from './ports/event-bus.ts';
 import type { TelemetrySource } from './ports/telemetry-source.ts';
+import type { CueSelector } from './ports/cue-selector.ts';
+import type { CueCalibrator } from './ports/cue-calibrator.ts';
 import { resolveTuning, type EngineTuning } from './domain/session.ts';
 import { SystemClock } from './adapters/system-clock.ts';
 import { ConsoleTTS } from './adapters/console-tts.ts';
@@ -28,6 +30,10 @@ export interface CreateCompanionOptions {
   tts?: TTS;
   bus?: EventBus;
   cueBank?: CueBank;
+  /** Cue-selection seam override (a personalization layer). Defaults to `cueBank`. */
+  cueSelector?: CueSelector;
+  /** Cue-wording seam override (a personalization layer). Defaults to identity. */
+  calibrator?: CueCalibrator;
   /** Biometric source; supplying it (or `withBiometrics`) builds a BiometricTrigger. */
   telemetry?: TelemetrySource;
   /** Force-build the biometric trigger even without supplying a telemetry source. */
@@ -60,7 +66,8 @@ export function createCompanion(options: CreateCompanionOptions = {}): Companion
     clock,
     tts,
     bus,
-    cueBank,
+    cueSelector: options.cueSelector ?? cueBank,
+    calibrator: options.calibrator,
     temporal,
     biometric,
     telemetry: options.telemetry,

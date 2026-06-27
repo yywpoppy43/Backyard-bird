@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { FrictionState } from '../domain/friction-state.ts';
 import { deriveRelationalTarget } from '../domain/relational.ts';
 import { createSeedCueBank } from '../cue-bank/seed-cues.ts';
-import type { SelectionContext } from '../cue-bank/cue-bank.ts';
+import type { SelectionContext } from '../ports/cue-selector.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const srcRoot = join(here, '..');
@@ -47,6 +47,7 @@ test('cue selection is reproducible across repeated calls', () => {
   for (const state of states) {
     const ctx: SelectionContext = {
       targetState: state,
+      source: 'INIT',
       intensity: 0.8,
       round: 2,
       now: 1234,

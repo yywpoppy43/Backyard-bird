@@ -52,9 +52,9 @@ effects.
 {
   "CueID": "encounter.stay",
   "PrimaryState": "ENCOUNTER",
-  "PhysicalLever_Metal":   "Stack the joints",
-  "EnergeticVector_Water": "Channel the breath",
-  "StructuralYield_Wood":  "Capacity to handle asymmetry",
+  "PhysicalLever":   "Stack the joints",
+  "EnergeticVector": "Channel the breath",
+  "StructuralYield": "Capacity to handle asymmetry",
   "AudioTranscript": "Stay. Breathe here. Do not leave the structure…",
   "DeliveryTone": "Sharp, commanding"
 }
@@ -186,6 +186,26 @@ For V2, pass a `telemetry` adapter implementing `TelemetrySource` and set
 * **Tune behaviour**: every threshold/window/weight lives in `EngineTuning`
   (`domain/session.ts`) with documented defaults; override per session via
   `SessionConfig.tuning`.
+
+## Extensibility seams (personalization-ready)
+
+The engine is built so a later **personalization layer** (which derives a user
+profile at onboarding) can plug in at three independent seams **without any
+engine refactor**. Each seam is a port with a behaviour-preserving default, so
+V1 runs unchanged until something is injected.
+
+| Seam | Port | Default | A personalization module would… |
+|---|---|---|---|
+| **Which cue is chosen** | `CueSelector` (`ports/cue-selector.ts`) | `CueBank` (relational matrix) | inject a selector (e.g. a decorator wrapping the `CueBank`, built with the profile) |
+| **How the cue is worded** | `CueCalibrator` (`ports/cue-calibrator.ts`) | `IdentityCueCalibrator` (no-op) | inject a calibrator that rewords/tones the chosen cue for the user (must keep `CueID`) |
+| **When tipping points fire** | `Trigger` (`triggers/trigger.ts`) | `TemporalTrigger` / `BiometricTrigger` | inject or decorate the temporal `Trigger` to shift tipping-point timing |
+
+The selection/calibration seams receive a `SelectionContext` / `CalibrationContext`
+carrying the full situational signal — state, **trigger source**, intensity,
+round, history — so neither is coupled to biometric state alone. The engine
+depends only on these interfaces; it never references a concrete cue bank or
+calibrator. Wire overrides via `createCompanion({ cueSelector, calibrator })` or
+the `SessionEngine` constructor.
 
 ### Implementation note
 

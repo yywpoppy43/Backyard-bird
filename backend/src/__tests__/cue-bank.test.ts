@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 import { loadCues, InvalidCueError } from '../domain/cue.ts';
 import { FrictionState } from '../domain/friction-state.ts';
 import { deriveRelationalTarget } from '../domain/relational.ts';
-import { CueBank, type SelectionContext } from '../cue-bank/cue-bank.ts';
+import { CueBank } from '../cue-bank/cue-bank.ts';
+import type { SelectionContext } from '../ports/cue-selector.ts';
 import { createSeedCueBank, SEED_CUES } from '../cue-bank/seed-cues.ts';
 
 function ctxFor(
@@ -14,6 +15,7 @@ function ctxFor(
 ): SelectionContext {
   return {
     targetState: state,
+    source: 'INIT',
     intensity,
     round: 1,
     now: 0,
@@ -51,8 +53,8 @@ test('selection is deterministic and respects the relational matrix', () => {
   const b = bank.select(ctx);
   assert.ok(a);
   assert.equal(a?.CueID, b?.CueID, 'same context yields the same cue');
-  // ENCOUNTER target desires Metal "Stack the joints" + Water "Channel the breath",
-  // both present on encounter.stay → highest relational overlap.
+  // ENCOUNTER target desires PhysicalLever "Stack the joints" + EnergeticVector
+  // "Channel the breath", both present on encounter.stay → highest relational overlap.
   assert.equal(a?.CueID, 'encounter.stay');
 });
 

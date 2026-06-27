@@ -42,16 +42,25 @@ import type { Clock, TimerHandle } from '../ports/clock.ts';
 import type { EventBus } from '../ports/event-bus.ts';
 import type { TTS } from '../ports/tts.ts';
 import type { TelemetrySource, BiometricSample } from '../ports/telemetry-source.ts';
-import type { Trigger, TriggerSignal, TriggerArmContext } from '../triggers/trigger.ts';
+import type { Trigger, TriggerSignal, TriggerArmContext, TriggerSource } from '../triggers/trigger.ts';
 import type { BiometricTrigger } from '../triggers/biometric-trigger.ts';
-import { CueBank, type SelectionContext } from '../cue-bank/cue-bank.ts';
+import type { CueSelector, SelectionContext } from '../ports/cue-selector.ts';
+import type { CueCalibrator } from '../ports/cue-calibrator.ts';
 import { StabilizationDetector, type StabilizationOutcome } from './stabilization.ts';
+
+/** Source attribution for a cue: a proactive lifecycle cue, or a trigger fire. */
+type CueSource = TriggerSource | 'INIT';
 
 export interface SessionEngineDeps {
   clock: Clock;
   tts: TTS;
   bus: EventBus;
-  cueBank: CueBank;
+  /** Cue-selection seam. The default is a {@link CueBank}; a personalization
+   *  layer can supply its own selector to influence which cue is chosen. */
+  cueSelector: CueSelector;
+  /** Cue-wording seam. Defaults to an identity pass-through; a personalization
+   *  layer can supply a calibrator to reword/tone a cue for a specific user. */
+  calibrator?: CueCalibrator;
   /** The temporal (V1) trigger — always present. */
   temporal: Trigger;
   /** The biometric (V2) trigger — required to use `enableBiometrics`. */
@@ -72,7 +81,8 @@ export class SessionEngine {
   private readonly clock: Clock;
   private readonly tts: TTS;
   private readonly bus: EventBus;
-  private readonly cueBank: CueBank;
+  private readonly cueSelector: CueSelector;
+  private readonly calibrator: CueCalibrator;
   private readonly temporal: Trigger;
   private readonly biometric: BiometricTrigger | undefined;
   private readonly telemetry: TelemetrySource | undefined;
@@ -86,6 +96,7 @@ export class SessionEngine {
   private sessionStartedAt = 0;
 
   private currentIntensity: Unit = 0;
+  private currentSource: CueSource = 'INIT';
   private lastCue: Cue | null = null;
   private lastCueId: string | null = null;
   private recentCueIds: string[] = [];
@@ -104,7 +115,9 @@ export class SessionEngine {
     this.clock = deps.clock;
     this.tts = deps.tts;
     this.bus = deps.bus;
-    this.cueBank = deps.cueBank;
+    this.cueSelector = deps.cueSelector;
+    // Default cue-wording seam: identity pass-through (no external dependency).
+    this.calibrator = deps.calibrator ?? { calibrate: (cue) => cue };
     this.temporal = deps.temporal;
     this.biometric = deps.biometric;
     this.telemetry = deps.telemetry;
@@ -136,6 +149,7 @@ export class SessionEngine {
     this.round = 1;
     this.sessionStartedAt = this.clock.now();
     this.currentIntensity = intensityAt(config.curve, 0);
+    this.currentSource = 'INIT';
     this.lastCue = null;
     this.lastCueId = null;
     this.recentCueIds = [];
@@ -164,7 +178,7 @@ export class SessionEngine {
     this.timers.end = this.clock.setTimer(config.lengthMs, () => this.end('completed'));
 
     // Initialize: BASELINE anchor cue, then advance to INTENTION after settling.
-    void this.cueAndContinue(this.currentIntensity, () => {
+    void this.cueAndContinue('INIT', this.currentIntensity, () => {
       this.timers.settle = this.clock.setTimer(this.tuning.baselineSettleMs, () =>
         this.advanceToIntention(),
       );
@@ -189,7 +203,7 @@ export class SessionEngine {
     if (!this.running) return;
     const intensity = intensityAt(this.config.curve, this.progress());
     this.currentIntensity = intensity;
-    void this.cueAndContinue(intensity, () => this.armForRound());
+    void this.cueAndContinue('INIT', intensity, () => this.armForRound());
   }
 
   private armForRound(): void {
@@ -212,6 +226,7 @@ export class SessionEngine {
     this.biometric?.disarm();
 
     this.currentIntensity = signal.intensity;
+    this.currentSource = signal.source;
     this.consecutiveDestabilizations = 0;
     this.emit({
       type: 'TIPPING_POINT',
@@ -230,7 +245,7 @@ export class SessionEngine {
   private enterEncounter(intensity: Unit): void {
     if (!this.running) return;
     this.currentIntensity = intensity;
-    void this.cueAndContinue(intensity, () => this.beginRecalibration());
+    void this.cueAndContinue(this.currentSource, intensity, () => this.beginRecalibration());
   }
 
   /** PRD §5 "Recalibrate": await metric stabilization. */
@@ -308,7 +323,7 @@ export class SessionEngine {
   /** PRD §2 State 4: demand an expansion of the edge, then loop to next round. */
   private enterGrowth(): void {
     if (!this.running) return;
-    void this.cueAndContinue(this.currentIntensity, () => this.scheduleNextRound());
+    void this.cueAndContinue(this.currentSource, this.currentIntensity, () => this.scheduleNextRound());
   }
 
   private scheduleNextRound(): void {
@@ -349,12 +364,13 @@ export class SessionEngine {
    * Never strands the session: if no cue is available or TTS fails, it emits a
    * recoverable ERROR and still continues the lifecycle.
    */
-  private async cueAndContinue(intensity: Unit, after: () => void): Promise<void> {
+  private async cueAndContinue(source: CueSource, intensity: Unit, after: () => void): Promise<void> {
     if (!this.running) return;
     const state = this.state;
     const target = deriveRelationalTarget(state, intensity, this.relationalOverride);
     const ctx: SelectionContext = {
       targetState: state,
+      source,
       intensity,
       round: this.round,
       now: this.now(),
@@ -364,8 +380,9 @@ export class SessionEngine {
       lastSpokenAt: this.lastSpokenAt,
     };
 
-    const cue = this.cueBank.select(ctx);
-    if (!cue) {
+    // Cue-SELECTION seam: which cue fires (default = deterministic CueBank).
+    const selected = this.cueSelector.select(ctx);
+    if (!selected) {
       this.emit({
         type: 'ERROR',
         scope: 'cue-bank',
@@ -376,6 +393,9 @@ export class SessionEngine {
       after();
       return;
     }
+
+    // Cue-WORDING seam: how the cue is phrased/toned (default = identity).
+    const cue = this.calibrator.calibrate(selected, { state, source, intensity, round: this.round });
 
     this.emit({ type: 'CUE_SELECTED', cue, state, round: this.round, at: this.now() });
 

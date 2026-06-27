@@ -10,11 +10,11 @@
  *   {
  *     "CueID": "string",
  *     "PrimaryState": "enum [BASELINE, INTENTION, ENCOUNTER, GROWTH]",
- *     "PhysicalLever_Metal":   "string",
- *     "EnergeticVector_Water": "string",
- *     "StructuralYield_Wood":  "string",
- *     "AudioTranscript":       "string",
- *     "DeliveryTone":          "string"
+ *     "PhysicalLever":    "string",
+ *     "EnergeticVector":  "string",
+ *     "StructuralYield":  "string",
+ *     "AudioTranscript":  "string",
+ *     "DeliveryTone":     "string"
  *   }
  *
  * Validation is hand-rolled (no Zod/ajv) to keep the framework dependency-free.
@@ -28,23 +28,23 @@ import { FrictionState, FRICTION_STATES } from './friction-state.ts';
  * "strict relational matrix" used by the {@link CueBank} to select cues.
  */
 export const Lever = {
-  /** PhysicalLever_Metal — the structural/postural instruction. */
-  METAL: 'METAL',
-  /** EnergeticVector_Water — the flow/intention instruction. */
-  WATER: 'WATER',
-  /** StructuralYield_Wood — the capacity/boundary instruction. */
-  WOOD: 'WOOD',
+  /** PhysicalLever — the structural/postural instruction. */
+  PHYSICAL: 'PHYSICAL',
+  /** EnergeticVector — the flow/intention instruction. */
+  ENERGETIC: 'ENERGETIC',
+  /** StructuralYield — the capacity/boundary instruction. */
+  STRUCTURAL: 'STRUCTURAL',
 } as const;
 
 export type Lever = (typeof Lever)[keyof typeof Lever];
 
-export const LEVERS: readonly Lever[] = [Lever.METAL, Lever.WATER, Lever.WOOD];
+export const LEVERS: readonly Lever[] = [Lever.PHYSICAL, Lever.ENERGETIC, Lever.STRUCTURAL];
 
 /** Maps a {@link Lever} dimension to its concrete field name on a {@link Cue}. */
 export const LEVER_FIELD = {
-  [Lever.METAL]: 'PhysicalLever_Metal',
-  [Lever.WATER]: 'EnergeticVector_Water',
-  [Lever.WOOD]: 'StructuralYield_Wood',
+  [Lever.PHYSICAL]: 'PhysicalLever',
+  [Lever.ENERGETIC]: 'EnergeticVector',
+  [Lever.STRUCTURAL]: 'StructuralYield',
 } as const satisfies Record<Lever, keyof Cue>;
 
 /**
@@ -69,12 +69,12 @@ export interface Cue {
   CueID: string;
   /** Which state of the Friction State Machine this cue belongs to. */
   PrimaryState: FrictionState;
-  /** Metal — physical lever, e.g. "Lower center of gravity", "Extend spine". */
-  PhysicalLever_Metal: string;
-  /** Water — energetic vector, e.g. "Localize intention", "Release secondary tension". */
-  EnergeticVector_Water: string;
-  /** Wood — structural yield, e.g. "Capacity to handle asymmetry", "Boundary expansion". */
-  StructuralYield_Wood: string;
+  /** Physical lever — postural/structural instruction, e.g. "Lower center of gravity". */
+  PhysicalLever: string;
+  /** Energetic vector — flow/intention instruction, e.g. "Localize intention". */
+  EnergeticVector: string;
+  /** Structural yield — capacity/boundary instruction, e.g. "Boundary expansion". */
+  StructuralYield: string;
   /** The exact verbal transmission handed to the TTS engine. */
   AudioTranscript: string;
   /** Delivery tone hint, e.g. "Clinical, grounding", "Sharp, commanding". */
@@ -88,8 +88,8 @@ export function leverValue(cue: Cue, lever: Lever): string {
 
 /**
  * The three relational dimensions of a cue as `{ lever, value }` pairs, in
- * canonical Metal/Water/Wood order. Convenient for a UI rendering the relational
- * make-up of a selected cue.
+ * canonical Physical/Energetic/Structural order. Convenient for a UI rendering
+ * the relational make-up of a selected cue.
  */
 export function leverEntries(cue: Cue): { lever: Lever; value: string }[] {
   return LEVERS.map((lever) => ({ lever, value: leverValue(cue, lever) }));
@@ -110,9 +110,9 @@ export function isCue(value: unknown): value is Cue {
   return (
     isNonEmptyString(c['CueID']) &&
     isFrictionState(c['PrimaryState']) &&
-    isNonEmptyString(c['PhysicalLever_Metal']) &&
-    isNonEmptyString(c['EnergeticVector_Water']) &&
-    isNonEmptyString(c['StructuralYield_Wood']) &&
+    isNonEmptyString(c['PhysicalLever']) &&
+    isNonEmptyString(c['EnergeticVector']) &&
+    isNonEmptyString(c['StructuralYield']) &&
     isNonEmptyString(c['AudioTranscript']) &&
     isNonEmptyString(c['DeliveryTone'])
   );
@@ -141,8 +141,8 @@ export function loadCues(data: unknown): Cue[] {
     if (!isCue(entry)) {
       throw new InvalidCueError(
         `Cue at index ${i} is malformed; required fields: CueID, PrimaryState ` +
-          `(one of ${FRICTION_STATES.join('/')}), PhysicalLever_Metal, ` +
-          `EnergeticVector_Water, StructuralYield_Wood, AudioTranscript, DeliveryTone.`,
+          `(one of ${FRICTION_STATES.join('/')}), PhysicalLever, ` +
+          `EnergeticVector, StructuralYield, AudioTranscript, DeliveryTone.`,
       );
     }
     if (seen.has(entry.CueID)) {

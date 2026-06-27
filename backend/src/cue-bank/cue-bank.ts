@@ -15,31 +15,14 @@
  *   4. CueID               — lexicographic tie-break, guaranteeing a total order
  */
 
-import type { Millis } from '../domain/units.ts';
 import type { FrictionState } from '../domain/friction-state.ts';
 import { FRICTION_STATES } from '../domain/friction-state.ts';
 import { leverValue, loadCues } from '../domain/cue.ts';
 import type { Cue } from '../domain/cue.ts';
 import type { RelationalTarget } from '../domain/relational.ts';
+import type { CueSelector, SelectionContext } from '../ports/cue-selector.ts';
 
-/** Everything `select` needs to choose a cue deterministically. */
-export interface SelectionContext {
-  targetState: FrictionState;
-  /** Current intensity in [0,1] (already folded into `target`). */
-  intensity: number;
-  round: number;
-  now: Millis;
-  /** The cue spoken immediately before (never repeated back-to-back). */
-  lastCueId: string | null;
-  /** Recently spoken cues to avoid (rotation), most-recent-last. */
-  recentCueIds: readonly string[];
-  /** The relational ideal for this moment. */
-  target: RelationalTarget;
-  /** CueID → last spoken time, for the freshness tier. */
-  lastSpokenAt: ReadonlyMap<string, Millis>;
-}
-
-export class CueBank {
+export class CueBank implements CueSelector {
   private readonly byState: Map<FrictionState, Cue[]> = new Map();
   private readonly all: readonly Cue[];
 

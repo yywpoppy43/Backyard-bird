@@ -5,8 +5,9 @@
  * not randomized motivation."
  *
  * This module encodes the relationship between the Friction State, the current
- * intensity, and the three Cue Bank dimensions (Metal / Water / Wood) plus the
- * Delivery Tone. It produces a {@link RelationalTarget} — the deterministic
+ * intensity, and the three Cue Bank dimensions (PhysicalLever / EnergeticVector /
+ * StructuralYield) plus the Delivery Tone. It produces a {@link RelationalTarget}
+ * — the deterministic
  * "what kind of cue does this exact moment call for?" — which the
  * {@link CueBank} ranks candidate cues against. There is no randomness anywhere.
  */
@@ -17,9 +18,9 @@ import { Lever, DeliveryTone, leverValue, type Cue, type CanonicalDeliveryTone }
 
 /** Controlled vocabulary for each lever dimension (shared with the seed corpus). */
 export const LEVER_VOCABULARY = {
-  [Lever.METAL]: ['Lower center of gravity', 'Extend spine', 'Root through the floor', 'Stack the joints'],
-  [Lever.WATER]: ['Localize intention', 'Release secondary tension', 'Channel the breath', 'Flood the target'],
-  [Lever.WOOD]: ['Capacity to handle asymmetry', 'Boundary expansion', 'Absorb the load', 'Yield then hold'],
+  [Lever.PHYSICAL]: ['Lower center of gravity', 'Extend spine', 'Root through the floor', 'Stack the joints'],
+  [Lever.ENERGETIC]: ['Localize intention', 'Release secondary tension', 'Channel the breath', 'Flood the target'],
+  [Lever.STRUCTURAL]: ['Capacity to handle asymmetry', 'Boundary expansion', 'Absorb the load', 'Yield then hold'],
 } as const satisfies Record<Lever, readonly string[]>;
 
 /** Intensity bands used to index the tone matrix. */
@@ -34,16 +35,16 @@ export function intensityBand(intensity: Unit): IntensityBand {
 /**
  * Per-state ordered priority of the lever dimensions, derived from each state's
  * "Target Logic" in PRD §2:
- *   BASELINE  — establish the physical fact of capability → structural grounding (Metal)
- *   INTENTION — direct energetic focus; prevent energy leakage (Water)
- *   ENCOUNTER — force the Pilot to remain in the structure; "breathe, stay" (Metal/Water)
- *   GROWTH    — expand the edge; new capacity (Wood)
+ *   BASELINE  — establish the physical fact of capability → structural grounding (PhysicalLever)
+ *   INTENTION — direct energetic focus; prevent energy leakage (EnergeticVector)
+ *   ENCOUNTER — force the Pilot to remain in the structure; "breathe, stay" (PhysicalLever/EnergeticVector)
+ *   GROWTH    — expand the edge; new capacity (StructuralYield)
  */
 export const STATE_EMPHASIS: Readonly<Record<FrictionState, readonly Lever[]>> = {
-  [FrictionState.BASELINE]: [Lever.METAL, Lever.WOOD, Lever.WATER],
-  [FrictionState.INTENTION]: [Lever.WATER, Lever.METAL, Lever.WOOD],
-  [FrictionState.ENCOUNTER]: [Lever.METAL, Lever.WATER, Lever.WOOD],
-  [FrictionState.GROWTH]: [Lever.WOOD, Lever.METAL, Lever.WATER],
+  [FrictionState.BASELINE]: [Lever.PHYSICAL, Lever.STRUCTURAL, Lever.ENERGETIC],
+  [FrictionState.INTENTION]: [Lever.ENERGETIC, Lever.PHYSICAL, Lever.STRUCTURAL],
+  [FrictionState.ENCOUNTER]: [Lever.PHYSICAL, Lever.ENERGETIC, Lever.STRUCTURAL],
+  [FrictionState.GROWTH]: [Lever.STRUCTURAL, Lever.PHYSICAL, Lever.ENERGETIC],
 };
 
 /**
@@ -79,10 +80,10 @@ export const TONE_MATRIX: Readonly<
 
 /** Default desired lever phrase for each state's primary emphasis dimension. */
 export const STATE_DEFAULT_DESIRED: Readonly<Record<FrictionState, Partial<Record<Lever, string>>>> = {
-  [FrictionState.BASELINE]: { [Lever.METAL]: 'Root through the floor' },
-  [FrictionState.INTENTION]: { [Lever.WATER]: 'Localize intention' },
-  [FrictionState.ENCOUNTER]: { [Lever.METAL]: 'Stack the joints', [Lever.WATER]: 'Channel the breath' },
-  [FrictionState.GROWTH]: { [Lever.WOOD]: 'Boundary expansion' },
+  [FrictionState.BASELINE]: { [Lever.PHYSICAL]: 'Root through the floor' },
+  [FrictionState.INTENTION]: { [Lever.ENERGETIC]: 'Localize intention' },
+  [FrictionState.ENCOUNTER]: { [Lever.PHYSICAL]: 'Stack the joints', [Lever.ENERGETIC]: 'Channel the breath' },
+  [FrictionState.GROWTH]: { [Lever.STRUCTURAL]: 'Boundary expansion' },
 };
 
 /**
