@@ -1,1466 +1,462 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Backyard Birds of Woodside - Interactive Guide</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Return — Poppy Lifeforce</title>
+<meta name="description" content="One mechanism decides what pressure becomes in a person. A map of it — the parts, the loop it runs, the move that breaks the loop, and what's being built to train it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E9E9E2; --paper-2:#E3E3DB; --ink:#1E2023; --ink-2:#6C6F72; --faint:#9A9C98;
+  --line:rgba(30,32,35,.16); --line-2:rgba(30,32,35,.30); --ox:#7A2E2A;
+  --sans:'Bricolage Grotesque','Helvetica Neue','Segoe UI',Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --col:46rem;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+@media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:400;line-height:1.6;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+::selection{background:var(--ink);color:var(--paper)}
+a{color:inherit}
 
-        body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            background: linear-gradient(to bottom, #87CEEB 0%, #98D8C8 50%, #6B8E23 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+/* top bar */
+.bar{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--paper) 90%,transparent);
+  backdrop-filter:saturate(1.05) blur(6px);border-bottom:1px solid var(--line)}
+.bar .in{max-width:var(--col);margin:0 auto;padding:14px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.wordmark{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--ink)}
+.bar nav{display:flex;gap:20px}
+.bar nav a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);
+  text-decoration:none;padding-bottom:2px;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
+.bar nav a:hover{color:var(--ink);border-color:var(--line-2)}
 
-        .forest-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            opacity: 0.2;
-            background-image: 
-                radial-gradient(ellipse at 20% 80%, rgba(34, 139, 34, 0.4) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 70%, rgba(46, 125, 50, 0.4) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 90%, rgba(27, 94, 32, 0.4) 0%, transparent 50%);
-        }
+.wrap{max-width:var(--col);margin:0 auto;padding:0 26px}
 
-        header {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            padding: 40px 20px;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-bottom: 3px solid #6B8E23;
-        }
+/* master plate */
+.master{padding:52px 0 40px}
+.plate-num{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.master h1{font-weight:640;font-size:clamp(2.7rem,8vw,4.8rem);letter-spacing:-.028em;line-height:.98;margin:10px 0 0}
+.master .caption{font-size:clamp(1.05rem,2.5vw,1.28rem);color:var(--ink-2);line-height:1.5;max-width:34rem;margin:18px 0 0}
+.diagram{margin:38px 0 8px}
+.diagram svg{display:block;width:100%;height:auto;max-width:600px;margin:0 auto}
+.region{cursor:pointer}
+.region .hit{fill:transparent}
+.region:hover .tagc{fill:var(--ink)}
+.region:hover .tagt{fill:var(--paper)}
+.diagram figcaption{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--faint);text-align:center;margin-top:14px}
 
-        h1 {
-            font-size: 2.8em;
-            color: #2d5016;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 10px;
-            font-weight: normal;
-            letter-spacing: 1px;
-        }
+hr.rule{border:none;border-top:1px solid var(--line);margin:0}
 
-        .subtitle {
-            font-size: 1.1em;
-            color: #5a7c3e;
-            font-style: italic;
-        }
+/* plates */
+.plate{padding:9vh 0}
+.eyebrow{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+.eyebrow .n{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.08em;color:var(--ink)}
+.eyebrow .l{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.plate h2{font-weight:600;font-size:clamp(1.6rem,4.4vw,2.5rem);letter-spacing:-.02em;line-height:1.1;margin:0 0 .7em;max-width:20ch}
+.plate p{font-size:clamp(1.05rem,2.4vw,1.2rem);line-height:1.62;color:var(--ink);margin:0 0 1em;max-width:36rem}
+.plate p .dim{color:var(--ink-2)}
+.plate p em,.plate em{font-style:italic}
 
-        .attribution {
-            font-size: 0.9em;
-            color: #888;
-            margin-top: 10px;
-        }
+/* 01 figure */
+.fig-inline{margin:1.4em 0 .4em}
+.fig-inline svg{display:block;width:100%;height:auto;max-width:420px}
 
-        .container {
-            position: relative;
-            z-index: 5;
-            max-width: 1400px;
-            margin: 40px auto;
-            padding: 20px;
-        }
+/* 02 channels */
+.channels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:.4em 0 1.4em;max-width:38rem}
+.chan{border:1px solid var(--line-2);border-radius:2px;padding:15px 16px}
+.chan.dash{border-style:dashed}
+.chan .ck{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-bottom:9px}
+.chan p{font-size:1rem;margin:0;color:var(--ink);max-width:none}
 
-        .birds-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 30px;
-            padding: 20px;
-        }
+/* 03 alarm phrases */
+.costumes{margin:.6em 0 .8em}
+.costumes .ph{font-style:italic;font-weight:400;font-size:clamp(1.5rem,4.6vw,2.4rem);letter-spacing:-.01em;line-height:1.28;color:var(--ink)}
+.costumes .cap{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-top:16px}
 
-        .bird-card {
-            background: rgba(255, 255, 255, 0.97);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border: 2px solid #e0e0e0;
-            position: relative;
-        }
+/* 04 panels */
+.panels{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:.4em 0 1.5em;max-width:none}
+.pnl{border:1px solid var(--line);border-top:2px solid var(--line-2);border-radius:2px;padding:16px}
+.pnl .pk{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.16em;color:var(--ink);margin-bottom:9px}
+.pnl p{font-size:.98rem;line-height:1.5;color:var(--ink);margin:0;max-width:none}
 
-        .bird-card:hover {
-            transform: translateY(-12px) scale(1.03);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
-            border-color: #6B8E23;
-        }
+/* 05 oxblood mark 1 */
+.h-mark{display:inline-flex;align-items:center;gap:16px}
+.oxmark{display:inline-block;width:26px;height:4px;background:var(--ox);border-radius:2px;flex:none}
 
-        .bird-illustration {
-            width: 180px;
-            height: 180px;
-            margin: 10px auto 20px;
-            position: relative;
-        }
+/* 06 curve */
+.fig-curve{margin:1em 0 .4em}
+.fig-curve svg{display:block;width:100%;height:auto;max-width:560px}
 
-        .bird-name {
-            font-size: 1.3em;
-            font-weight: 600;
-            color: #2d5016;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
-        }
+/* 07 proof ground — largest */
+.plate.big h2{font-size:clamp(2rem,5.6vw,3.3rem)}
+.plate.big p{font-size:clamp(1.15rem,2.7vw,1.4rem);line-height:1.55;max-width:38rem}
+.plate.big .stopline{font-style:italic;color:var(--ink)}
+.ox{color:var(--ox)}
+.run-test{margin:2em 0 0;border-top:1px solid var(--line);padding-top:16px;max-width:38rem}
+.run-test .rk{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin-bottom:10px}
+.run-test p{font-size:1.05rem;color:var(--ink);margin:0}
 
-        .scientific-name {
-            font-size: 0.95em;
-            font-style: italic;
-            color: #666;
-            margin-bottom: 12px;
-        }
+/* 08 measure */
+.setapart{margin-top:1.6em;border-top:1px solid var(--line);padding-top:1.1em;max-width:36rem}
+.setapart p{font-size:clamp(1.15rem,2.8vw,1.4rem);line-height:1.4;color:var(--ink);margin:0}
 
-        .click-hint {
-            font-size: 0.9em;
-            color: #888;
-            margin-top: 10px;
-            padding: 8px;
-            background: rgba(107, 142, 35, 0.1);
-            border-radius: 8px;
-        }
+/* 09 build */
+.statement{border:1px solid var(--line);border-radius:2px;padding:22px 22px;background:var(--paper-2);max-width:38rem}
+.statement p{margin:0}
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
-            animation: fadeIn 0.3s;
-        }
+/* close */
+.close{padding:11vh 0 6vh}
+.close .wk{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);margin-bottom:24px}
+.close .prose{font-size:clamp(1.1rem,2.6vw,1.35rem);line-height:1.6;color:var(--ink);max-width:36rem}
+.email-line{margin:2.4em 0;font-size:clamp(1.2rem,3vw,1.6rem);letter-spacing:-.01em}
+.email-line a{color:var(--ink);text-decoration:none;border-bottom:2px solid var(--line-2);padding-bottom:3px;transition:border-color .2s}
+.email-line a:hover{border-color:var(--ink)}
+.email-line .say{color:var(--ink-2);font-size:.8em;border:none}
+.companion{border:1px solid var(--line);border-radius:2px;padding:18px 20px;max-width:38rem;
+  display:flex;flex-direction:column;gap:6px;text-decoration:none;transition:border-color .2s}
+.companion:hover{border-color:var(--line-2)}
+.companion .ck{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.companion .ct{font-size:1.1rem;color:var(--ink)}
+.companion .ct b{font-weight:600}
+.companion .ct .arr{color:var(--ink-2)}
+footer{border-top:1px solid var(--line);margin-top:9vh;padding:36px 0 60px}
+footer .meta{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+/* reveal (motion-safe only) */
+@media(prefers-reduced-motion:no-preference){
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .8s cubic-bezier(.2,.6,.2,1),transform .8s cubic-bezier(.2,.6,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+}
 
-        .modal-content {
-            background: linear-gradient(135deg, #fff 0%, #f8fdf8 100%);
-            margin: 3% auto;
-            padding: 40px;
-            border: 4px solid #6B8E23;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 850px;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-            animation: slideIn 0.4s;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-60px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .close {
-            color: #999;
-            float: right;
-            font-size: 32px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s;
-            line-height: 1;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: #333;
-        }
-
-        .modal-bird-illustration {
-            width: 280px;
-            height: 280px;
-            margin: 20px auto;
-            display: block;
-        }
-
-        .modal h2 {
-            color: #2d5016;
-            text-align: center;
-            margin-bottom: 12px;
-            font-size: 2.2em;
-            font-weight: normal;
-        }
-
-        .modal .scientific-name {
-            text-align: center;
-            font-size: 1.2em;
-            margin-bottom: 25px;
-        }
-
-        .play-sound-btn {
-            display: block;
-            margin: 25px auto;
-            padding: 18px 40px;
-            background: linear-gradient(135deg, #6B8E23 0%, #8FBC8F 100%);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            font-size: 1.15em;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            font-weight: 600;
-        }
-
-        .play-sound-btn:hover:not(:disabled) {
-            transform: scale(1.08);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(135deg, #7BA32E 0%, #9FCC9F 100%);
-        }
-
-        .play-sound-btn:active:not(:disabled) {
-            transform: scale(1.02);
-        }
-
-        .play-sound-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .sound-status {
-            text-align: center;
-            font-size: 0.95em;
-            color: #666;
-            margin-top: 12px;
-            font-style: italic;
-        }
-
-        .info-section {
-            margin: 25px 0;
-            padding: 18px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 12px;
-            border-left: 5px solid #6B8E23;
-        }
-
-        .info-section h3 {
-            color: #2d5016;
-            margin-bottom: 12px;
-            font-size: 1.4em;
-            font-weight: 600;
-        }
-
-        .info-section p, .info-section ul {
-            color: #333;
-            line-height: 1.7;
-            font-size: 1.05em;
-        }
-
-        .info-section ul {
-            margin-left: 25px;
-            margin-top: 12px;
-        }
-
-        .info-section li {
-            margin-bottom: 8px;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
-            }
-            
-            .birds-grid {
-                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-                gap: 20px;
-            }
-            
-            .modal-content {
-                width: 95%;
-                padding: 25px;
-            }
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
-            }
-        }
-
-        .leaf {
-            position: fixed;
-            pointer-events: none;
-            z-index: 2;
-            font-size: 20px;
-            opacity: 0.4;
-        }
-    </style>
+@media(max-width:640px){
+  .wrap,.bar .in{padding-left:20px;padding-right:20px}
+  .panels{grid-template-columns:1fr}
+  .channels{grid-template-columns:1fr}
+  .plate p,.plate.big p,.close .prose,.run-test,.setapart{max-width:100%}
+  .bar nav{gap:14px}
+}
+</style>
 </head>
 <body>
-    <div class="forest-background"></div>
-    
-    <header>
-        <h1>Backyard Birds of Woodside</h1>
-        <p class="subtitle">An Interactive Guide to Local Birds - Click any bird to learn more and hear authentic calls!</p>
-        <p class="attribution">Art and Design by Robin Lazzara</p>
-    </header>
 
-    <div class="container">
-        <div class="birds-grid" id="birdsGrid"></div>
+<header class="bar">
+  <div class="in">
+    <span class="wordmark">Poppy Lifeforce</span>
+    <nav>
+      <a href="you-have-to-be-the-shopper.html">the shopper</a>
+      <a href="mailto:hello@poppylifeforce.com">write</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- MASTER PLATE -->
+  <section class="master">
+    <div class="plate-num">The map</div>
+    <h1>The Return</h1>
+    <p class="caption">One mechanism decides what pressure becomes in a person. This page is a map of it — the parts, the loop it runs, the move that breaks the loop, and what&rsquo;s being built to train it.</p>
+
+    <figure class="diagram reveal">
+      <svg viewBox="0 0 600 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schematic of the whole mechanism: pressure enters a structure with two channels, an alarm forks into an obeyed loop and a held path that leads to the clearing and the return, watched by the one at the controls.">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#1E2023"/></marker>
+          <marker id="ahm" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#6C6F72"/></marker>
+        </defs>
+        <g font-family="'JetBrains Mono',monospace" fill="#1E2023">
+
+        <!-- 01 pressure -->
+        <a href="#p01" class="region"><g>
+          <rect class="hit" x="240" y="10" width="150" height="78"/>
+          <line x1="300" y1="24" x2="300" y2="86" stroke="#1E2023" stroke-width="1.4" marker-end="url(#ah)"/>
+          <text x="315" y="60" font-size="15">pressure</text>
+          <circle class="tagc" cx="250" cy="52" r="12.5" fill="none" stroke="#1E2023" stroke-width="1"/><text class="tagt" x="250" y="56.5" font-size="11" text-anchor="middle" fill="#1E2023">01</text>
+        </g></a>
+
+        <!-- structure frame · 07 the body / proof ground -->
+        <a href="#p07" class="region"><g>
+          <rect class="hit" x="112" y="92" width="376" height="30"/>
+          <rect x="118" y="98" width="364" height="360" rx="13" fill="none" stroke="#1E2023" stroke-width="1.4"/>
+          <line x1="118" y1="458" x2="482" y2="458" stroke="#1E2023" stroke-width="2.4"/>
+          <text x="126" y="480" font-size="12" fill="#6C6F72">the body</text>
+          <circle class="tagc" cx="466" cy="112" r="12.5" fill="none" stroke="#1E2023" stroke-width="1"/><text class="tagt" x="466" y="116.5" font-size="11" text-anchor="middle" fill="#1E2023">07</text>
+        </g></a>
+
+        <!-- 02 two channels -->
+        <a href="#p02" class="region"><g>
+          <rect class="hit" x="150" y="128" width="212" height="60"/>
+          <rect x="150" y="158" width="150" height="272" rx="4" fill="none" stroke="#1E2023" stroke-width="1"/>
+          <rect x="332" y="158" width="150" height="272" rx="4" fill="none" stroke="#1E2023" stroke-width="1" stroke-dasharray="5 4"/>
+          <text x="225" y="142" font-size="13" text-anchor="middle">sensation</text>
+          <text x="225" y="154" font-size="9.5" text-anchor="middle" fill="#6C6F72">cannot be edited</text>
+          <text x="407" y="142" font-size="13" text-anchor="middle">narration</text>
+          <text x="407" y="154" font-size="9.5" text-anchor="middle" fill="#6C6F72">rewrites fast</text>
+          <circle class="tagc" cx="316" cy="200" r="12.5" fill="none" stroke="#1E2023" stroke-width="1"/><text class="tagt" x="316" y="204.5" font-size="11" text-anchor="middle" fill="#1E2023">02</text>
+        </g></a>
+
+        <!-- 03 the alarm (on narration) -->
+        <a href="#p03" class="region"><g>
+          <rect x="344" y="250" width="126" height="58" rx="4" fill="#1E2023"/>
+          <text x="407" y="284" font-size="13" text-anchor="middle" fill="#E9E9E2">the alarm</text>
+          <circle class="tagc" cx="316" cy="279" r="12.5" fill="none" stroke="#1E2023" stroke-width="1"/><text class="tagt" x="316" y="283.5" font-size="11" text-anchor="middle" fill="#1E2023">03</text>
+        </g></a>
+
+        <!-- fork from alarm -->
+        <line x1="407" y1="308" x2="407" y2="498" stroke="#1E2023" stroke-width="1.2"/>
+        <path d="M407,498 C 362,526 312,556 274,586" fill="none" stroke="#1E2023" stroke-width="1.2"/>
+        <path d="M407,498 C 460,514 500,542 510,566" fill="none" stroke="#1E2023" stroke-width="1.2"/>
+        <text x="322" y="520" font-size="12" fill="#6C6F72">obeyed</text>
+        <text x="470" y="520" font-size="12" fill="#6C6F72">held</text>
+        <!-- 09 connector: the whole mechanism feeds the build -->
+        <line x1="213" y1="462" x2="213" y2="748" stroke="#1E2023" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#ah)"/>
+
+        <!-- 04 push / withdraw / manage + loop back -->
+        <a href="#p04" class="region"><g>
+          <rect class="hit" x="120" y="566" width="290" height="98"/>
+          <circle cx="168" cy="606" r="18" fill="none" stroke="#1E2023" stroke-width="1"/>
+          <circle cx="258" cy="606" r="18" fill="none" stroke="#1E2023" stroke-width="1"/>
+          <circle cx="348" cy="606" r="18" fill="none" stroke="#1E2023" stroke-width="1"/>
+          <text x="168" y="640" font-size="10" text-anchor="middle">push</text>
+          <text x="258" y="640" font-size="10" text-anchor="middle">withdraw</text>
+          <text x="348" y="640" font-size="10" text-anchor="middle">manage</text>
+          <path d="M168,624 C 70,624 64,300 118,266" fill="none" stroke="#1E2023" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#ah)"/>
+          <text x="46" y="440" font-size="10" fill="#6C6F72" transform="rotate(-90 46 440)" text-anchor="middle">loops back in</text>
+          <circle class="tagc" cx="392" cy="606" r="12.5" fill="none" stroke="#1E2023" stroke-width="1"/><text class="tagt" x="392" y="610.5" font-size="11" text-anchor="middle" fill="#1E2023">04</text>
+        </g></a>
+
+        <!-- 06 held -> burn-down -> clearing -> return -->
+        <a href="#p06" class="region"><g>
+          <rect class="hit" x="446" y="554" width="150" height="112"/>
+          <path d="M510,566 l9,10 l-15,9 l16,9 l-9,10" fill="none" stroke="#1E2023" stroke-width="1.2"/>
+          <text x="534" y="578" font-size="11" fill="#6C6F72">burn-down</text>
+          <line x1="452" y1="636" x2="556" y2="636" stroke="#1E2023" stroke-width="1.6"/>
+          <text x="505" y="655" font-size="12" text-anchor="middle">the clearing</text>
+          <path d="M452,636 C 448,600 440,548 432,508" fill="none" stroke="#1E2023" stroke-width="1.2"/>
+          <text x="386" y="556" font-size="12">the return</text>
+          <circle class="tagc" cx="576" cy="612" r="12.5" fill="none" stroke="#1E2023" stroke-width="1"/><text class="tagt" x="576" y="616.5" font-size="11" text-anchor="middle" fill="#1E2023">06</text>
+        </g></a>
+
+        <!-- 08 growth -->
+        <a href="#p08" class="region"><g>
+          <rect class="hit" x="414" y="448" width="76" height="70"/>
+          <line x1="432" y1="508" x2="430" y2="452" stroke="#1E2023" stroke-width="1.4" marker-end="url(#ah)"/>
+          <text x="446" y="488" font-size="12">growth</text>
+          <circle class="tagc" cx="462" cy="502" r="12.5" fill="none" stroke="#1E2023" stroke-width="1"/><text class="tagt" x="462" y="506.5" font-size="11" text-anchor="middle" fill="#1E2023">08</text>
+        </g></a>
+
+        <!-- 05 the one at the controls -->
+        <a href="#p05" class="region"><g>
+          <rect class="hit" x="0" y="150" width="86" height="150"/>
+          <circle cx="42" cy="214" r="15" fill="none" stroke="#1E2023" stroke-width="1"/>
+          <circle cx="42" cy="214" r="4.5" fill="#1E2023"/>
+          <line x1="57" y1="210" x2="150" y2="250" stroke="#1E2023" stroke-width=".6" stroke-dasharray="2 4"/>
+          <line x1="58" y1="214" x2="332" y2="256" stroke="#1E2023" stroke-width=".6" stroke-dasharray="2 4"/>
+          <line x1="58" y1="218" x2="344" y2="278" stroke="#1E2023" stroke-width=".6" stroke-dasharray="2 4"/>
+          <text x="22" y="214" font-size="11" transform="rotate(-90 22 214)" text-anchor="middle">the one at the controls</text>
+          <circle class="tagc" cx="42" cy="270" r="12.5" fill="none" stroke="#1E2023" stroke-width="1"/><text class="tagt" x="42" y="274.5" font-size="11" text-anchor="middle" fill="#1E2023">05</text>
+        </g></a>
+
+        <!-- 09 the build -->
+        <a href="#p09" class="region"><g>
+          <rect class="hit" x="141" y="748" width="184" height="60"/>
+          <rect x="151" y="750" width="124" height="46" rx="5" fill="none" stroke="#1E2023" stroke-width="1.2"/>
+          <text x="213" y="778" font-size="13" text-anchor="middle">the build</text>
+          <circle class="tagc" cx="305" cy="773" r="12.5" fill="none" stroke="#1E2023" stroke-width="1"/><text class="tagt" x="305" y="777.5" font-size="11" text-anchor="middle" fill="#1E2023">09</text>
+        </g></a>
+
+        </g>
+      </svg>
+      <figcaption>tap any part of the schematic to jump to its plate</figcaption>
+    </figure>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 01 -->
+  <section class="plate reveal" id="p01">
+    <div class="eyebrow"><span class="n">01</span><span class="l">the pressure</span></div>
+    <h2>Pressure arrives uncustomized.</h2>
+    <p>The same deadline, the same cold reply, the same held plank — the world sends one signal and doesn&rsquo;t adjust it for anyone. What it becomes is decided by the structure it meets. So this map is not about the weather. It&rsquo;s about the structure.</p>
+    <figure class="fig-inline" aria-label="One wind-arrow meeting two structures — one channels it, one bulges">
+      <svg viewBox="0 0 420 150" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ah2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#1E2023"/></marker></defs>
+        <g font-family="'JetBrains Mono',monospace" fill="#6C6F72">
+          <line x1="20" y1="75" x2="150" y2="75" stroke="#1E2023" stroke-width="1.4" marker-end="url(#ah2)"/>
+          <text x="24" y="64" font-size="11">one signal</text>
+          <path d="M210,30 L188,75 L210,120" fill="none" stroke="#1E2023" stroke-width="1.4"/>
+          <path d="M188,75 L150,75" stroke="#1E2023" stroke-width="1" stroke-dasharray="3 3"/>
+          <path d="M205,75 C 250,60 250,90 292,75" stroke="#1E2023" stroke-width="1" fill="none" marker-end="url(#ah2)"/>
+          <text x="196" y="140" font-size="10" text-anchor="middle">channels it</text>
+          <path d="M330,32 C 300,60 300,90 330,118" fill="none" stroke="#1E2023" stroke-width="1.4"/>
+          <path d="M330,32 C 372,58 372,92 330,118" fill="none" stroke="#1E2023" stroke-width="1.4" stroke-dasharray="4 3"/>
+          <text x="345" y="140" font-size="10" text-anchor="middle">bulges</text>
+        </g>
+      </svg>
+    </figure>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 02 -->
+  <section class="plate reveal" id="p02">
+    <div class="eyebrow"><span class="n">02</span><span class="l">the two channels</span></div>
+    <h2>Everything gets reported twice.</h2>
+    <div class="channels">
+      <div class="chan"><div class="ck">sensation</div><p>Once as raw sensation — the tight chest, the heat in the face, the drop in the gut, before any words arrive.</p></div>
+      <div class="chan dash"><div class="ck">narration</div><p>Once as narration — the fast story of what it means.</p></div>
     </div>
+    <p>The narration can be rewritten. The sensation cannot lie. Hold that difference. The whole map turns on it.</p>
+  </section>
 
-    <div id="birdModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="modalContent"></div>
-        </div>
+  <hr class="rule">
+
+  <!-- 03 -->
+  <section class="plate reveal" id="p03">
+    <div class="eyebrow"><span class="n">03</span><span class="l">the alarm</span></div>
+    <h2>On the narration channel sits an alarm.</h2>
+    <p>A threat-detection system, installed early, protective by design. Its one flaw is calibration: it reads ordinary pressure as danger — a hard email and a house fire get the same siren. And when it fires, it doesn&rsquo;t sound like an alarm. It writes itself into the narration as the truth:</p>
+    <div class="costumes">
+      <div class="ph"><em>This is too much.</em></div>
+      <div class="ph"><em>Fix it now.</em></div>
+      <div class="ph"><em>Get out.</em></div>
+      <div class="ph"><em>Say nothing.</em></div>
+      <div class="cap">one alarm, four costumes</div>
     </div>
+  </section>
 
-    <script>
-        const birds = [
-            {
-                number: 1,
-                name: "Bewick's Wren",
-                scientific: "Thryomanes bewickii",
-                colors: { body: "#8B7355", wing: "#6B5945", breast: "#E8D8C8", accent: "#FFFFFF", tail: "#5A4A3A" },
-                // Bewick's Wren: 2 sec song with 2-5 high intro notes, buzzes, and deliberate trill ending at 3.3-4.1 kHz
-                soundPattern: [
-                    {type: 'pure', freq: 3800, duration: 0.12},
-                    {type: 'pure', freq: 3700, duration: 0.12},
-                    {type: 'buzz', freq: 3400, duration: 0.15},
-                    {type: 'buzz', freq: 3200, duration: 0.12},
-                    {type: 'warble', freqStart: 3500, freqEnd: 3900, duration: 0.25},
-                    {type: 'trill', freq: 3600, duration: 0.4, rate: 15}
-                ],
-                diet: "Primarily insects and spiders",
-                habitat: "Brushy areas, thickets, and suburban gardens",
-                size: "5.1 inches long",
-                characteristics: "A small, energetic bird with a long tail often held upright and a distinctive white eyebrow stripe.",
-                behavior: "Very active and curious, often seen hopping through brush and low vegetation. Sings a beautiful, variable song from exposed perches.",
-                funFacts: [
-                    "Named after Thomas Bewick, an English engraver and naturalist",
-                    "Males may build several 'dummy' nests before the female chooses one",
-                    "Their tail constantly flicks and moves as they forage"
-                ]
-            },
-            {
-                number: 2,
-                name: "Anna's Hummingbird",
-                scientific: "Calypte anna",
-                colors: { body: "#4CAF50", wing: "#2E7D32", breast: "#C2185B", accent: "#FF1744", throat: "#E91E63" },
-                // Anna's Hummingbird: Rapid high-pitched chips and buzzy notes 4-5.5 kHz
-                soundPattern: [
-                    {type: 'chip', freq: 5200, duration: 0.03},
-                    {type: 'chip', freq: 5400, duration: 0.03},
-                    {type: 'buzz', freq: 4800, duration: 0.08},
-                    {type: 'chip', freq: 5100, duration: 0.03},
-                    {type: 'chip', freq: 5300, duration: 0.03},
-                    {type: 'buzz', freq: 4600, duration: 0.08},
-                    {type: 'chip', freq: 5500, duration: 0.03}
-                ],
-                diet: "Nectar from flowers and small insects",
-                habitat: "Gardens, parks, and coastal scrub",
-                size: "3.9 inches long",
-                characteristics: "Males have iridescent rose-pink throats and crowns that can appear red or gold in different lighting.",
-                behavior: "Extremely territorial and aggressive despite their tiny size. Males perform dramatic dive displays during courtship.",
-                funFacts: [
-                    "One of the few hummingbirds that stays year-round in California",
-                    "Can fly backwards and hover in place",
-                    "Their heart beats up to 1,260 times per minute"
-                ]
-            },
-            {
-                number: 3,
-                name: "Oak Titmouse",
-                scientific: "Baeolophus inornatus",
-                colors: { body: "#A9A9A9", wing: "#8B8B8B", breast: "#C8C8C8", accent: "#696969", crest: "#909090" },
-                // Oak Titmouse: Repeated whistled notes, 3-4 kHz
-                soundPattern: [
-                    {type: 'whistle', freq: 3400, duration: 0.18},
-                    {type: 'whistle', freq: 3200, duration: 0.18},
-                    {type: 'whistle', freq: 3400, duration: 0.18},
-                    {type: 'whistle', freq: 3100, duration: 0.2}
-                ],
-                diet: "Insects, spiders, seeds, and acorns",
-                habitat: "Oak woodlands and mixed forests",
-                size: "5-5.5 inches long",
-                characteristics: "A plain gray-brown bird with a small crest and large dark eyes.",
-                behavior: "Active and acrobatic, often hanging upside down while foraging. Forms pairs that stay together year-round.",
-                funFacts: [
-                    "Endemic to California - found nowhere else in the world",
-                    "Stores food in bark crevices for later",
-                    "Pairs often stay together for life"
-                ]
-            },
-            {
-                number: 4,
-                name: "Lesser Goldfinch",
-                scientific: "Spinus psaltria",
-                colors: { body: "#FFD700", wing: "#000000", breast: "#FFED4E", accent: "#FFFFFF", cap: "#1C1C1C" },
-                // Lesser Goldfinch: Complex twittering song with imitations, 3-5 kHz
-                soundPattern: [
-                    {type: 'twitter', freqStart: 3800, freqEnd: 4400, duration: 0.25},
-                    {type: 'pure', freq: 4200, duration: 0.08},
-                    {type: 'pure', freq: 4400, duration: 0.08},
-                    {type: 'twitter', freqStart: 3600, freqEnd: 4600, duration: 0.3},
-                    {type: 'pure', freq: 4000, duration: 0.1}
-                ],
-                diet: "Seeds, especially from sunflowers and thistles",
-                habitat: "Open woodlands, gardens, and weedy fields",
-                size: "3.5-4.5 inches long",
-                characteristics: "Males are bright yellow below with either black or olive-green backs. White wing patches are visible in flight.",
-                behavior: "Often seen in flocks feeding on seed heads. Very social and may visit feeders in groups.",
-                funFacts: [
-                    "Can imitate other bird songs",
-                    "Males sing while flying",
-                    "Often feeds while hanging upside down"
-                ]
-            },
-            {
-                number: 5,
-                name: "Chestnut-backed Chickadee",
-                scientific: "Poecile rufescens",
-                colors: { body: "#8B4513", wing: "#A0522D", breast: "#FFFFFF", accent: "#000000", back: "#A0522D" },
-                // Chestnut-backed Chickadee: Higher, hoarser "chick-a-dee-dee", 3-4.5 kHz
-                soundPattern: [
-                    {type: 'pure', freq: 4200, duration: 0.1},
-                    {type: 'pure', freq: 3800, duration: 0.08},
-                    {type: 'dee', freq: 3400, duration: 0.12},
-                    {type: 'dee', freq: 3400, duration: 0.12},
-                    {type: 'dee', freq: 3400, duration: 0.12}
-                ],
-                diet: "Insects, spiders, seeds, and berries",
-                habitat: "Coniferous and mixed forests",
-                size: "4.5 inches long",
-                characteristics: "Black cap and bib, white cheeks, and distinctive rich chestnut back and sides.",
-                behavior: "Acrobatic foragers, often hanging upside down on branches. Very social and often joins mixed-species flocks.",
-                funFacts: [
-                    "Can remember thousands of hiding spots where they cached food",
-                    "The only chickadee species on the Pacific Coast",
-                    "Communal roosters in winter to stay warm"
-                ]
-            },
-            {
-                number: 6,
-                name: "Western Scrub-Jay",
-                scientific: "Aphelocoma californica",
-                colors: { body: "#4169E1", wing: "#1E3A8A", breast: "#E0E0E0", accent: "#0D47A1", head: "#4169E1" },
-                // Western Scrub-Jay: Harsh "shreep" calls, 1.5-2.5 kHz
-                soundPattern: [
-                    {type: 'harsh', freq: 2000, duration: 0.2},
-                    {type: 'harsh', freq: 2200, duration: 0.18},
-                    {type: 'harsh', freq: 2000, duration: 0.22},
-                    {type: 'rattle', freq: 1800, duration: 0.15}
-                ],
-                diet: "Acorns, insects, small animals, and bird eggs",
-                habitat: "Oak woodlands, suburban areas, and chaparral",
-                size: "11 inches long",
-                characteristics: "Bright blue head, wings, and tail with gray-brown back and white underparts. No crest.",
-                behavior: "Intelligent and bold. Known to cache thousands of acorns each fall. Can recognize individual humans.",
-                funFacts: [
-                    "Can remember where they buried thousands of acorns",
-                    "May live up to 15 years",
-                    "Will mob predators like hawks and owls"
-                ]
-            },
-            {
-                number: 7,
-                name: "Golden-crowned Sparrow",
-                scientific: "Zonotrichia atricapilla",
-                colors: { body: "#8B7355", wing: "#6B5945", breast: "#C0C0C0", accent: "#FFD700", crown: "#DAA520" },
-                // Golden-crowned Sparrow: "Oh dear me" - 3 descending whistles, 2-3 kHz
-                soundPattern: [
-                    {type: 'whistle', freq: 2800, duration: 0.35},
-                    {type: 'whistle', freq: 2400, duration: 0.35},
-                    {type: 'whistle', freq: 2000, duration: 0.4}
-                ],
-                diet: "Seeds, buds, flowers, and insects",
-                habitat: "Dense shrubs, chaparral, and gardens",
-                size: "7 inches long",
-                characteristics: "Black and yellow striped crown in breeding plumage. Gray breast and brown streaked back.",
-                behavior: "Often forages on the ground in flocks during winter. Hops rather than walks.",
-                funFacts: [
-                    "Song sounds like 'Oh dear me'",
-                    "Breeds in Alaska and far northern Canada",
-                    "Can live up to 10 years"
-                ]
-            },
-            {
-                number: 8,
-                name: "White-crowned Sparrow",
-                scientific: "Zonotrichia leucophrys",
-                colors: { body: "#8B7355", wing: "#6B5945", breast: "#D3D3D3", accent: "#FFFFFF", crown: "#F5F5F5" },
-                // White-crowned Sparrow: Clear whistles then buzzy trill, 2.5-4 kHz
-                soundPattern: [
-                    {type: 'pure', freq: 3400, duration: 0.22},
-                    {type: 'buzz', freq: 3000, duration: 0.15},
-                    {type: 'trill', freq: 2800, duration: 0.35, rate: 18},
-                    {type: 'buzz', freq: 2500, duration: 0.18}
-                ],
-                diet: "Seeds, grains, and insects",
-                habitat: "Brushy areas, gardens, and woodland edges",
-                size: "7 inches long",
-                characteristics: "Bold black and white head stripes. Pink or yellowish bill. Gray underparts.",
-                behavior: "Forages on the ground, often scratching in leaf litter. Sings a distinctive whistled song.",
-                funFacts: [
-                    "Dialects vary by region, like human accents",
-                    "Young birds learn songs from adults",
-                    "Can live up to 13 years in the wild"
-                ]
-            },
-            {
-                number: 9,
-                name: "Purple Finch",
-                scientific: "Haemorhous purpureus",
-                colors: { body: "#8B2252", wing: "#722243", breast: "#C2185B", accent: "#FFFFFF", head: "#8B2252" },
-                // Purple Finch: Rich warbling song, 2.5-4.5 kHz
-                soundPattern: [
-                    {type: 'warble', freqStart: 2800, freqEnd: 4200, duration: 0.45},
-                    {type: 'pure', freq: 3800, duration: 0.1},
-                    {type: 'warble', freqStart: 3000, freqEnd: 4500, duration: 0.4},
-                    {type: 'pure', freq: 3400, duration: 0.12}
-                ],
-                diet: "Seeds, buds, and berries",
-                habitat: "Coniferous forests and suburban areas",
-                size: "6 inches long",
-                characteristics: "Males are raspberry-red, especially on head and breast. Females are brown-streaked with a bold face pattern.",
-                behavior: "Often visits feeders. Males sing a rich, warbling song from treetops.",
-                funFacts: [
-                    "Not actually purple, but raspberry-colored",
-                    "Numbers have declined in recent decades",
-                    "May irrupt southward in winter when food is scarce"
-                ]
-            },
-            {
-                number: 10,
-                name: "House Finch",
-                scientific: "Haemorhous mexicanus",
-                colors: { body: "#8B4513", wing: "#6B3410", breast: "#CD5C5C", accent: "#FFFFFF", head: "#CD5C5C" },
-                // House Finch: Long jumbled warbling, 2-4 kHz
-                soundPattern: [
-                    {type: 'warble', freqStart: 2600, freqEnd: 3800, duration: 0.55},
-                    {type: 'pure', freq: 3200, duration: 0.1},
-                    {type: 'warble', freqStart: 2800, freqEnd: 4000, duration: 0.5},
-                    {type: 'buzz', freq: 3000, duration: 0.15}
-                ],
-                diet: "Seeds, fruits, and buds",
-                habitat: "Urban and suburban areas",
-                size: "5.5 inches long",
-                characteristics: "Males have red head, breast, and rump. Females are grayish-brown with streaks.",
-                behavior: "Very common at feeders. Gregarious and often in flocks. Sings a long, jumbled warbling song.",
-                funFacts: [
-                    "Originally from the western US, introduced to eastern US in 1940",
-                    "Male's red color comes from pigments in their diet",
-                    "Can nest year-round in mild climates"
-                ]
-            },
-            {
-                number: 11,
-                name: "Western Bluebird",
-                scientific: "Sialia mexicana",
-                colors: { body: "#0000FF", wing: "#00008B", breast: "#FF6347", accent: "#1E90FF", back: "#4169E1" },
-                // Western Bluebird: Soft "pew" and warbled songs, 2.5-3.5 kHz
-                soundPattern: [
-                    {type: 'pure', freq: 3200, duration: 0.15},
-                    {type: 'warble', freqStart: 2800, freqEnd: 3400, duration: 0.3},
-                    {type: 'pure', freq: 3000, duration: 0.15},
-                    {type: 'warble', freqStart: 2600, freqEnd: 3200, duration: 0.25}
-                ],
-                diet: "Insects and berries",
-                habitat: "Open woodlands, farmlands, and suburbs",
-                size: "7 inches long",
-                characteristics: "Males are bright blue above with rusty-orange breast and shoulders. Females are grayer with hints of blue.",
-                behavior: "Perches in the open and drops to catch insects. Nests in cavities and readily uses nest boxes.",
-                funFacts: [
-                    "Often helps raise siblings from previous broods",
-                    "Populations rebounded thanks to nest box programs",
-                    "Pairs may stay together for multiple breeding seasons"
-                ]
-            },
-            {
-                number: 12,
-                name: "Spotted Towhee",
-                scientific: "Pipilo maculatus",
-                colors: { body: "#000000", wing: "#2F2F2F", breast: "#CD853F", accent: "#FFFFFF", side: "#D2691E" },
-                // Spotted Towhee: Buzzy trill, 2-3 kHz
-                soundPattern: [
-                    {type: 'buzz', freq: 2400, duration: 0.22},
-                    {type: 'trill', freq: 2600, duration: 0.35, rate: 12},
-                    {type: 'buzz', freq: 2300, duration: 0.18}
-                ],
-                diet: "Insects, seeds, and berries",
-                habitat: "Dense thickets and woodland edges",
-                size: "8.5 inches long",
-                characteristics: "Black head, back, and tail with rufous sides and white belly. White spots on wings and back.",
-                behavior: "Forages on the ground by kicking backward with both feet simultaneously.",
-                funFacts: [
-                    "Their 'kick-scratching' behavior is unique among birds",
-                    "Call sounds like 'chewink' or 'towhee'",
-                    "Often skulks in dense brush"
-                ]
-            },
-            {
-                number: 13,
-                name: "White-breasted Nuthatch",
-                scientific: "Sitta carolinensis",
-                colors: { body: "#708090", wing: "#4682B4", breast: "#FFFFFF", accent: "#000000", cap: "#2F4F4F" },
-                // White-breasted Nuthatch: Nasal "yank yank", 2.5-3 kHz
-                soundPattern: [
-                    {type: 'nasal', freq: 2800, duration: 0.13},
-                    {type: 'nasal', freq: 2800, duration: 0.13},
-                    {type: 'nasal', freq: 2800, duration: 0.13},
-                    {type: 'nasal', freq: 2800, duration: 0.13}
-                ],
-                diet: "Insects, seeds, and nuts",
-                habitat: "Deciduous and mixed forests",
-                size: "5.5 inches long",
-                characteristics: "Blue-gray back, black cap, and white face and breast. Short tail and long pointed bill.",
-                behavior: "Climbs down tree trunks head-first. Uses bill to wedge nuts into bark crevices and hack them open.",
-                funFacts: [
-                    "Only bird that regularly climbs down trees head-first",
-                    "Smears insects around nest entrance to deter predators",
-                    "Caches food year-round"
-                ]
-            },
-            {
-                number: 14,
-                name: "Dark-eyed Junco",
-                scientific: "Junco hyemalis",
-                colors: { body: "#696969", wing: "#505050", breast: "#FFFFFF", accent: "#D3D3D3", hood: "#4A4A4A" },
-                // Dark-eyed Junco: Musical trill, 3-4 kHz
-                soundPattern: [
-                    {type: 'trill', freq: 3400, duration: 0.9, rate: 14},
-                    {type: 'pure', freq: 3600, duration: 0.1}
-                ],
-                diet: "Seeds and insects",
-                habitat: "Forests, parks, and gardens",
-                size: "6 inches long",
-                characteristics: "Slate-gray overall with white belly and outer tail feathers that flash white in flight. Pink bill.",
-                behavior: "Forages on the ground, often in flocks. Hops rather than walks. Common at feeders in winter.",
-                funFacts: [
-                    "Sometimes called 'snowbirds' because they appear in winter",
-                    "One of the most abundant birds in North America",
-                    "Several distinct color forms across their range"
-                ]
-            },
-            {
-                number: 15,
-                name: "Black-headed Grosbeak",
-                scientific: "Pheucticus melanocephalus",
-                colors: { body: "#FF8C00", wing: "#000000", breast: "#FFA500", accent: "#FFFFFF", head: "#1C1C1C" },
-                // Black-headed Grosbeak: Robin-like caroling song, 2-4 kHz
-                soundPattern: [
-                    {type: 'carol', freqStart: 2400, freqEnd: 3800, duration: 0.65},
-                    {type: 'pure', freq: 3200, duration: 0.12},
-                    {type: 'carol', freqStart: 2600, freqEnd: 4000, duration: 0.6},
-                    {type: 'pure', freq: 2800, duration: 0.15}
-                ],
-                diet: "Insects, seeds, and berries",
-                habitat: "Deciduous and mixed woodlands",
-                size: "8 inches long",
-                characteristics: "Males have black head, orange breast and collar, and black and white wings. Thick conical bill.",
-                behavior: "Sings a beautiful, robin-like song. Males and females both sing. Often sings while incubating eggs.",
-                funFacts: [
-                    "Can eat toxic monarch butterflies without harm",
-                    "Both parents incubate eggs and sing on the nest",
-                    "Winters in Mexico"
-                ]
-            },
-            {
-                number: 16,
-                name: "California Towhee",
-                scientific: "Melozone crissalis",
-                colors: { body: "#8B7355", wing: "#6B5945", breast: "#A0826D", accent: "#CD853F", undertail: "#8B4513" },
-                // California Towhee: Metallic "chink" calls, 2-2.5 kHz
-                soundPattern: [
-                    {type: 'chip', freq: 2400, duration: 0.1},
-                    {type: 'chip', freq: 2400, duration: 0.1},
-                    {type: 'chip', freq: 2400, duration: 0.1},
-                    {type: 'trill', freq: 2200, duration: 0.25, rate: 10}
-                ],
-                diet: "Seeds, berries, and insects",
-                habitat: "Chaparral, gardens, and parks",
-                size: "9 inches long",
-                characteristics: "Uniformly gray-brown with rusty undertail coverts. Long tail and conical bill.",
-                behavior: "Ground forager that scratches in leaf litter. Often seen in pairs. Very territorial.",
-                funFacts: [
-                    "Pairs mate for life and defend territories year-round",
-                    "Endemic to California and southwestern Oregon",
-                    "Often quite tame around humans"
-                ]
-            },
-            {
-                number: 17,
-                name: "Acorn Woodpecker",
-                scientific: "Melanerpes formicivorus",
-                colors: { body: "#000000", wing: "#2F2F2F", breast: "#FFFFFF", accent: "#FF0000", face: "#FAFAFA" },
-                // Acorn Woodpecker: Loud "waka-waka" laughing calls, 2-3 kHz
-                soundPattern: [
-                    {type: 'loud', freq: 2600, duration: 0.15},
-                    {type: 'loud', freq: 2800, duration: 0.15},
-                    {type: 'loud', freq: 2600, duration: 0.15},
-                    {type: 'rattle', freq: 2700, duration: 0.45, rate: 18}
-                ],
-                diet: "Acorns, insects, sap, and fruit",
-                habitat: "Oak woodlands",
-                size: "9 inches long",
-                characteristics: "Clownish face pattern with red crown, white face, and black around eyes. Black back with white rump.",
-                behavior: "Lives in cooperative family groups. Famous for creating 'granary trees' where they store thousands of acorns.",
-                funFacts: [
-                    "A single granary tree may have 50,000 holes",
-                    "Lives in family groups with multiple breeders",
-                    "Can be quite noisy and raucous"
-                ]
-            },
-            {
-                number: 18,
-                name: "Hermit Thrush",
-                scientific: "Catharus guttatus",
-                colors: { body: "#8B7355", wing: "#704214", breast: "#F5DEB3", accent: "#CD853F", tail: "#A0522D" },
-                // Hermit Thrush: Ethereal flutelike song, 3-5 kHz descending
-                soundPattern: [
-                    {type: 'flute', freq: 4200, duration: 0.35},
-                    {type: 'flute', freq: 3600, duration: 0.32},
-                    {type: 'flute', freq: 3000, duration: 0.35},
-                    {type: 'warble', freqStart: 3200, freqEnd: 4400, duration: 0.45}
-                ],
-                diet: "Insects and berries",
-                habitat: "Forests and woodlands",
-                size: "6.75 inches long",
-                characteristics: "Brown above with spotted breast. Distinctive reddish tail that it slowly raises and lowers.",
-                behavior: "Often forages on the forest floor. Has one of the most beautiful songs of any North American bird.",
-                funFacts: [
-                    "State bird of Vermont",
-                    "Song inspired Walt Whitman's poetry",
-                    "Characteristically flicks tail and wings"
-                ]
-            },
-            {
-                number: 19,
-                name: "American Robin",
-                scientific: "Turdus migratorius",
-                colors: { body: "#696969", wing: "#505050", breast: "#DC143C", accent: "#FFFFFF", head: "#2F2F2F" },
-                // American Robin: Cheerful caroling "cheerily-cheer-up", 2-4 kHz
-                soundPattern: [
-                    {type: 'carol', freq: 2600, duration: 0.25},
-                    {type: 'carol', freq: 3000, duration: 0.25},
-                    {type: 'carol', freq: 2800, duration: 0.25},
-                    {type: 'carol', freq: 3200, duration: 0.25},
-                    {type: 'carol', freq: 2400, duration: 0.3}
-                ],
-                diet: "Earthworms, insects, and berries",
-                habitat: "Lawns, parks, and forests",
-                size: "10 inches long",
-                characteristics: "Gray-brown above with brick-red breast. White around eyes and throat.",
-                behavior: "Often seen running across lawns, stopping to cock head and look for earthworms.",
-                funFacts: [
-                    "Can eat up to 14 feet of earthworms per day",
-                    "Not actually 'listening' for worms - they're looking for them",
-                    "One of the first birds to sing at dawn"
-                ]
-            },
-            {
-                number: 20,
-                name: "California Quail",
-                scientific: "Callipepla californica",
-                colors: { body: "#708090", wing: "#4682B4", breast: "#D3D3D3", accent: "#000000", belly: "#B8B8B8" },
-                // California Quail: "Chi-ca-go" assembly call, 1.5-2.5 kHz
-                soundPattern: [
-                    {type: 'call', freq: 1900, duration: 0.18},
-                    {type: 'call', freq: 2200, duration: 0.22},
-                    {type: 'call', freq: 1800, duration: 0.28},
-                    {type: 'chip', freq: 2400, duration: 0.12}
-                ],
-                diet: "Seeds, leaves, and berries",
-                habitat: "Chaparral, woodlands, and suburban areas",
-                size: "10 inches long",
-                characteristics: "Plump ground bird with distinctive teardrop-shaped head plume. Gray and brown plumage with scaled belly.",
-                behavior: "Highly social, living in groups called coveys. Often seen running rather than flying. Roosts in trees at night.",
-                funFacts: [
-                    "State bird of California",
-                    "Chicks can run right after hatching",
-                    "Coveys can contain 25-40 birds in winter"
-                ]
-            }
-        ];
+  <hr class="rule">
 
-        // Enhanced bird sound synthesis with authentic patterns
-        function playBirdSound(bird) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const masterGain = audioContext.createGain();
-            masterGain.connect(audioContext.destination);
-            masterGain.gain.value = 0.25;
+  <!-- 04 -->
+  <section class="plate reveal" id="p04">
+    <div class="eyebrow"><span class="n">04</span><span class="l">the takeover</span></div>
+    <h2>Obeyed, it runs the person. Three styles.</h2>
+    <div class="panels">
+      <div class="pnl"><div class="pk">PUSH</div><p>Drive straight into it. More force, more speed, jaw set, breath high in the chest. Reads as intensity.</p></div>
+      <div class="pnl"><div class="pk">WITHDRAW</div><p>Go flat and far away. The volume drops, the limbs get heavy, the day goes grey. Reads as laziness, or calm.</p></div>
+      <div class="pnl"><div class="pk">MANAGE</div><p>Tighten the grip. Perfect the plan, track every variable, hold everything still. Reads as being responsible.</p></div>
+    </div>
+    <p>Run one long enough and it stops reading as a state and starts reading as a personality. None of it is damage — it&rsquo;s protective equipment with the sensitivity set too high. It can&rsquo;t be argued with or deleted. It can be outlasted.</p>
+  </section>
 
-            let currentTime = audioContext.currentTime + 0.1;
+  <hr class="rule">
 
-            bird.soundPattern.forEach((note, index) => {
-                const startTime = currentTime;
-                
-                switch(note.type) {
-                    case 'pure':
-                        createPureTone(audioContext, masterGain, note.freq, note.duration, startTime);
-                        break;
-                    case 'chirp':
-                    case 'chip':
-                        createChirp(audioContext, masterGain, note.freq, note.duration, startTime);
-                        break;
-                    case 'trill':
-                        createTrill(audioContext, masterGain, note.freq, note.duration, startTime, note.rate || 15);
-                        break;
-                    case 'warble':
-                        createWarble(audioContext, masterGain, note.freqStart, note.freqEnd, note.duration, startTime);
-                        break;
-                    case 'buzz':
-                        createBuzz(audioContext, masterGain, note.freq, note.duration, startTime);
-                        break;
-                    case 'whistle':
-                        createWhistle(audioContext, masterGain, note.freq, note.duration, startTime);
-                        break;
-                    case 'nasal':
-                        createNasal(audioContext, masterGain, note.freq, note.duration, startTime);
-                        break;
-                    case 'flute':
-                        createFlute(audioContext, masterGain, note.freq, note.duration, startTime);
-                        break;
-                    case 'carol':
-                        if (note.freqStart && note.freqEnd) {
-                            createCarolPhrase(audioContext, masterGain, note.freqStart, note.freqEnd, note.duration, startTime);
-                        } else {
-                            createCarol(audioContext, masterGain, note.freq, note.duration, startTime);
-                        }
-                        break;
-                    case 'harsh':
-                        createHarsh(audioContext, masterGain, note.freq, note.duration, startTime);
-                        break;
-                    case 'loud':
-                        createLoud(audioContext, masterGain, note.freq, note.duration, startTime);
-                        break;
-                    case 'rattle':
-                        createRattle(audioContext, masterGain, note.freq, note.duration, startTime, note.rate || 15);
-                        break;
-                    case 'call':
-                        createCall(audioContext, masterGain, note.freq, note.duration, startTime);
-                        break;
-                    case 'twitter':
-                        createTwitter(audioContext, masterGain, note.freqStart, note.freqEnd, note.duration, startTime);
-                        break;
-                    case 'dee':
-                        createDee(audioContext, masterGain, note.freq, note.duration, startTime);
-                        break;
-                }
-                
-                currentTime = startTime + note.duration + 0.05;
-            });
-        }
+  <!-- 05 -->
+  <section class="plate reveal" id="p05">
+    <div class="eyebrow"><span class="n">05</span><span class="l">the one at the controls</span></div>
+    <h2 class="h-mark"><span class="oxmark" aria-hidden="true"></span>Something is reading this map.</h2>
+    <p>The part checking each plate against its own experience — the one that can watch the sensation, the narration, and the alarm all run, and choose — is the other thing in the system. When the alarm floods the channel, it doesn&rsquo;t leave. It gets outvoted: the alarm takes so much of the attention that almost none is left for the one watching. The problem was never absence. It&rsquo;s volume.</p>
+  </section>
 
-        // Sound generation functions
-        function createPureTone(ctx, dest, freq, duration, startTime) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, startTime);
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.7, startTime + 0.02);
-            gain.gain.setValueAtTime(0.7, startTime + duration - 0.03);
-            gain.gain.linearRampToValueAtTime(0.01, startTime + duration);
-            osc.connect(gain);
-            gain.connect(dest);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
+  <hr class="rule">
 
-        function createChirp(ctx, dest, freq, duration, startTime) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, startTime);
-            osc.frequency.exponentialRampToValueAtTime(freq * 0.85, startTime + duration);
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.8, startTime + 0.005);
-            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-            osc.connect(gain);
-            gain.connect(dest);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
+  <!-- 06 -->
+  <section class="plate reveal" id="p06">
+    <div class="eyebrow"><span class="n">06</span><span class="l">the move — the return</span></div>
+    <h2>Hold one beat past the alarm.</h2>
+    <figure class="fig-curve" aria-label="A curve: the alarm spikes, a held beat, brief escalation, burn-down to flat — the clearing — then the return">
+      <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ah3" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#1E2023"/></marker></defs>
+        <g font-family="'JetBrains Mono',monospace" fill="#6C6F72">
+          <line x1="40" y1="200" x2="540" y2="200" stroke="#1E2023" stroke-width="1" opacity=".5"/>
+          <line x1="40" y1="40" x2="40" y2="200" stroke="#1E2023" stroke-width="1" opacity=".5"/>
+          <text x="34" y="36" font-size="9" text-anchor="end">volume</text>
+          <text x="536" y="216" font-size="9" text-anchor="end">time</text>
+          <rect x="150" y="40" width="70" height="160" fill="#1E2023" opacity="0.07"/>
+          <text x="185" y="30" font-size="10" text-anchor="middle" fill="#1E2023">the held beat</text>
+          <path d="M40,190 L120,188 L155,90 L200,55 L235,120 L300,185 L400,196 L540,197" fill="none" stroke="#1E2023" stroke-width="1.8"/>
+          <line x1="360" y1="197" x2="520" y2="197" stroke="#1E2023" stroke-width="3"/>
+          <text x="440" y="188" font-size="11" text-anchor="middle" fill="#1E2023">the clearing</text>
+          <path d="M520,197 C 536,197 540,180 540,168" fill="none" stroke="#1E2023" stroke-width="1.4" marker-end="url(#ah3)"/>
+          <text x="548" y="150" font-size="11" text-anchor="end" fill="#1E2023">the return</text>
+        </g>
+      </svg>
+    </figure>
+    <p>Not fighting it, not obeying it — staying, one beat, while it fires. The alarm exists to force an action; refused one, it escalates — louder story, tighter chest — then burns through its own fuel and goes quiet. In the quiet, the situation is visible as it actually is, often for the first time since it started. Nothing was added to the person. The weight came off, and what was under it was there the whole time. That move is the return, and it is trainable.</p>
+  </section>
 
-        function createTrill(ctx, dest, freq, duration, startTime, rate) {
-            const pulseWidth = 1 / rate;
-            const numPulses = Math.floor(duration / pulseWidth);
-            for (let i = 0; i < numPulses; i++) {
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                const freqVar = freq + (Math.random() * 100 - 50);
-                osc.frequency.setValueAtTime(freqVar, startTime + i * pulseWidth);
-                gain.gain.setValueAtTime(0.6, startTime + i * pulseWidth);
-                gain.gain.exponentialRampToValueAtTime(0.01, startTime + i * pulseWidth + pulseWidth * 0.8);
-                osc.connect(gain);
-                gain.connect(dest);
-                osc.start(startTime + i * pulseWidth);
-                osc.stop(startTime + i * pulseWidth + pulseWidth * 0.8);
-            }
-        }
+  <hr class="rule">
 
-        function createWarble(ctx, dest, freqStart, freqEnd, duration, startTime) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freqStart, startTime);
-            const steps = 25;
-            for (let i = 0; i < steps; i++) {
-                const t = startTime + (duration * i / steps);
-                const progress = i / steps;
-                const f = freqStart + ((freqEnd - freqStart) * (Math.sin(progress * Math.PI * 3) + progress) / 2);
-                osc.frequency.setValueAtTime(f, t);
-            }
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.5, startTime + 0.03);
-            gain.gain.setValueAtTime(0.5, startTime + duration - 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-            osc.connect(gain);
-            gain.connect(dest);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
+  <!-- 07 -->
+  <section class="plate big reveal" id="p07">
+    <div class="eyebrow"><span class="n">07</span><span class="l">the proof ground</span></div>
+    <h2>The body is where none of it can be faked.</h2>
+    <p>The alarm owns narration — it can argue with any story, reframe any insight, weaponize any advice. It cannot edit raw sensation. That makes the body the one place the whole loop runs where nothing can be faked. Minute two of the hold: legs shaking, alarm at full volume — <span class="stopline">stop, this is the limit, put it down.</span> One breath past it: the shake continues, nothing breaks. Days later the muscle is measurably stronger — not despite being held at its edge, because of it. The same physics that grows the muscle grows <span class="ox">the one who stayed</span>.</p>
+    <div class="run-test">
+      <div class="rk">run the test</div>
+      <p>This week, at the point where the legs shake and everything says stop — one more breath. Watch what the alarm does when it isn&rsquo;t obeyed.</p>
+    </div>
+  </section>
 
-        function createBuzz(ctx, dest, freq, duration, startTime) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(freq, startTime);
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.35, startTime + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-            osc.connect(gain);
-            gain.connect(dest);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
+  <hr class="rule">
 
-        function createWhistle(ctx, dest, freq, duration, startTime) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, startTime);
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.55, startTime + 0.05);
-            gain.gain.setValueAtTime(0.55, startTime + duration - 0.05);
-            gain.gain.linearRampToValueAtTime(0.01, startTime + duration);
-            osc.connect(gain);
-            gain.connect(dest);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
+  <!-- 08 -->
+  <section class="plate reveal" id="p08">
+    <div class="eyebrow"><span class="n">08</span><span class="l">the measure</span></div>
+    <h2>The readout is recovery.</h2>
+    <p>Not whether a person gets knocked over — everyone does. How fast they come back. Hit the same, steady by noon instead of by Thursday. That recovery curve is the trainable quantity, and it transfers: built where the proof is physical, it shows up where nothing shakes but the voice — the message, the meeting, the blank page. Call the capacity agency.</p>
+    <div class="setapart">
+      <p>The one at the controls while the machinery runs loud — the pilot. That&rsquo;s what grows.</p>
+    </div>
+  </section>
 
-        function createNasal(ctx, dest, freq, duration, startTime) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(freq, startTime);
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.28, startTime + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-            osc.connect(gain);
-            gain.connect(dest);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
+  <hr class="rule">
 
-        function createFlute(ctx, dest, freq, duration, startTime) {
-            const osc1 = ctx.createOscillator();
-            const osc2 = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc1.type = 'sine';
-            osc2.type = 'sine';
-            osc1.frequency.setValueAtTime(freq, startTime);
-            osc2.frequency.setValueAtTime(freq * 2, startTime);
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.35, startTime + 0.06);
-            gain.gain.setValueAtTime(0.35, startTime + duration - 0.1);
-            gain.gain.linearRampToValueAtTime(0.01, startTime + duration);
-            osc1.connect(gain);
-            osc2.connect(gain);
-            gain.connect(dest);
-            osc1.start(startTime);
-            osc2.start(startTime);
-            osc1.stop(startTime + duration);
-            osc2.stop(startTime + duration);
-        }
+  <!-- 09 -->
+  <section class="plate reveal" id="p09">
+    <div class="eyebrow"><span class="n">09</span><span class="l">the build</span></div>
+    <h2>This is what&rsquo;s being built.</h2>
+    <div class="statement">
+      <p>A tool with two halves. A read: the precise pattern a specific person runs under pressure — not a type, the actual pattern. And a held place to practice the return against real load, starting where nothing can be faked: the body. It&rsquo;s being built now, by one person, from the map above.</p>
+    </div>
+  </section>
 
-        function createCarol(ctx, dest, freq, duration, startTime) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, startTime);
-            osc.frequency.linearRampToValueAtTime(freq * 1.08, startTime + duration/2);
-            osc.frequency.linearRampToValueAtTime(freq * 0.98, startTime + duration);
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.55, startTime + 0.04);
-            gain.gain.setValueAtTime(0.55, startTime + duration - 0.06);
-            gain.gain.linearRampToValueAtTime(0.01, startTime + duration);
-            osc.connect(gain);
-            gain.connect(dest);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
+  <hr class="rule">
 
-        function createCarolPhrase(ctx, dest, freqStart, freqEnd, duration, startTime) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freqStart, startTime);
-            const steps = 15;
-            for (let i = 0; i < steps; i++) {
-                const t = startTime + (duration * i / steps);
-                const progress = i / steps;
-                const f = freqStart + ((freqEnd - freqStart) * (Math.sin(progress * Math.PI * 2) * 0.3 + progress));
-                osc.frequency.setValueAtTime(f, t);
-            }
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.5, startTime + 0.05);
-            gain.gain.setValueAtTime(0.5, startTime + duration - 0.08);
-            gain.gain.linearRampToValueAtTime(0.01, startTime + duration);
-            osc.connect(gain);
-            gain.connect(dest);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
+  <!-- CLOSE -->
+  <section class="close reveal">
+    <div class="wk">the welcome</div>
+    <p class="prose">A plant set in the wrong ground doesn&rsquo;t die. It holds on — thin leaves, small blooms, a whole season spent just standing. Moved back into the right ground, it thickens on its own. Nothing in the plant changed. The ground did. If this map read less like an argument and more like a description of something familiar — the window is open.</p>
+    <div class="email-line"><a href="mailto:hello@poppylifeforce.com">hello@poppylifeforce.com</a> <span class="say">— say what you recognized.</span></div>
+    <a class="companion" href="you-have-to-be-the-shopper.html">
+      <span class="ck">the companion piece</span>
+      <span class="ct">Why this skill, why now: <b>You Have to Be the Shopper</b> <span class="arr">→</span></span>
+    </a>
+  </section>
 
-        function createHarsh(ctx, dest, freq, duration, startTime) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(freq, startTime);
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.45, startTime + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-            osc.connect(gain);
-            gain.connect(dest);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
+  <footer>
+    <div class="meta">Poppy Lifeforce · The Return</div>
+  </footer>
 
-        function createLoud(ctx, dest, freq, duration, startTime) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(freq, startTime);
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.6, startTime + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-            osc.connect(gain);
-            gain.connect(dest);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
+</main>
 
-        function createRattle(ctx, dest, freq, duration, startTime, rate) {
-            const pulseWidth = 1 / rate;
-            const numPulses = Math.floor(duration / pulseWidth);
-            for (let i = 0; i < numPulses; i++) {
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(freq + (Math.random() * 150 - 75), startTime + i * pulseWidth);
-                gain.gain.setValueAtTime(0.35, startTime + i * pulseWidth);
-                gain.gain.exponentialRampToValueAtTime(0.01, startTime + i * pulseWidth + pulseWidth * 0.7);
-                osc.connect(gain);
-                gain.connect(dest);
-                osc.start(startTime + i * pulseWidth);
-                osc.stop(startTime + i * pulseWidth + pulseWidth * 0.7);
-            }
-        }
-
-        function createCall(ctx, dest, freq, duration, startTime) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, startTime);
-            osc.frequency.linearRampToValueAtTime(freq * 1.15, startTime + duration/3);
-            osc.frequency.linearRampToValueAtTime(freq * 0.92, startTime + duration);
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.5, startTime + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-            osc.connect(gain);
-            gain.connect(dest);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
-
-        function createTwitter(ctx, dest, freqStart, freqEnd, duration, startTime) {
-            const numNotes = 8;
-            const noteLength = duration / numNotes;
-            for (let i = 0; i < numNotes; i++) {
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                const freq = freqStart + ((freqEnd - freqStart) * (i / numNotes)) + (Math.random() * 200 - 100);
-                osc.frequency.setValueAtTime(freq, startTime + i * noteLength);
-                gain.gain.setValueAtTime(0.4, startTime + i * noteLength);
-                gain.gain.exponentialRampToValueAtTime(0.01, startTime + i * noteLength + noteLength * 0.9);
-                osc.connect(gain);
-                gain.connect(dest);
-                osc.start(startTime + i * noteLength);
-                osc.stop(startTime + i * noteLength + noteLength * 0.9);
-            }
-        }
-
-        function createDee(ctx, dest, freq, duration, startTime) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, startTime);
-            osc.frequency.exponentialRampToValueAtTime(freq * 0.9, startTime + duration);
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.45, startTime + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-            osc.connect(gain);
-            gain.connect(dest);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-        }
-
-        // Create detailed, realistic bird illustrations using canvas
-        function createBirdSVG(bird, size = 180) {
-            const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-            const ctx = canvas.getContext('2d');
-            
-            // Scale for drawing
-            const scale = size / 180;
-            ctx.scale(scale, scale);
-            
-            // Anti-aliasing
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'high';
-            
-            // Draw based on bird species characteristics
-            drawBird(ctx, bird);
-            
-            return canvas;
-        }
-
-        function drawBird(ctx, bird) {
-            ctx.save();
-            
-            // Draw tail first (background layer)
-            ctx.fillStyle = bird.colors.tail || bird.colors.wing;
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.ellipse(50, 120, 18, 45, -0.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-            
-            // Add tail feather details
-            ctx.strokeStyle = '#222';
-            ctx.lineWidth = 1;
-            for (let i = 0; i < 4; i++) {
-                ctx.beginPath();
-                ctx.moveTo(50, 100 + i * 10);
-                ctx.lineTo(50, 130 + i * 10);
-                ctx.stroke();
-            }
-            
-            // Draw body
-            ctx.fillStyle = bird.colors.body;
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.ellipse(90, 100, 35, 42, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-            
-            // Draw breast overlay
-            ctx.fillStyle = bird.colors.breast;
-            ctx.beginPath();
-            ctx.ellipse(75, 110, 22, 30, -0.2, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Draw wing
-            ctx.fillStyle = bird.colors.wing;
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.ellipse(105, 100, 28, 40, 0.3, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-            
-            // Wing feather details
-            ctx.strokeStyle = '#222';
-            ctx.lineWidth = 1.2;
-            for (let i = 0; i < 5; i++) {
-                ctx.beginPath();
-                ctx.moveTo(100, 75 + i * 10);
-                ctx.lineTo(115, 72 + i * 10);
-                ctx.stroke();
-            }
-            
-            // Draw neck
-            ctx.fillStyle = bird.colors.body;
-            ctx.beginPath();
-            ctx.ellipse(90, 68, 20, 18, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Draw head
-            ctx.fillStyle = bird.colors.head || bird.colors.body;
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(90, 50, 25, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-            
-            // Draw eye
-            ctx.fillStyle = '#000';
-            ctx.beginPath();
-            ctx.arc(100, 47, 5, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Eye highlight
-            ctx.fillStyle = '#fff';
-            ctx.beginPath();
-            ctx.arc(102, 45, 2, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Eye ring for some species
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(100, 47, 7, 0, Math.PI * 2);
-            ctx.stroke();
-            
-            // Draw beak
-            ctx.fillStyle = '#D97000';
-            ctx.strokeStyle = '#8B4500';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(115, 50);
-            ctx.lineTo(135, 48);
-            ctx.lineTo(115, 54);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-            
-            // Accent markings (spots/patches)
-            if (bird.colors.accent && bird.colors.accent !== '#FFFFFF') {
-                ctx.fillStyle = bird.colors.accent;
-                
-                // Wing bars or spots
-                ctx.beginPath();
-                ctx.arc(108, 90, 5, 0, Math.PI * 2);
-                ctx.fill();
-                
-                ctx.beginPath();
-                ctx.arc(108, 105, 4, 0, Math.PI * 2);
-                ctx.fill();
-                
-                ctx.beginPath();
-                ctx.arc(108, 118, 4, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            
-            // Crown/cap for some species
-            if (bird.colors.crown || bird.colors.cap) {
-                ctx.fillStyle = bird.colors.crown || bird.colors.cap;
-                ctx.beginPath();
-                ctx.ellipse(90, 40, 18, 12, 0, Math.PI, Math.PI * 2);
-                ctx.fill();
-            }
-            
-            // Draw legs
-            ctx.strokeStyle = '#6B4423';
-            ctx.lineWidth = 3;
-            ctx.lineCap = 'round';
-            
-            // Left leg
-            ctx.beginPath();
-            ctx.moveTo(75, 140);
-            ctx.lineTo(70, 165);
-            ctx.stroke();
-            
-            // Left foot
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(70, 165);
-            ctx.lineTo(62, 168);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(70, 165);
-            ctx.lineTo(78, 168);
-            ctx.stroke();
-            
-            // Right leg
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(90, 140);
-            ctx.lineTo(95, 165);
-            ctx.stroke();
-            
-            // Right foot
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(95, 165);
-            ctx.lineTo(87, 168);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(95, 165);
-            ctx.lineTo(103, 168);
-            ctx.stroke();
-            
-            // Add texture with subtle gradients
-            const gradient = ctx.createRadialGradient(85, 100, 10, 85, 100, 40);
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
-            gradient.addColorStop(1, 'rgba(0, 0, 0, 0.1)');
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.ellipse(90, 100, 35, 42, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.restore();
-        }
-
-        // Create bird cards
-        function loadBirds() {
-            const birdsGrid = document.getElementById('birdsGrid');
-            
-            birds.forEach(bird => {
-                const card = document.createElement('div');
-                card.className = 'bird-card';
-                
-                const birdCanvas = createBirdSVG(bird);
-                birdCanvas.className = 'bird-illustration';
-                
-                const nameDiv = document.createElement('div');
-                nameDiv.className = 'bird-name';
-                nameDiv.textContent = bird.name;
-                
-                const scientificDiv = document.createElement('div');
-                scientificDiv.className = 'scientific-name';
-                scientificDiv.textContent = bird.scientific;
-                
-                const hintDiv = document.createElement('div');
-                hintDiv.className = 'click-hint';
-                hintDiv.textContent = '🎵 Click to hear authentic bird call!';
-                
-                card.appendChild(birdCanvas);
-                card.appendChild(nameDiv);
-                card.appendChild(scientificDiv);
-                card.appendChild(hintDiv);
-                
-                card.onclick = () => showBirdInfo(bird);
-                birdsGrid.appendChild(card);
-            });
-        }
-
-        // Modal functionality
-        const modal = document.getElementById('birdModal');
-        const closeBtn = document.getElementsByClassName('close')[0];
-        let isPlaying = false;
-
-        closeBtn.onclick = function() {
-            modal.style.display = 'none';
-            isPlaying = false;
-        }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-                isPlaying = false;
-            }
-        }
-
-        function showBirdInfo(bird) {
-            isPlaying = false;
-            const modalContent = document.getElementById('modalContent');
-            
-            const birdCanvas = createBirdSVG(bird, 280);
-            birdCanvas.className = 'modal-bird-illustration';
-            
-            modalContent.innerHTML = `
-                <h2>${bird.name}</h2>
-                <div class="scientific-name">${bird.scientific}</div>
-                
-                <button class="play-sound-btn" id="playSoundBtn">
-                    🎵 Play Authentic ${bird.name} Call
-                </button>
-                <div class="sound-status">Synthesized based on ornithological recordings</div>
-
-                <div class="info-section">
-                    <h3>📏 Size</h3>
-                    <p>${bird.size}</p>
-                </div>
-
-                <div class="info-section">
-                    <h3>🎨 Characteristics</h3>
-                    <p>${bird.characteristics}</p>
-                </div>
-
-                <div class="info-section">
-                    <h3>🍽️ Diet</h3>
-                    <p>${bird.diet}</p>
-                </div>
-
-                <div class="info-section">
-                    <h3>🏡 Habitat</h3>
-                    <p>${bird.habitat}</p>
-                </div>
-
-                <div class="info-section">
-                    <h3>🎭 Behavior</h3>
-                    <p>${bird.behavior}</p>
-                </div>
-
-                <div class="info-section">
-                    <h3>✨ Fun Facts</h3>
-                    <ul>
-                        ${bird.funFacts.map(fact => `<li>${fact}</li>`).join('')}
-                    </ul>
-                </div>
-            `;
-            
-            // Insert canvas at the top
-            modalContent.insertBefore(birdCanvas, modalContent.firstChild);
-            
-            modal.style.display = 'block';
-            
-            const playBtn = document.getElementById('playSoundBtn');
-            playBtn.onclick = () => {
-                if (!isPlaying) {
-                    isPlaying = true;
-                    playBtn.disabled = true;
-                    playBtn.textContent = `🔊 Playing ${bird.name}'s Call...`;
-                    playBirdSound(bird);
-                    setTimeout(() => {
-                        isPlaying = false;
-                        playBtn.disabled = false;
-                        playBtn.textContent = `🎵 Play Authentic ${bird.name} Call`;
-                    }, 3000);
-                }
-            };
-        }
-
-        // Add floating leaves animation
-        function createLeaves() {
-            for (let i = 0; i < 12; i++) {
-                const leaf = document.createElement('div');
-                leaf.className = 'leaf';
-                leaf.innerHTML = ['🍂', '🍃'][Math.floor(Math.random() * 2)];
-                leaf.style.left = Math.random() * 100 + '%';
-                leaf.style.top = -50 + 'px';
-                leaf.style.animation = `fall ${Math.random() * 8 + 8}s linear infinite`;
-                leaf.style.animationDelay = Math.random() * 5 + 's';
-                document.body.appendChild(leaf);
-            }
-        }
-
-        // Initialize
-        loadBirds();
-        createLeaves();
-    </script>
+<script>
+"use strict";
+/* subtle scroll-reveal, motion-safe */
+(function(){
+  if(!window.matchMedia||window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    document.querySelectorAll('.reveal').forEach(r=>r.classList.add('in'));return;
+  }
+  if(!('IntersectionObserver' in window)){document.querySelectorAll('.reveal').forEach(r=>r.classList.add('in'));return;}
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('.reveal').forEach(r=>io.observe(r));
+})();
+/* region tap -> scroll to its plate (reliable across browsers) */
+(function(){
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('a.region').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var href=a.getAttribute('href');if(!href||href.charAt(0)!=='#')return;
+      var el=document.getElementById(href.slice(1));if(!el)return;
+      e.preventDefault();
+      el.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
+      if(history&&history.replaceState)history.replaceState(null,'',href);
+    });
+  });
+})();
+</script>
 </body>
 </html>
