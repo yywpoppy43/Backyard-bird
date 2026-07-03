@@ -36,12 +36,20 @@ a{color:inherit}
 
 .wrap{max-width:var(--col);margin:0 auto;padding:0 26px}
 
-/* master plate */
-.master{padding:52px 0 40px}
-.plate-num{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
-.master h1{font-weight:640;font-size:clamp(2.7rem,8vw,4.8rem);letter-spacing:-.028em;line-height:.98;margin:10px 0 0}
+/* entry */
+.entry{padding:62px 0 18px}
+.entry .beat{font-weight:600;font-size:clamp(1.5rem,4.2vw,2.5rem);line-height:1.14;letter-spacing:-.02em;color:var(--ink);margin:0 0 .55em;max-width:22ch}
+.entry .answer{font-weight:640;font-size:clamp(2.9rem,10.5vw,6rem);line-height:.95;letter-spacing:-.035em;color:var(--ink);margin:.42em 0 .32em}
+.entry .ask{font-weight:500;font-size:clamp(1.35rem,3.6vw,2.1rem);letter-spacing:-.01em;color:var(--ink-2);margin:.1em 0 0}
+.entry .bridge{margin:2.7em 0 0;max-width:30rem}
+.entry .bridge p{font-size:clamp(1rem,2.3vw,1.16rem);line-height:1.62;color:var(--ink-2);margin:0 0 1.05em}
+.entry .bridge .final{color:var(--ink)}
+.entry .bridge .final em{font-style:italic}
+
+/* title block */
+.master{padding:40px 0 24px}
+.master h1{font-weight:640;font-size:clamp(2.5rem,7vw,4.4rem);letter-spacing:-.028em;line-height:.98;margin:0}
 .master .caption{font-size:clamp(1.05rem,2.5vw,1.28rem);color:var(--ink-2);line-height:1.5;max-width:34rem;margin:18px 0 0}
-.entry-slot{min-height:22vh}
 
 hr.rule{border:none;border-top:1px solid var(--line);margin:0}
 
@@ -52,53 +60,41 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0}
 .eyebrow .l{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
 .plate h2{font-weight:600;font-size:clamp(1.6rem,4.4vw,2.5rem);letter-spacing:-.02em;line-height:1.1;margin:0 0 .7em;max-width:20ch}
 .plate p{font-size:clamp(1.05rem,2.4vw,1.2rem);line-height:1.62;color:var(--ink);margin:0 0 1em;max-width:36rem}
-.plate p .dim{color:var(--ink-2)}
-.plate p em,.plate em{font-style:italic}
+.plate em{font-style:italic}
+.plate .lead-line{font-size:clamp(1.15rem,2.7vw,1.42rem);color:var(--ink);line-height:1.4;margin:.2em 0 1em;max-width:34rem}
+.plate .lead-line strong{font-weight:600}
+.plate .return-line{font-size:clamp(1.3rem,3.3vw,1.75rem);font-weight:500;line-height:1.34;letter-spacing:-.012em;color:var(--ink);margin:.35em 0 0;max-width:27rem}
+.plate .return-line .ox{color:var(--ox);font-weight:600}
 
-/* 01 figure */
-.fig-inline{margin:1.4em 0 .4em}
+/* figures */
+.fig-inline{margin:1.6em 0 .6em}
 .fig-inline svg{display:block;width:100%;height:auto;max-width:420px}
+.fig-curve{margin:1.4em 0 .8em}
+.fig-curve svg{display:block;width:100%;height:auto;max-width:560px}
 
-/* 02 channels */
-.channels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:.4em 0 1.4em;max-width:38rem}
-.chan{border:1px solid var(--line-2);border-radius:2px;padding:15px 16px}
-.chan.dash{border-style:dashed}
-.chan .ck{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-bottom:9px}
-.chan p{font-size:1rem;margin:0;color:var(--ink);max-width:none}
-
-/* 03 alarm phrases */
-.costumes{margin:.6em 0 .8em}
-.costumes .ph{font-style:italic;font-weight:400;font-size:clamp(1.5rem,4.6vw,2.4rem);letter-spacing:-.01em;line-height:1.28;color:var(--ink)}
-.costumes .cap{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-top:16px}
-
-/* 04 panels */
-.panels{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:.4em 0 1.5em;max-width:none}
+/* panels (station 3) */
+.panels{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:.5em 0 1.6em}
 .pnl{border:1px solid var(--line);border-top:2px solid var(--line-2);border-radius:2px;padding:16px}
 .pnl .pk{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.16em;color:var(--ink);margin-bottom:9px}
 .pnl p{font-size:.98rem;line-height:1.5;color:var(--ink);margin:0;max-width:none}
 
-/* 05 oxblood mark 1 */
+/* oxblood mark 1 (station 4) */
 .h-mark{display:inline-flex;align-items:center;gap:16px}
 .oxmark{display:inline-block;width:26px;height:4px;background:var(--ox);border-radius:2px;flex:none}
 
-/* 06 curve */
-.fig-curve{margin:1em 0 .4em}
-.fig-curve svg{display:block;width:100%;height:auto;max-width:560px}
-
-/* 07 proof ground — largest */
-.plate.big h2{font-size:clamp(2rem,5.6vw,3.3rem)}
+/* proof ground (station 7 — largest) */
+.plate.big h2{font-size:clamp(2rem,5.6vw,3.2rem)}
 .plate.big p{font-size:clamp(1.15rem,2.7vw,1.4rem);line-height:1.55;max-width:38rem}
-.plate.big .stopline{font-style:italic;color:var(--ink)}
-.ox{color:var(--ox)}
+.plate.big em{font-style:italic}
 .run-test{margin:2em 0 0;border-top:1px solid var(--line);padding-top:16px;max-width:38rem}
 .run-test .rk{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin-bottom:10px}
 .run-test p{font-size:1.05rem;color:var(--ink);margin:0}
 
-/* 08 measure */
+/* measure (station 8) */
 .setapart{margin-top:1.6em;border-top:1px solid var(--line);padding-top:1.1em;max-width:36rem}
 .setapart p{font-size:clamp(1.15rem,2.8vw,1.4rem);line-height:1.4;color:var(--ink);margin:0}
 
-/* 09 build */
+/* build (station 9) */
 .statement{border:1px solid var(--line);border-radius:2px;padding:22px 22px;background:var(--paper-2);max-width:38rem}
 .statement p{margin:0}
 
@@ -129,8 +125,7 @@ footer .meta{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tr
 @media(max-width:640px){
   .wrap,.bar .in{padding-left:20px;padding-right:20px}
   .panels{grid-template-columns:1fr}
-  .channels{grid-template-columns:1fr}
-  .plate p,.plate.big p,.close .prose,.run-test,.setapart{max-width:100%}
+  .plate p,.plate.big p,.plate .lead-line,.plate .return-line,.close .prose,.run-test,.setapart,.entry .beat{max-width:100%}
   .bar nav{gap:14px}
 }
 </style>
@@ -149,24 +144,38 @@ footer .meta{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tr
 
 <main class="wrap">
 
-  <!-- MASTER PLATE -->
+  <!-- ENTRY -->
+  <section class="entry">
+    <p class="beat">For a long time, the answer has been the universe — reality itself.</p>
+    <p class="beat">The hard part was always the questions. So we built phenomenal instruments to find them — and they work.</p>
+    <p class="beat">This is the other direction.</p>
+    <p class="answer">The answer is you.</p>
+    <p class="ask">What do we ask now?</p>
+    <div class="bridge">
+      <p>Everything we&rsquo;ve ever discovered was already out there before we found it — the universe holds every answer and explains none of them. A question is only as good as the mind that asks it. So we extended that mind: instruments that stretch how far we can see, how fast we can think, how long we can last. Every one of them points away from the one holding it.</p>
+      <p>Here, the answer sits the way it has always sat out there — whole, already present, waiting on the right question.</p>
+      <p class="final">And the first question is simple: what, exactly, is this <em>you</em>?</p>
+    </div>
+  </section>
+
+  <!-- TITLE BLOCK -->
   <section class="master">
-    <div class="plate-num">The map</div>
     <h1>The Return</h1>
     <p class="caption">One mechanism decides what pressure becomes in a person. This page is a map of it — the parts, the loop it runs, the move that breaks the loop, and what&rsquo;s being built to train it.</p>
-
-    <!-- entry piece lands here in a later pass -->
-    <div class="entry-slot" aria-hidden="true"></div>
   </section>
 
   <hr class="rule">
 
-  <!-- 01 -->
+  <!-- 01 · friction -->
   <section class="plate reveal" id="p01">
-    <div class="eyebrow"><span class="n">01</span><span class="l">the pressure</span></div>
-    <h2>Pressure arrives uncustomized.</h2>
-    <p>The same deadline, the same cold reply, the same held plank — the world sends one signal and doesn&rsquo;t adjust it for anyone. What it becomes is decided by the structure it meets. Nothing alive gets to skip it — whatever is still growing is still being pushed on. So this map is not about the weather. It&rsquo;s about the structure.</p>
-    <figure class="fig-inline" aria-label="One wind-arrow meeting two structures — one channels it, one bulges">
+    <div class="eyebrow"><span class="n">01</span><span class="l">friction</span></div>
+    <h2>The pressure isn&rsquo;t the problem.</h2>
+    <p>A living system that stops moving is dead. To stay alive, anything alive has to keep adapting — and what forces it to adapt is pressure. So the pressure a life meets is not an accident, and not a punishment. It is the exact friction that keeps the organism changing, which is the same thing as staying alive. Nothing alive gets to skip it: whatever is still growing is still being pushed on.</p>
+    <p class="lead-line"><strong>Reality is innocent. It is not aimed at anyone.</strong> It simply arrives — and a particular structure meets it.</p>
+    <p>So the goal was never to get rid of the pressure. Wall a life off from all of it and you get stillness, which for anything alive is another word for finished. The goal is to meet what arrives without being run by it.</p>
+    <p>Here is the part everything turns on: the friction is not generated by the world. It is generated by how a specific structure meets the world.</p>
+    <p>The same gust of wind hits a sailboat, a windmill, and a sealed tent. The sailboat must steer. The windmill stores it as work. The sealed tent builds pressure until it tears. The wind is identical. The structure decides what the wind becomes.</p>
+    <figure class="fig-inline" aria-label="One signal meeting two structures — one channels it, one bulges">
       <svg viewBox="0 0 420 150" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <marker id="ah2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#1E2023"/></marker>
@@ -187,67 +196,57 @@ footer .meta{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tr
         </g>
       </svg>
     </figure>
+    <p>Which is why two people in the same situation can suffer completely differently — and why the suffering is not a verdict on the situation. It is information about the meeting.</p>
+    <p>A tree losing its leaves does not feel guilty. A hibernating animal does not feel lazy. They have a body and a given structure, and they adapt without resistance. Humans carry an extra layer — a threat-detection system that reads ordinary friction as a lethal threat and writes a story about it: <em>you are failing, you are trapped, you have to do something now.</em> Most human suffering is an organism using a sophisticated intelligence to argue with conditions instead of meeting them.</p>
   </section>
 
   <hr class="rule">
 
-  <!-- 02 -->
+  <!-- 02 · the defense -->
   <section class="plate reveal" id="p02">
-    <div class="eyebrow"><span class="n">02</span><span class="l">the two channels</span></div>
-    <h2>Everything gets reported twice.</h2>
-    <div class="channels">
-      <div class="chan"><div class="ck">sensation</div><p>Once as raw sensation — the tight chest, the heat in the face, the drop in the gut, before any words arrive.</p></div>
-      <div class="chan dash"><div class="ck">narration</div><p>Once as narration — the fast story of what it means.</p></div>
-    </div>
-    <p>The narration can be rewritten. The sensation cannot lie. Hold that difference. The whole map turns on it.</p>
+    <div class="eyebrow"><span class="n">02</span><span class="l">the defense</span></div>
+    <h2>The defense is not a defect.</h2>
+    <p>That extra layer — call it the defense — is not the enemy. It is a protective system doing exactly what it was built to do. It is simply miscalibrated: it treats ordinary pressure as if it were a predator. It isn&rsquo;t trying to hurt you. It is trying to save you from a threat that mostly isn&rsquo;t there.</p>
+    <p>Go one level deeper and here is the floor. A given structure is neutral. <strong>&ldquo;Gift&rdquo; and &ldquo;flaw&rdquo; are not properties of the structure</strong> — they are judgments assigned when the structure meets an environment and a story is told about the meeting. When the story comes back safe, the structure runs as itself, and that is the gift. When it comes back unsafe, the same structure runs as defense, and that is the flaw.</p>
+    <p class="lead-line"><strong>The wiring did not change. The story about it did.</strong></p>
+    <p>The defense and the gift are the same structure under two different stories. Which is why nothing in you needs removing. The thing you fight hardest is usually your own strength, running under the wrong story.</p>
   </section>
 
   <hr class="rule">
 
-  <!-- 03 -->
+  <!-- 03 · the takeover -->
   <section class="plate reveal" id="p03">
-    <div class="eyebrow"><span class="n">03</span><span class="l">the alarm</span></div>
-    <h2>On the narration channel sits an alarm.</h2>
-    <p>A threat-detection system, installed early, protective by design. Its one flaw is calibration: it reads ordinary pressure as danger — a hard email and a house fire get the same siren. And when it fires, it doesn&rsquo;t sound like an alarm. It writes itself into the narration as the truth:</p>
-    <div class="costumes">
-      <div class="ph"><em>This is too much.</em></div>
-      <div class="ph"><em>Fix it now.</em></div>
-      <div class="ph"><em>Get out.</em></div>
-      <div class="ph"><em>Say nothing.</em></div>
-      <div class="cap">one alarm, four costumes</div>
-    </div>
-  </section>
-
-  <hr class="rule">
-
-  <!-- 04 -->
-  <section class="plate reveal" id="p04">
-    <div class="eyebrow"><span class="n">04</span><span class="l">the takeover</span></div>
-    <h2>Obeyed, it runs the person. Three styles.</h2>
+    <div class="eyebrow"><span class="n">03</span><span class="l">the takeover</span></div>
+    <h2>Obeyed, it drives — in three styles.</h2>
+    <p>When the story comes back unsafe and you obey it, the defense takes the wheel. It does that in one of three styles. You will recognize at least one as yours.</p>
     <div class="panels">
-      <div class="pnl"><div class="pk">PUSH</div><p>Drive straight into it. More force, more speed, jaw set, breath high in the chest. Reads as intensity.</p></div>
-      <div class="pnl"><div class="pk">WITHDRAW</div><p>Go flat and far away. The volume drops, the limbs get heavy, the day goes grey. Reads as laziness, or calm.</p></div>
-      <div class="pnl"><div class="pk">MANAGE</div><p>Tighten the grip. Perfect the plan, track every variable, hold everything still. Reads as being responsible.</p></div>
+      <div class="pnl"><div class="pk">PUSH</div><p>Drive straight into the friction. More force, more speed — jaw set, breath high in the chest, armor up, race ahead. From the outside it looks like intensity.</p></div>
+      <div class="pnl"><div class="pk">WITHDRAW</div><p>Go flat and far away. The volume drops, the limbs get heavy, the day goes grey. Detach, numb out, leave the room without moving. Reads as laziness, or calm.</p></div>
+      <div class="pnl"><div class="pk">MANAGE</div><p>Tighten the grip. Perfect the plan, track every variable, stay three moves ahead, hold everything still. Reads as being responsible — which is what makes it hardest to catch.</p></div>
     </div>
-    <p>Run one long enough and it stops reading as a state and starts reading as a personality. None of it is damage — it&rsquo;s protective equipment with the sensitivity set too high. It can&rsquo;t be argued with or deleted. It can be outlasted.</p>
+    <p>Run one long enough and it stops looking like a state and starts looking like a personality. None of it is damage. It is protective equipment with the sensitivity set too high — and it cannot be argued with or deleted. It can only be outlasted.</p>
   </section>
 
   <hr class="rule">
 
-  <!-- 05 -->
+  <!-- 04 · still in there -->
+  <section class="plate reveal" id="p04">
+    <div class="eyebrow"><span class="n">04</span><span class="l">still in there</span></div>
+    <h2 class="h-mark"><span class="oxmark" aria-hidden="true"></span>You&rsquo;re still in there.</h2>
+    <p>Here is what almost everyone gets backwards. When the defense floods the channel, the part of you at the controls does not leave. It gets outvoted: the defense takes so much of the attention that almost none is left for the one still watching. You are there the whole time — reading the room, wanting the truer move — just drowned out.</p>
+    <p class="lead-line">The problem was never absence. It is volume.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 05 · the move -->
   <section class="plate reveal" id="p05">
-    <div class="eyebrow"><span class="n">05</span><span class="l">the one at the controls</span></div>
-    <h2 class="h-mark"><span class="oxmark" aria-hidden="true"></span>Something is reading this map.</h2>
-    <p>The part checking each plate against its own experience — the one that can watch the sensation, the narration, and the alarm all run, and choose — is the other thing in the system. When the alarm floods the channel, it doesn&rsquo;t leave. It gets outvoted: the alarm takes so much of the attention that almost none is left for the one watching. The problem was never absence. It&rsquo;s volume.</p>
-  </section>
-
-  <hr class="rule">
-
-  <!-- 06 -->
-  <section class="plate reveal" id="p06">
-    <div class="eyebrow"><span class="n">06</span><span class="l">the move — the return</span></div>
-    <h2>Hold one beat past the alarm.</h2>
-    <figure class="fig-curve" aria-label="A curve: the alarm spikes, a held beat, brief escalation, burn-down to flat — the clearing — then the return">
+    <div class="eyebrow"><span class="n">05</span><span class="l">the move</span></div>
+    <h2>The move is one beat of not yet.</h2>
+    <p>The defense runs on automatic: friction hits, and the reaction fires before any choice happens. The whole move is to wedge one beat of <em>not yet</em> between the friction and the reaction. You have not beaten the defense — it is still loud. But the action is withheld, and in that withholding a gap opens. The gap is the only place a choice can happen.</p>
+    <p>Withheld, the defense escalates. The story gets louder; the body insists something terrible will happen if you do not act now. But the defense exists to trigger an action — so refusing it the action starves it. It runs in a closed loop with no output, burns through its own fuel, and goes quiet.</p>
+    <p class="lead-line"><strong>It feels like dying because the defense is built to make withholding feel like dying. It is not dying. It is a protective loop running out of fuel.</strong></p>
+    <figure class="fig-curve" aria-label="A curve: the defense spikes, a held beat, brief escalation, burn-down to flat — the clearing — then the return">
       <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <marker id="ah3" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#1E2023"/></marker>
@@ -267,16 +266,29 @@ footer .meta{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tr
         </g>
       </svg>
     </figure>
-    <p>Not fighting it, not obeying it — staying, one beat, while it fires. The alarm exists to force an action; refused one, it escalates — louder story, tighter chest — then burns through its own fuel and goes quiet. In the quiet, the situation is visible as it actually is, often for the first time since it started. Nothing was added to the person. The weight came off, and what was under it was there the whole time. That move is the return, and it is trainable.</p>
+    <p>When the loop exhausts, the load clears — and the actual situation is visible for the first time since the friction started. The same action, taken from here, costs almost nothing, because nothing is screaming while you take it.</p>
+    <p class="return-line">Nothing was added. The weight came off — and what was under it was there the whole time. <span class="ox">That is the return.</span></p>
   </section>
 
   <hr class="rule">
 
-  <!-- 07 -->
+  <!-- 06 · the boundary -->
+  <section class="plate reveal" id="p06">
+    <div class="eyebrow"><span class="n">06</span><span class="l">the boundary</span></div>
+    <h2>Why trying harder fails.</h2>
+    <p>Two things can hold you inside the friction long enough for that to happen, and they run on opposite fuel.</p>
+    <p>The first is willpower — the boundary held by the mind: <em>not now, stay on task, don&rsquo;t react.</em> It is real, and it runs on a small tank that drains first under stress. So it fails exactly when it is needed most, handing control back to the automatic patterns. That is why &ldquo;just try harder&rdquo; always loses over a long enough stretch: the system that supplies the trying is the first to empty.</p>
+    <p>The second holds when will runs out, because it is not made of will — it is a boundary built into the world. The class that does not end early. The practice with a real edge. The environment with no quick exit. It costs nothing to maintain, because you are not the one maintaining it; it is simply a fact of the world now. And it matters, because friction with nothing to hold you inside it is just suffering — the defense finds the exit, the loop never finishes, and the cycle repeats.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 07 · the proof ground -->
   <section class="plate big reveal" id="p07">
     <div class="eyebrow"><span class="n">07</span><span class="l">the proof ground</span></div>
-    <h2>The body is where none of it can be faked.</h2>
-    <p>The alarm owns narration — it can argue with any story, reframe any insight, weaponize any advice. It cannot edit raw sensation. That makes the body the one place the whole loop runs where nothing can be faked. Minute two of the hold: legs shaking, alarm at full volume — <span class="stopline">stop, this is the limit, put it down.</span> One breath past it: the shake continues, nothing breaks. Days later the muscle is measurably stronger — not despite being held at its edge, because of it. The same physics that grows the muscle grows <span class="ox">the one who stayed</span>.</p>
+    <h2>The body can&rsquo;t lie.</h2>
+    <p>You can argue with a coach, a book, a good idea. You cannot argue with a muscle that is shaking and still holding the weight. Under real load the body cannot lie — which makes it the one place this whole loop runs where nothing can be faked.</p>
+    <p>Minute two of the hold: legs shaking, alarm at full volume — <em>stop, this is the limit, put it down.</em> One breath past it: the shake continues, nothing breaks. Days later the muscle is measurably stronger — not despite being held at its edge, because of it. The same physics that grows the muscle grows the one who stayed.</p>
     <div class="run-test">
       <div class="rk">run the test</div>
       <p>This week, at the point where the legs shake and everything says stop — one more breath. Watch what the alarm does when it isn&rsquo;t obeyed.</p>
@@ -285,11 +297,11 @@ footer .meta{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tr
 
   <hr class="rule">
 
-  <!-- 08 -->
+  <!-- 08 · the measure -->
   <section class="plate reveal" id="p08">
     <div class="eyebrow"><span class="n">08</span><span class="l">the measure</span></div>
     <h2>The readout is recovery.</h2>
-    <p>Not whether a person gets knocked over — everyone does. How fast they come back. Hit the same, steady by noon instead of by Thursday. That recovery curve is the trainable quantity, and it transfers: built where the proof is physical, it shows up where nothing shakes but the voice — the message, the meeting, the blank page. Call the capacity agency.</p>
+    <p>Not whether you get knocked over — everyone does. How fast you come back. Hit the same, steady by noon instead of by Thursday. That recovery curve is the trainable quantity, and it transfers: built where the proof is physical, it shows up where nothing shakes but the voice — the message, the meeting, the blank page. Call the capacity agency.</p>
     <div class="setapart">
       <p>The one at the controls while everything runs loud — your core. That&rsquo;s what grows.</p>
     </div>
@@ -297,12 +309,12 @@ footer .meta{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tr
 
   <hr class="rule">
 
-  <!-- 09 -->
+  <!-- 09 · the build -->
   <section class="plate reveal" id="p09">
     <div class="eyebrow"><span class="n">09</span><span class="l">the build</span></div>
     <h2>This is what&rsquo;s being built.</h2>
     <div class="statement">
-      <p>Something real is being built to train exactly this: a precise read of the pattern a specific person runs — not a type, the actual pattern — and a held place to practice the return against real load, starting where nothing can be faked. Being built now, by one person, from the map you just walked.</p>
+      <p>A system that reads the specific pattern keeping a person stuck under pressure — precisely enough that they feel seen — and returns them to their own clarity in the moment it matters. Then trains that as a portable skill they carry on their own. Starting where nothing can be faked: the body. Being built now, by one person, from the map above.</p>
     </div>
   </section>
 
