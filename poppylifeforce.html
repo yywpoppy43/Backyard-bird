@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Return — poppylifeforce.com</title>
+<meta name="description" content="The same pressure that forges one person buries another. A short walk through the part of you that stays at the controls — and how it's trained.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ECEBE3; --paper-dim:#E5E3D9; --lift:#F3F2EB;
+  --ink:#25282C; --ink-2:#54585D; --muted:#8B8E88; --faint:#A9ABA3;
+  --line:rgba(37,40,44,.15); --line-2:rgba(37,40,44,.28);
+  --ox:#7C2E2A; --ox-2:#9A3A33; --ox-soft:rgba(124,46,42,.10);
+  --sans:'Bricolage Grotesque','Helvetica Neue','Segoe UI',Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --col:44rem;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:400;
+  line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+::selection{background:var(--ox);color:var(--paper)}
+a{color:inherit}
+
+/* progress bar */
+.prog{position:fixed;top:0;left:0;height:2px;background:var(--ox);width:0;z-index:60;transition:width .1s linear}
+
+/* left spine (desktop) */
+.spine{position:fixed;left:30px;top:50%;transform:translateY(-50%);z-index:50;display:none}
+.spine ol{list-style:none;display:flex;flex-direction:column;gap:2px}
+.spine li{display:flex;align-items:center;gap:11px;cursor:pointer;padding:5px 0;opacity:.55;transition:opacity .3s}
+.spine li:hover{opacity:1}
+.spine li.on{opacity:1}
+.spine .dot{width:7px;height:7px;border-radius:50%;border:1px solid var(--line-2);background:transparent;transition:all .3s;flex:none}
+.spine li.on .dot{background:var(--ox);border-color:var(--ox);box-shadow:0 0 0 4px var(--ox-soft)}
+.spine .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.02em;color:var(--ink-2);white-space:nowrap;
+  max-width:0;overflow:hidden;opacity:0;transition:all .3s}
+.spine li.on .lab,.spine li:hover .lab{max-width:220px;opacity:1}
+.spine .num{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.spine li.on .num{color:var(--ox)}
+@media(min-width:1120px){.spine{display:block}}
+
+/* walk */
+.walk{max-width:var(--col);margin:0 auto;padding:0 26px}
+.node{padding:15vh 0;border-top:1px solid transparent}
+.node:first-child{padding-top:0}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .9s cubic-bezier(.2,.6,.2,1),transform .9s cubic-bezier(.2,.6,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}
+
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+  display:flex;align-items:center;gap:11px;margin-bottom:26px}
+.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ox);flex:none}
+.eyebrow b{color:var(--ox);font-weight:500}
+
+h1{font-weight:640;font-size:clamp(2.5rem,7.6vw,5.3rem);line-height:1.0;letter-spacing:-.028em;margin:0}
+h2{font-weight:600;font-size:clamp(1.9rem,5vw,3.2rem);line-height:1.06;letter-spacing:-.02em;margin:0}
+h2 .ox{color:var(--ox)}
+p{font-size:clamp(1.06rem,2.4vw,1.28rem);line-height:1.62;color:var(--ink-2);margin:1.05em 0 0;max-width:36rem}
+p:first-of-type{margin-top:1.4em}
+p strong{color:var(--ink);font-weight:600}
+p .ox{color:var(--ox);font-weight:500}
+.lead{font-size:clamp(1.15rem,2.9vw,1.5rem);color:var(--ink);line-height:1.5;font-weight:420;max-width:34rem}
+
+/* hero */
+.hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:12vh 0 8vh}
+.hero h1{max-width:16ch}
+.hero .lead{margin-top:1.7em}
+.scrollcue{margin-top:3.4em;font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);display:inline-flex;align-items:center;gap:9px}
+.scrollcue .ar{display:inline-block;animation:bob 1.9s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+
+.pull{font-weight:600;font-size:clamp(1.35rem,3.6vw,2rem);line-height:1.2;letter-spacing:-.015em;color:var(--ink);
+  margin:1.5em 0 0;max-width:20ch}
+.pull .ox{color:var(--ox)}
+
+/* interactive block shell */
+.ix{margin-top:2.6em;border:1px solid var(--line);border-radius:2px;background:var(--lift);overflow:hidden}
+.ix-head{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  padding:15px 20px 0}
+/* tabs */
+.tabs{display:flex;gap:0;padding:12px 20px 0;flex-wrap:wrap}
+.tab{font-family:var(--sans);font-size:clamp(1.05rem,3vw,1.35rem);font-weight:600;letter-spacing:-.01em;
+  background:none;border:none;color:var(--faint);cursor:pointer;padding:6px 0;margin-right:26px;position:relative;transition:color .2s}
+.tab:last-child{margin-right:0}
+.tab.on{color:var(--ink)}
+.tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--ox)}
+.tab:hover{color:var(--ink-2)}
+.panel{padding:16px 20px 22px}
+.panel .pt{font-weight:600;font-size:1.2rem;color:var(--ox);margin-bottom:.35em;letter-spacing:-.01em}
+.panel .pb{font-size:1.05rem;line-height:1.55;color:var(--ink-2);max-width:34rem}
+.divide{height:1px;background:var(--line);margin:4px 20px}
+/* segmented */
+.seg{display:flex;padding:12px 20px 0;gap:8px;flex-wrap:wrap}
+.segb{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  background:transparent;border:1px solid var(--line-2);border-radius:40px;color:var(--ink-2);
+  padding:8px 15px;cursor:pointer;transition:all .2s}
+.segb.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.segb:hover:not(.on){border-color:var(--ink)}
+.state-driver{display:flex;align-items:center;gap:10px;padding:14px 20px 0;font-family:var(--mono);
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.state-driver .who{width:9px;height:9px;border-radius:50%;background:var(--faint);transition:all .35s}
+.state-driver.you .who{background:var(--ox);box-shadow:0 0 0 4px var(--ox-soft)}
+
+.closer{margin-top:2.4em;font-weight:600;font-size:clamp(1.2rem,3.2vw,1.75rem);line-height:1.25;
+  letter-spacing:-.015em;max-width:22ch}
+.closer .ox{color:var(--ox)}
+
+/* friction demo */
+.fr{margin-top:2.6em;border:1px solid var(--line);border-radius:2px;background:var(--lift);padding:22px 20px}
+.fr-stage{display:flex;gap:22px;align-items:flex-end}
+.fr-track{position:relative;width:66px;height:190px;border:1px solid var(--line-2);border-radius:3px;
+  background:repeating-linear-gradient(0deg,transparent 0 18px,rgba(37,40,44,.04) 18px 19px);flex:none;overflow:hidden}
+.fr-fill{position:absolute;left:0;right:0;bottom:0;height:8%;
+  background:linear-gradient(0deg,var(--ox),var(--ox-2));transition:height .05s linear}
+.fr-base{position:absolute;left:-4px;right:-4px;bottom:8%;height:2px;background:var(--ink);transition:bottom .8s cubic-bezier(.3,.7,.2,1)}
+.fr-base::after{content:"floor";position:absolute;right:74px;top:-7px;font-family:var(--mono);font-size:9px;
+  letter-spacing:.08em;color:var(--muted);white-space:nowrap}
+.fr-break{position:absolute;left:0;right:0;top:16%;border-top:1px dashed var(--line-2)}
+.fr-break::after{content:"everything says stop";position:absolute;left:74px;top:-6px;font-family:var(--mono);
+  font-size:9px;letter-spacing:.08em;color:var(--muted);white-space:nowrap}
+.fr-right{flex:1;min-width:0;align-self:stretch;display:flex;flex-direction:column;justify-content:flex-end}
+.fr-cap{min-height:4.6em;font-size:1.05rem;line-height:1.5;color:var(--ink-2)}
+.fr-cap b{color:var(--ink);font-weight:600}
+.fr-cap .ox{color:var(--ox);font-weight:600}
+.fr-btn{margin-top:16px;align-self:flex-start;font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;background:var(--ink);color:var(--paper);border:none;border-radius:40px;
+  padding:11px 20px;cursor:pointer;transition:background .2s}
+.fr-btn:hover{background:var(--ox)}
+.fr-btn:disabled{opacity:.45;cursor:default}
+
+/* stages */
+.stages{margin-top:2.6em}
+.st-rail{display:flex;align-items:center;margin-bottom:4px}
+.st-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:pointer;position:relative;padding-top:6px}
+.st-line{position:absolute;top:16px;left:50%;width:100%;height:1px;background:var(--line-2);z-index:0}
+.st-step:last-child .st-line{display:none}
+.st-mark{width:21px;height:21px;border-radius:50%;border:1.5px solid var(--line-2);background:var(--paper);
+  z-index:1;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;color:var(--muted);transition:all .3s}
+.st-step.on .st-mark{border-color:var(--ox);background:var(--ox);color:var(--paper)}
+.st-step.done .st-mark{border-color:var(--ox)}
+.st-nm{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);transition:color .3s;text-align:center}
+.st-step.on .st-nm{color:var(--ink)}
+.st-shake.on .st-mark{animation:shk .5s ease-in-out infinite}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-1.5px)}75%{transform:translateX(1.5px)}}
+.st-panel{border:1px solid var(--line);border-radius:2px;background:var(--lift);padding:20px;margin-top:14px}
+.st-panel .sh{font-weight:600;font-size:1.35rem;letter-spacing:-.015em;margin-bottom:.4em}
+.st-panel .sb{font-size:1.05rem;line-height:1.55;color:var(--ink-2);max-width:34rem}
+.st-panel .scue{margin-top:1em;padding-top:.9em;border-top:1px solid var(--line);
+  font-size:1.05rem;color:var(--ox);font-weight:500;font-style:italic}
+
+/* thesis */
+.thesis{border-left:2px solid var(--ox);padding:.1em 0 .1em 1.1em;margin-top:.2em}
+.thesis h2{font-size:clamp(1.9rem,5.1vw,3.1rem)}
+
+.named{margin-top:2.8em;padding:22px 24px;border:1px solid var(--line);border-radius:2px;background:var(--paper-dim)}
+.named .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.7em}
+.named p{margin:0;color:var(--ink-2)}
+.named .nm{color:var(--ox);font-weight:600}
+
+/* cta */
+.cta{margin-top:2.4em;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.cta a.mail{font-family:var(--sans);font-weight:600;font-size:clamp(1.15rem,3vw,1.5rem);letter-spacing:-.01em;
+  color:var(--paper);background:var(--ox);border-radius:2px;padding:14px 26px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:12px;transition:background .2s}
+.cta a.mail:hover{background:var(--ink)}
+.cta a.mail .ar{transition:transform .2s}
+.cta a.mail:hover .ar{transform:translateX(4px)}
+.cta .site{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted)}
+
+/* footer */
+footer{border-top:1px solid var(--line);margin-top:14vh;padding:8vh 0 10vh}
+footer .fline{font-weight:600;font-size:clamp(1.3rem,3.6vw,2rem);line-height:1.2;letter-spacing:-.015em;max-width:20ch}
+footer .fline .ox{color:var(--ox)}
+footer .meta{margin-top:3em;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+footer .meta span{color:var(--line-2)}
+footer .meta a{color:var(--ink-2);text-decoration:none}
+footer .meta a:hover{color:var(--ox)}
+
+@media(max-width:640px){
+  .walk{padding:0 22px}
+  .node{padding:12vh 0}
+  .fr-stage{gap:16px}
+  .fr-break::after,.fr-base::after{font-size:8px}
+  p,.panel .pb,.fr-cap,.st-panel .sb{max-width:100%}
+}
+@media(max-width:420px){
+  .tab{margin-right:18px;font-size:1.1rem}
+  .fr-break::after{content:"stop"}
+  .fr-base::after{content:""}
+}
+</style>
+</head>
+<body>
+<div class="prog" id="prog"></div>
+
+<nav class="spine" aria-label="walk">
+  <ol id="spine">
+    <li data-go="top"><span class="dot"></span><span class="num">00</span><span class="lab">the way in</span></li>
+    <li data-go="controls"><span class="dot"></span><span class="num">01</span><span class="lab">the one at the controls</span></li>
+    <li data-go="defenses"><span class="dot"></span><span class="num">02</span><span class="lab">what runs you instead</span></li>
+    <li data-go="friction"><span class="dot"></span><span class="num">03</span><span class="lab">what the pressure is for</span></li>
+    <li data-go="body"><span class="dot"></span><span class="num">04</span><span class="lab">in the body</span></li>
+    <li data-go="built"><span class="dot"></span><span class="num">05</span><span class="lab">what's being built</span></li>
+    <li data-go="hello"><span class="dot"></span><span class="num">06</span><span class="lab">hello</span></li>
+  </ol>
+</nav>
+
+<main class="walk">
+
+  <!-- 00 · HERO -->
+  <section class="node hero" id="top" data-node="top">
+    <div class="reveal in">
+      <div class="eyebrow">The Return <b>·</b> poppylifeforce.com</div>
+      <h1>The same pressure that forges one person buries another.</h1>
+      <p class="lead">Same weight. Same week. The pressure was never the difference. Who stayed at the controls when everything said stop — that was the difference.</p>
+      <div class="scrollcue">a short walk through where that lives <span class="ar">↓</span></div>
+    </div>
+  </section>
+
+  <!-- 01 · THE ONE AT THE CONTROLS -->
+  <section class="node" id="controls" data-node="controls">
+    <div class="reveal"><div class="eyebrow"><b>01</b> — the one at the controls</div>
+    <h2>There is a part of you that can stay.</h2></div>
+    <div class="reveal d1"><p>Not the part that panics. Not the loud one with the opinion about how bad this is. The quiet one underneath it — the one that watches all of it and can still choose the next move.</p>
+    <p>You've met it. Usually once, in something that mattered, when you were steadier than the situation had any right to make you. Some people reach for the word <strong>agency</strong>. The plainest name is simpler than that: it's <strong>the part of you at the controls</strong>.</p></div>
+    <div class="reveal d2"><p class="pull">Most people meet it once and spend years trying to get back to it. It was never gone. <span class="ox">It just got outvoted.</span></p></div>
+  </section>
+
+  <!-- 02 · WHAT RUNS YOU INSTEAD -->
+  <section class="node" id="defenses" data-node="defenses">
+    <div class="reveal"><div class="eyebrow"><b>02</b> — what runs you instead</div>
+    <h2>When you're not at the controls, something else is.</h2></div>
+    <div class="reveal d1"><p>Under pressure, an older system takes the wheel. It's fast, it's certain, and it is genuinely trying to protect you — it's just misreading an ordinary hard moment as a threat to your life. That's why it never feels like a reaction. <strong>It feels like the truth.</strong></p></div>
+
+    <div class="reveal d2 ix" id="defense-ix">
+      <div class="ix-head">it takes three shapes — you'll know at least one as yours</div>
+      <div class="tabs" role="tablist">
+        <button class="tab on" data-i="0">Push</button>
+        <button class="tab" data-i="1">Withdraw</button>
+        <button class="tab" data-i="2">Manage</button>
+      </div>
+      <div class="panel"><div class="pt" id="d-pt"></div><div class="pb" id="d-pb"></div></div>
+      <div class="divide"></div>
+      <div class="ix-head" style="padding-top:16px">and whichever shape it takes, it runs in three settings</div>
+      <div class="seg" role="tablist">
+        <button class="segb on" data-s="0">Running you</button>
+        <button class="segb" data-s="1">Quiet</button>
+        <button class="segb" data-s="2">Harnessed</button>
+      </div>
+      <div class="state-driver" id="d-driver"><span class="who"></span><span id="d-drv-label"></span></div>
+      <div class="panel"><div class="pb" id="d-sb"></div></div>
+    </div>
+
+    <div class="reveal d1"><p class="closer">This is the part almost everyone gets backwards: nothing in you is broken. <span class="ox">The thing you fight hardest is your own strength, running on the wrong setting.</span></p></div>
+  </section>
+
+  <!-- 03 · FRICTION -->
+  <section class="node" id="friction" data-node="friction">
+    <div class="reveal"><div class="eyebrow"><b>03</b> — what the pressure is for</div>
+    <h2>Friction isn't the enemy. It's the <span class="ox">only</span> thing that builds you.</h2></div>
+    <div class="reveal d1"><p>A life with no pressure isn't peace. It's a system going still — and for anything alive, still is just a slower word for finished. Everything that stays alive does it the same way: by meeting friction and adapting to it. The pressure isn't the punishment. It's the input.</p>
+    <p>There's one catch, and it's the whole game. Right before pressure builds you, it feels exactly like it's about to break you. That's the moment the old system screams <em>flee</em> — and the scream arrives wearing the face of truth. <strong>Learning that the scream is not the truth is the entire skill.</strong></p></div>
+
+    <div class="reveal d2 fr" id="friction-ix">
+      <div class="fr-stage">
+        <div class="fr-track"><div class="fr-break"></div><div class="fr-fill" id="fr-fill"></div><div class="fr-base" id="fr-base"></div></div>
+        <div class="fr-right">
+          <div class="fr-cap" id="fr-cap">Pressure comes. Watch what happens if you stay in it instead of running.</div>
+          <button class="fr-btn" id="fr-btn">stay in it →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 · IN THE BODY -->
+  <section class="node" id="body" data-node="body">
+    <div class="reveal"><div class="eyebrow"><b>04</b> — where it's trained</div>
+    <h2>You can't argue with a shaking muscle.</h2></div>
+    <div class="reveal d1"><p>You can argue with a coach. You can argue with a book, a quote, a good idea. You cannot argue with a muscle that is shaking and still holding the weight. That's why the body is the first place this is trained: it's the one place the whole thing stops being a belief and becomes a fact you can feel.</p>
+    <p><strong>Everything says stop. You stay. It grows.</strong> No performance survives it and no story explains it away — the muscle held or it didn't, and tomorrow it is stronger. It's the same move as staying at the controls, run somewhere you can't fake.</p></div>
+
+    <div class="reveal d2 stages" id="stages-ix">
+      <div class="ix-head" style="font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:14px">it runs in four stages — the same four, every time</div>
+      <div class="st-rail" id="st-rail">
+        <div class="st-step on" data-i="0"><div class="st-line"></div><div class="st-mark">I</div><div class="st-nm">Baseline</div></div>
+        <div class="st-step" data-i="1"><div class="st-line"></div><div class="st-mark">II</div><div class="st-nm">Intention</div></div>
+        <div class="st-step st-shake" data-i="2"><div class="st-line"></div><div class="st-mark">III</div><div class="st-nm">Encounter</div></div>
+        <div class="st-step" data-i="3"><div class="st-mark">IV</div><div class="st-nm">Growth</div></div>
+      </div>
+      <div class="st-panel"><div class="sh" id="st-h"></div><div class="sb" id="st-b"></div><div class="scue" id="st-c"></div></div>
+    </div>
+  </section>
+
+  <!-- 05 · WHAT'S BEING BUILT -->
+  <section class="node" id="built" data-node="built">
+    <div class="reveal"><div class="eyebrow"><b>05</b> — what's being built</div></div>
+    <div class="reveal d1 thesis"><h2>The same physics that grows a muscle grows the part of you that <span class="ox">stays at the controls</span>.</h2></div>
+    <div class="reveal d2"><p>Train one and you're training the other — in the one place you can't fake it. That isn't a metaphor. It's the bet the whole thing is built on.</p>
+    <p>It's becoming a real tool: something that reads the exact pattern that stops <em>you</em> under pressure, meets you in the moment it actually matters, and hands you back to yourself with a skill you keep. Not an app built to keep you coming back — one whose entire job is to make you not need it.</p>
+    <p>And the measure isn't never getting knocked down. Everyone gets knocked down. It's <strong>how fast you come back</strong> — knocked flat and back on your feet in a week; later, the same size hit, back in a day. That curve is the whole promise. It's also the one thing you can't fake.</p></div>
+    <div class="reveal d2 named">
+      <div class="k">and the name for it, once it's yours</div>
+      <p>There's a word for the one at the controls — earned, not front-loaded, true only once you've felt it hold. <span class="nm">The pilot.</span> You've flown before; you already know the seat. The rest is just time in it.</p>
+    </div>
+  </section>
+
+  <!-- 06 · HELLO -->
+  <section class="node" id="hello" data-node="hello">
+    <div class="reveal"><div class="eyebrow"><b>06</b> — if this is yours</div>
+    <h2>You probably already knew most of this.</h2></div>
+    <div class="reveal d1"><p>If it read less like new information and more like something finally being named — you're who it's for. The ones who feel the pattern before it has words. The builders and operators who already live at the controls and want to live there on purpose.</p>
+    <p>There's a whole architecture underneath this page — built, not gestured at. If you want to see it, or you just want to say something true, the door is open.</p></div>
+    <div class="reveal d2 cta">
+      <a class="mail" href="mailto:hello@poppylifeforce.com">say hello <span class="ar">→</span></a>
+      <span class="site">hello@poppylifeforce.com</span>
+    </div>
+  </section>
+
+  <footer>
+    <div class="reveal fline">Nothing here is broken. <span class="ox">The wrong thing is just holding the wheel.</span></div>
+    <div class="reveal d1 meta">The Return <span>·</span> <a href="https://poppylifeforce.com">poppylifeforce.com</a> <span>·</span> <a href="mailto:hello@poppylifeforce.com">hello@poppylifeforce.com</a></div>
+  </footer>
+</main>
+
+<script>
+"use strict";
+/* ---------- reveal on scroll ---------- */
+const revs=document.querySelectorAll('.reveal');
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+  revs.forEach(r=>{if(!r.classList.contains('in'))io.observe(r);});
+}else{revs.forEach(r=>r.classList.add('in'));}
+
+/* ---------- progress bar ---------- */
+const prog=document.getElementById('prog');
+function onScroll(){
+  const h=document.documentElement;
+  const p=h.scrollTop/(h.scrollHeight-h.clientHeight||1);
+  prog.style.width=(p*100).toFixed(2)+'%';
+}
+window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+/* ---------- spine scroll-spy + jump ---------- */
+const spineItems=[...document.querySelectorAll('#spine li')];
+const nodes=[...document.querySelectorAll('.node')];
+spineItems.forEach(li=>li.addEventListener('click',()=>{
+  const t=document.getElementById(li.dataset.go);
+  if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+}));
+if('IntersectionObserver' in window){
+  const spy=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){
+      const id=e.target.id;
+      spineItems.forEach(li=>li.classList.toggle('on',li.dataset.go===id));
+    }});
+  },{threshold:.01,rootMargin:'-45% 0px -45% 0px'});
+  nodes.forEach(n=>spy.observe(n));
+}
+
+/* ---------- 02 defenses ---------- */
+(function(){
+  const shapes=[
+    {t:'Force through it.',b:'Drive harder, get louder, armor up, make the problem submit. From the outside it can look like strength. Inside, it’s a system that has forgotten how to stop.'},
+    {t:'Disappear from it.',b:'Go quiet, go numb, leave the room without moving your feet. Decide you don’t care. The pressure is still there — you’ve just walked away from the controls.'},
+    {t:'Stay ahead of it.',b:'Handle everyone, perfect everything, read the room, run the contingencies three moves out. It looks like competence, which is exactly why it’s the hardest one to catch — and the most tiring to run.'},
+  ];
+  const states=[
+    {lab:'it has the wheel',b:'The defense is driving. You’re outvoted — still here, still watching, just not steering. Most of a hard day is spent right here, and it feels completely normal.'},
+    {lab:'you have the wheel',b:'You’re at the controls; it idles in the background, scanning but not steering. This is the state that feels calmer than the moment has any right to make you.'},
+    {lab:'you have the wheel',b:'Same force, now yours. The drive, the vigilance, the intensity — aimed by you instead of aiming you. Nothing got removed. The wheel just changed hands.'},
+  ];
+  const pt=document.getElementById('d-pt'),pb=document.getElementById('d-pb');
+  const sb=document.getElementById('d-sb'),drv=document.getElementById('d-driver'),drvL=document.getElementById('d-drv-label');
+  function setShape(i){pt.textContent=shapes[i].t;pb.textContent=shapes[i].b;
+    document.querySelectorAll('#defense-ix .tab').forEach((t,j)=>t.classList.toggle('on',j===i));}
+  function setState(i){sb.textContent=states[i].b;drvL.textContent=states[i].lab;
+    drv.classList.toggle('you',i>0);
+    document.querySelectorAll('#defense-ix .segb').forEach((t,j)=>t.classList.toggle('on',j===i));}
+  document.querySelectorAll('#defense-ix .tab').forEach(t=>t.addEventListener('click',()=>setShape(+t.dataset.i)));
+  document.querySelectorAll('#defense-ix .segb').forEach(t=>t.addEventListener('click',()=>setState(+t.dataset.s)));
+  setShape(0);setState(0);
+})();
+
+/* ---------- 03 friction demo ---------- */
+(function(){
+  const fill=document.getElementById('fr-fill'),base=document.getElementById('fr-base'),
+        cap=document.getElementById('fr-cap'),btn=document.getElementById('fr-btn');
+  let floor=8, running=false, round=0;
+  const caps={
+    rise:'The pressure climbs. Your whole system starts bracing for it.',
+    peak:'<span class="ox">Everything says stop.</span> This is the moment it feels like breaking — the exact moment it screams <b>flee</b>.',
+    hold:'You don’t force it. You don’t flee it. You <b>stay</b>, right in the shake.',
+    grow:'…and it holds. The floor you can stand on is <b>higher than it was.</b> That’s the whole mechanism.',
+    done:'That rise in the floor is the only thing worth measuring. Run it again — the floor keeps climbing.'
+  };
+  function set(h){fill.style.height=h+'%';}
+  function baseAt(h){base.style.bottom=h+'%';}
+  function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+  async function run(){
+    if(running)return;running=true;btn.disabled=true;
+    // rise
+    cap.innerHTML=caps.rise;
+    for(let h=floor;h<=78;h+=2){set(h);await wait(16);}
+    // peak / flee signal
+    cap.innerHTML=caps.peak;set(82);await wait(950);
+    // hold
+    cap.innerHTML=caps.hold;await wait(900);
+    // crest + settle, floor rises
+    for(let h=82;h>=floor+10;h-=2){set(h);await wait(14);}
+    floor=Math.min(floor+11,52);round++;
+    baseAt(floor);set(floor);
+    cap.innerHTML=caps.grow;await wait(1100);
+    cap.innerHTML= round>=3 ? 'Three rounds in, the floor sits far above where it started. You did not get tougher by avoiding the shake — you got tougher by staying in it.' : caps.done;
+    btn.textContent = round>=3 ? 'reset' : 'again — stay in it';
+    if(round>=3){btn.onclick=reset;}
+    running=false;btn.disabled=false;
+  }
+  function reset(){floor=8;round=0;baseAt(8);set(8);cap.innerHTML='Pressure comes. Watch what happens if you stay in it instead of running.';btn.textContent='stay in it →';btn.onclick=run;}
+  btn.onclick=run;
+})();
+
+/* ---------- 04 four stages ---------- */
+(function(){
+  const S=[
+    {h:'Baseline — where you actually stand.',b:'Find your real starting point — no performance, no shame. It might look nothing like the person next to you. That isn’t a problem; it’s just information.',c:'It is not about how it looks. Different from the next person is not a worse place to start.'},
+    {h:'Intention — how you engage.',b:'Form over outcome. Presence over speed. Done with full attention, a small movement builds something real; done absent, the same movement builds nothing — and the body always knows the difference.',c:'Aim at the length, not the height. The height comes on its own.'},
+    {h:'Encounter — where it gets hard.',b:'Everything says stop. You don’t force it and you don’t flee it — you stay in contact with the ground while the storm moves through. This is the rep that actually trains the one at the controls.',c:'Lean into the shake. The shake is where it’s built.'},
+    {h:'Growth — now further.',b:'Not reckless — earned. You reach one inch past where you were certain your edge was, and find it moved while you weren’t watching.',c:'Your edge is moving. Reach one inch past where you think it is.'},
+  ];
+  const h=document.getElementById('st-h'),b=document.getElementById('st-b'),c=document.getElementById('st-c');
+  const steps=[...document.querySelectorAll('#st-rail .st-step')];
+  function pick(i){
+    h.textContent=S[i].h;b.textContent=S[i].b;c.textContent='“'+S[i].c+'”';
+    steps.forEach((s,j)=>{s.classList.toggle('on',j===i);s.classList.toggle('done',j<i);});
+  }
+  steps.forEach(s=>s.addEventListener('click',()=>pick(+s.dataset.i)));
+  pick(0);
+})();
+</script>
+</body>
+</html>
