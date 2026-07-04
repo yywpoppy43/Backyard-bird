@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Walk — Poppy Lifeforce</title>
+<meta name="description" content="One mechanism, one checkable idea at a time — until a thing you've felt your whole life becomes something you can see the shape of.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E4E0D6;
+    --ink:#161511;
+    --body:#211F19;
+    --muted:#615C50;
+    --faint:#8B8578;
+    --line:rgba(22,21,17,.16);
+    --line-soft:rgba(22,21,17,.09);
+    --oxblood:#7B2C27;
+    --serif:'Fraunces',Georgia,'Times New Roman',serif;
+    --read:'Newsreader',Georgia,serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --measure:40rem;      /* ~640px reading column */
+    --wide:66rem;         /* wide plates */
+    --pad:clamp(1.35rem,6vw,2.75rem);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  @media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+
+  body{
+    background:var(--paper);
+    color:var(--body);
+    font-family:var(--read);
+    font-weight:400;
+    font-optical-sizing:auto;
+    line-height:1.64;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    font-size:clamp(1.06rem,.99rem + .34vw,1.24rem);
+  }
+  a{color:inherit;text-decoration:none}
+
+  /* faint paper grain, held behind the content */
+  .grain{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    opacity:.05;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .page{position:relative;z-index:1}
+
+  .mono{font-family:var(--mono);font-weight:400}
+
+  /* ---------------- top bar ---------------- */
+  .bar{
+    max-width:var(--wide);margin:0 auto;
+    padding:1.15rem var(--pad);
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    border-bottom:1px solid var(--line);
+  }
+  .wordmark{
+    font-family:var(--mono);font-size:.72rem;font-weight:500;
+    letter-spacing:.24em;text-transform:uppercase;color:var(--ink);
+    white-space:nowrap;
+  }
+  .bar nav{display:flex;gap:1.4rem}
+  .bar nav a{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;
+    color:var(--muted);transition:color .18s ease;
+    padding-bottom:2px;border-bottom:1px solid transparent;
+  }
+  .bar nav a:hover{color:var(--ink);border-bottom-color:var(--line)}
+
+  /* ---------------- plates ---------------- */
+  .plate{
+    border-top:1px solid var(--line);
+    padding-block:clamp(4.5rem,11vw,9.5rem);
+  }
+  .plate:first-of-type{border-top:none}
+  .inner{
+    max-width:var(--measure);
+    margin:0 auto;
+    padding-inline:var(--pad);
+  }
+  .plate.wide .inner{max-width:var(--wide)}
+  .plate.wide .col{max-width:var(--measure);margin-inline:auto}
+
+  .tag{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;
+    display:flex;align-items:center;gap:.7em;
+    color:var(--muted);margin-bottom:1.9rem;
+  }
+  .tag .n{color:var(--ink);font-weight:500;letter-spacing:.06em}
+  .tag .dot{width:3px;height:3px;border-radius:50%;background:var(--faint);flex:none}
+  .tag .slug{text-transform:lowercase}
+
+  h2.h{
+    font-family:var(--serif);font-weight:400;font-optical-sizing:auto;
+    font-size:clamp(1.7rem,1.24rem + 2.3vw,2.85rem);
+    line-height:1.08;letter-spacing:-.014em;color:var(--ink);
+    max-width:19ch;
+  }
+  .plate.wide h2.h{max-width:24ch}
+
+  .body-copy{margin-top:1.5rem}
+  .body-copy p{
+    color:var(--body);
+    margin-top:1.05rem;
+    text-wrap:pretty;
+  }
+  .body-copy p:first-child{margin-top:0}
+  .body-copy em{font-style:italic}
+  .lead-narration{font-style:italic;color:var(--ink)}
+
+  /* ---------------- 02 · wind figure ---------------- */
+  .fig{margin-top:2.9rem}
+  .windband{display:flex;align-items:center;gap:1rem;margin-bottom:.4rem}
+  .windband .wlabel{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;
+    text-transform:lowercase;color:var(--muted);white-space:nowrap;flex:none;
+  }
+  .windband svg{flex:1;height:auto;min-width:0}
+  .structures{
+    display:grid;grid-template-columns:1fr;gap:2.4rem;
+    margin-top:1.6rem;
+  }
+  .struct{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.55rem}
+  .struct svg{width:min(58vw,150px);height:auto}
+  .struct .name{
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink);
+  }
+  .struct .out{font-family:var(--read);font-style:italic;font-size:.96rem;color:var(--muted);line-height:1.4;max-width:22ch}
+
+  .sketch{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+  .sketch .ground{stroke:var(--faint);stroke-width:1.2}
+  .sketch .press{stroke:var(--muted);stroke-width:1.3}
+  .windarrow{fill:none;stroke:var(--ink);stroke-width:1.4;stroke-linecap:round}
+  .windarrow .head{fill:var(--ink);stroke:none}
+
+  /* ---------------- 04 · four costumes ---------------- */
+  .costumes{margin-top:2.3rem}
+  .costumes p{
+    font-family:var(--serif);font-style:italic;font-weight:400;
+    font-size:clamp(1.55rem,1.15rem + 2vw,2.45rem);
+    line-height:1.16;color:var(--ink);letter-spacing:-.01em;
+    margin-top:.15em;
+  }
+  .cap{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;
+    text-transform:lowercase;color:var(--muted);
+    margin-top:1.5rem;
+    display:inline-flex;align-items:center;gap:.7em;
+  }
+  .cap::before{content:"";width:1.6rem;height:1px;background:var(--line);display:inline-block}
+  .closing-line{margin-top:2.4rem}
+
+  /* ---------------- 05 · three styles ---------------- */
+  .panels{
+    display:grid;grid-template-columns:1fr;gap:2.4rem;
+    margin-top:2.6rem;
+  }
+  .panel{padding-top:1.1rem;border-top:1px solid var(--line)}
+  .panel .plabel{
+    font-family:var(--mono);font-size:.74rem;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--ink);margin-bottom:.7rem;
+  }
+  .panel p{color:var(--body);font-size:1.02rem;line-height:1.55}
+  .after{
+    margin-top:2.8rem;padding-top:1.6rem;border-top:1px solid var(--line);
+    font-family:var(--serif);font-style:italic;font-weight:400;
+    font-size:clamp(1.15rem,1rem + .7vw,1.45rem);line-height:1.3;color:var(--ink);
+    text-wrap:balance;
+  }
+
+  /* ---------------- 07 · two channels ---------------- */
+  .channels{
+    margin-top:2.4rem;display:grid;grid-template-columns:1fr 1fr;gap:1px;
+    background:var(--line);border:1px solid var(--line);
+  }
+  .channels div{background:var(--paper);padding:1rem 1.15rem}
+  .channels .ck{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:lowercase;color:var(--ink)}
+  .channels .cv{font-family:var(--read);font-style:italic;color:var(--muted);font-size:.92rem;margin-top:.2rem;line-height:1.4}
+
+  /* ---------------- 08 · burn-down diagram ---------------- */
+  .diagram{margin-top:2.9rem}
+  .diagram svg{width:100%;height:auto;display:block}
+  .curve{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .axis{stroke:var(--faint);stroke-width:1}
+  .equi{stroke:var(--faint);stroke-width:1;stroke-dasharray:2 5;opacity:.8}
+  .band{fill:rgba(22,21,17,.06)}
+  .clearfill{fill:rgba(22,21,17,.035)}
+  .dtext{font-family:var(--mono);fill:var(--muted);font-size:12px;letter-spacing:.02em}
+  .dtext.ink{fill:var(--ink)}
+  .dtick{stroke:var(--muted);stroke-width:1}
+
+  /* ---------------- 10 · the proof ---------------- */
+  .plate.proof{padding-block:clamp(5rem,13vw,11rem)}
+  .proof h2.h{font-size:clamp(2rem,1.4rem + 3.4vw,3.7rem);max-width:20ch}
+  .proof .body-copy{margin-top:1.9rem}
+  .proof .body-copy p{font-size:clamp(1.12rem,1rem + .55vw,1.4rem);line-height:1.55}
+  .stop{
+    display:block;font-family:var(--serif);font-style:italic;font-weight:400;
+    font-size:clamp(1.55rem,1.15rem + 2vw,2.55rem);line-height:1.14;
+    color:var(--ink);margin:.6em 0 .34em;letter-spacing:-.01em;
+  }
+  .ox{color:var(--oxblood)}
+  .runtest{
+    margin-top:2.9rem;padding:1.4rem 1.5rem;
+    border:1px solid var(--line);
+    font-family:var(--mono);font-size:.86rem;line-height:1.62;color:var(--body);
+    letter-spacing:.01em;
+  }
+  .runtest b{font-weight:500;color:var(--ink);letter-spacing:.14em;text-transform:uppercase;font-size:.74rem}
+  .runtest .rt-lead{display:block;margin-bottom:.5rem}
+
+  /* ---------------- 11 · set-apart beats ---------------- */
+  .beat{
+    margin-top:2.2rem;padding-top:1.7rem;
+    border-top:1px solid var(--line);
+    font-family:var(--serif);font-weight:400;font-style:normal;
+    font-size:clamp(1.18rem,1.02rem + .75vw,1.5rem);line-height:1.36;color:var(--ink);
+    max-width:34ch;text-wrap:pretty;
+  }
+  .beat em{font-style:italic}
+
+  /* ---------------- 12 · the build ---------------- */
+  .statement{
+    margin:0 auto;max-width:var(--measure);
+    border:1px solid var(--line);
+    padding:clamp(2rem,5vw,3.2rem) clamp(1.5rem,4vw,2.6rem);
+    text-align:center;
+  }
+  .statement h2.h{max-width:none;margin-inline:auto}
+  .statement .body-copy{margin-top:1.3rem}
+  .statement .body-copy p{text-wrap:pretty}
+
+  /* ---------------- close ---------------- */
+  .close{border-top:1px solid var(--line);padding-block:clamp(4.5rem,11vw,9rem)}
+  .close .inner{max-width:var(--measure)}
+  .seclabel{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;
+    text-transform:lowercase;color:var(--muted);
+    display:flex;align-items:center;gap:.8em;margin-bottom:1.4rem;
+  }
+  .seclabel::after{content:"";flex:1;height:1px;background:var(--line)}
+  .close p{color:var(--body);margin-top:1.05rem}
+  .close p:first-of-type{margin-top:0}
+  .close .familiar{font-family:var(--serif);font-weight:400;font-size:clamp(1.15rem,1rem + .7vw,1.4rem);line-height:1.36;color:var(--ink);text-wrap:pretty}
+  .block-gap{height:clamp(3.4rem,8vw,5.5rem)}
+  .window-line{margin-top:1.4rem;font-size:1.05rem}
+  .window-line a{
+    font-family:var(--mono);color:var(--oxblood);letter-spacing:.01em;
+    border-bottom:1px solid rgba(123,44,39,.35);padding-bottom:1px;
+    transition:border-color .18s ease;
+  }
+  .window-line a:hover{border-bottom-color:var(--oxblood)}
+
+  .companion{
+    margin-top:clamp(3rem,7vw,4.5rem);
+    display:block;border:1px solid var(--line);
+    padding:1.3rem 1.4rem;transition:border-color .18s ease,transform .18s ease;
+  }
+  .companion:hover{border-color:var(--ink)}
+  .companion .clabel{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:lowercase;color:var(--muted);margin-bottom:.55rem}
+  .companion .ctitle{
+    font-family:var(--serif);font-style:italic;font-weight:400;
+    font-size:clamp(1.1rem,.98rem + .6vw,1.35rem);line-height:1.24;color:var(--ink);
+    display:flex;align-items:baseline;gap:.6em;justify-content:space-between;
+  }
+  .companion .arrow{font-family:var(--mono);font-style:normal;color:var(--muted);flex:none;transition:transform .18s ease}
+  .companion:hover .arrow{transform:translateX(3px)}
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:1.6rem var(--pad);
+    text-align:center;
+  }
+  footer .fmark{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+
+  /* ---------------- reveal ---------------- */
+  @media (prefers-reduced-motion:no-preference){
+    .js .reveal{opacity:0;transform:translateY(16px);
+      transition:opacity .85s cubic-bezier(.22,.7,.2,1),transform .85s cubic-bezier(.22,.7,.2,1);
+      transition-delay:calc(var(--i,0)*90ms);}
+    .js .reveal.in{opacity:1;transform:none}
+    .js .diagram .curve{stroke-dasharray:1;stroke-dashoffset:1;
+      transition:stroke-dashoffset 1.9s cubic-bezier(.4,.1,.2,1);}
+    .js .diagram.in .curve{stroke-dashoffset:0}
+    .js .diagram .danno{opacity:0;transition:opacity .7s ease 1.1s}
+    .js .diagram.in .danno{opacity:1}
+  }
+
+  /* ---------------- desktop ---------------- */
+  @media (min-width:720px){
+    .structures{grid-template-columns:repeat(3,1fr);gap:1.6rem;align-items:start}
+    .struct svg{width:min(15vw,140px)}
+    .panels{grid-template-columns:repeat(3,1fr);gap:2.2rem}
+    .companion .clabel{margin-bottom:.4rem}
+  }
+  @media (min-width:1040px){
+    .plate.wide .fig,.plate.wide .diagram{max-width:var(--wide)}
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="page">
+
+  <header class="bar">
+    <span class="wordmark">Poppy Lifeforce</span>
+    <nav>
+      <a href="you-have-to-be-the-shopper.html">the shopper</a>
+      <a href="mailto:hello@poppylifeforce.com">write</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- 01 -->
+    <section class="plate" id="p01">
+      <div class="inner">
+        <div class="tag reveal"><span class="n">01</span><span class="dot"></span><span class="slug">the layer with no name</span></div>
+        <h2 class="h reveal" style="--i:1">There&rsquo;s a part of you with no common name.</h2>
+        <div class="body-copy reveal" style="--i:2">
+          <p>Most of us carry a two-part map of ourselves: a body, and somewhere above it a mind — a self, a me. Ask where the trouble lives and people point to one or the other: fix the body, quiet the mind. But there&rsquo;s a third part, running between those two, and it has no everyday name. Most of what gets called suffering happens there. And nothing there can be worked on while it stays invisible. So this whole page does one thing: it brings that part into view, piece by piece — until <em>you</em> is no longer a feeling, but something you can see the shape of.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="plate wide" id="p02">
+      <div class="inner">
+        <div class="col">
+          <div class="tag reveal"><span class="n">02</span><span class="dot"></span><span class="slug">one weather, many machines</span></div>
+          <h2 class="h reveal" style="--i:1">Reality doesn&rsquo;t aim. It puts out one weather.</h2>
+          <div class="body-copy reveal" style="--i:2">
+            <p>It hands out no custom lessons — one weather lands on everything at once. The same gust meets a sailboat, a windmill, and a shut tent: the sailboat has to steer, the windmill turns it into work, the tent just holds the pressure until something gives. Same wind. What it becomes is decided by the thing it hits. Two people stand in the same storm and come out completely differently — and the difference was never a verdict on either of them. It&rsquo;s information about the meeting. That &ldquo;what it becomes&rdquo; is friction — and friction isn&rsquo;t a fault in the machine. It&rsquo;s the sign the machine is running. A thing that meets no friction at all has stopped.</p>
+          </div>
+        </div>
+
+        <figure class="fig reveal" style="--i:3">
+          <div class="windband">
+            <span class="wlabel">the same gust</span>
+            <svg viewBox="0 0 620 60" class="windarrow" role="img" aria-label="One weather moving left to right across all three structures">
+              <path d="M8,18 C170,8 330,26 540,18"/>
+              <path d="M8,32 C190,22 350,40 560,32"/>
+              <path d="M8,46 C170,38 330,54 540,46"/>
+              <path class="head" d="M540,10 l30,8 l-30,8 l8,-8 z"/>
+              <path class="head" d="M560,24 l30,8 l-30,8 l8,-8 z"/>
+              <path class="head" d="M540,38 l30,8 l-30,8 l8,-8 z"/>
+            </svg>
+          </div>
+
+          <div class="structures">
+            <div class="struct">
+              <svg viewBox="0 0 130 110" class="sketch" role="img" aria-label="A sailboat steering across the wind">
+                <line class="ground" x1="8" y1="88" x2="122" y2="88"/>
+                <path class="ground" d="M14,94 q6,-5 12,0 M40,94 q6,-5 12,0 M78,94 q6,-5 12,0 M104,94 q6,-5 12,0"/>
+                <path d="M30,88 h58 l-12,13 h-34 z"/>
+                <line x1="60" y1="24" x2="60" y2="88"/>
+                <path d="M60,28 C80,42 84,66 80,82 L60,82 Z"/>
+                <path d="M60,40 L44,82 L60,82 Z"/>
+              </svg>
+              <div class="name">Sailboat</div>
+              <div class="out">has to steer</div>
+            </div>
+
+            <div class="struct">
+              <svg viewBox="0 0 130 110" class="sketch" role="img" aria-label="A windmill turning the wind into work">
+                <line class="ground" x1="8" y1="98" x2="122" y2="98"/>
+                <path d="M50,98 L57,50 L73,50 L80,98 Z"/>
+                <path d="M55,50 q10,-11 20,0"/>
+                <g>
+                  <line x1="65" y1="48" x2="42" y2="25"/>
+                  <line x1="65" y1="48" x2="88" y2="25"/>
+                  <line x1="65" y1="48" x2="42" y2="71"/>
+                  <line x1="65" y1="48" x2="88" y2="71"/>
+                  <line x1="52" y1="31" x2="47" y2="36"/>
+                  <line x1="78" y1="31" x2="83" y2="36"/>
+                  <line x1="52" y1="65" x2="47" y2="60"/>
+                  <line x1="78" y1="65" x2="83" y2="60"/>
+                </g>
+                <circle cx="65" cy="48" r="3.2"/>
+                <path class="press" d="M92,40 a15,15 0 0 1 4,14" marker-end=""/>
+                <path class="press" d="M96,54 l-1,-6 l6,3 z" style="fill:var(--muted);stroke:none"/>
+              </svg>
+              <div class="name">Windmill</div>
+              <div class="out">turns it into work</div>
+            </div>
+
+            <div class="struct">
+              <svg viewBox="0 0 130 110" class="sketch" role="img" aria-label="A sealed tent holding rising internal pressure until it tears">
+                <line class="ground" x1="8" y1="96" x2="122" y2="96"/>
+                <path d="M65,22 L100,96 L30,96 Z"/>
+                <line x1="65" y1="22" x2="65" y2="96"/>
+                <line x1="30" y1="96" x2="20" y2="96"/>
+                <line x1="100" y1="96" x2="110" y2="96"/>
+                <g class="press">
+                  <line x1="60" y1="66" x2="46" y2="62"/>
+                  <path d="M46,62 l6,-1 l-3,5 z" style="fill:var(--muted);stroke:none"/>
+                  <line x1="70" y1="66" x2="84" y2="62"/>
+                  <path d="M84,62 l-6,-1 l3,5 z" style="fill:var(--muted);stroke:none"/>
+                </g>
+                <path class="press" d="M52,50 l4,5 l-3,5 l4,4"/>
+              </svg>
+              <div class="name">Sealed tent</div>
+              <div class="out">holds the pressure until something gives</div>
+            </div>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section class="plate" id="p03">
+      <div class="inner">
+        <div class="tag reveal"><span class="n">03</span><span class="dot"></span><span class="slug">the mix-up</span></div>
+        <h2 class="h reveal" style="--i:1">You are not the machine you&rsquo;re running.</h2>
+        <div class="body-copy reveal" style="--i:2">
+          <p>One distinction holds up everything after it. There&rsquo;s the machinery — the part that takes the weather in, runs it, and throws off sensations, stories, reactions. And there&rsquo;s the one at the controls — the part that doesn&rsquo;t produce any of that, but watches it happen and can choose what to do next. Nearly all of the trouble starts with a single mix-up: taking the machine&rsquo;s output for yourself. <em>I am anxious</em> — when what&rsquo;s true is the machine is running anxiety, and you are the one noticing it run. Everything below turns on which of those you take yourself to be.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="plate" id="p04">
+      <div class="inner">
+        <div class="tag reveal"><span class="n">04</span><span class="dot"></span><span class="slug">the alarm, and its one flaw</span></div>
+        <h2 class="h reveal" style="--i:1">None of this is damage.</h2>
+        <div class="body-copy reveal" style="--i:2">
+          <p>Built into the machine is an alarm — protective wiring, laid down early, doing exactly the job it was written for. It can&rsquo;t be deleted, argued with, or outgrown. Its one flaw is calibration: it reads ordinary weather as a predator — a hard email and a house fire get the same siren. And its verdicts never arrive sounding like an alarm. They arrive dressed as the truth:</p>
+        </div>
+        <div class="costumes reveal" style="--i:3">
+          <p>This is too much.</p>
+          <p>Fix it now.</p>
+          <p>Get out.</p>
+          <p>Say nothing.</p>
+          <div class="cap">one signal, four costumes</div>
+        </div>
+        <div class="body-copy reveal closing-line" style="--i:4">
+          <p>So nothing here is broken — it&rsquo;s an alarm with the sensitivity set too high.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section class="plate wide" id="p05">
+      <div class="inner">
+        <div class="col">
+          <div class="tag reveal"><span class="n">05</span><span class="dot"></span><span class="slug">when it wins</span></div>
+          <h2 class="h reveal" style="--i:1">When the alarm wins, it runs the person. Three styles.</h2>
+        </div>
+        <div class="panels">
+          <div class="panel reveal">
+            <div class="plabel">Push</div>
+            <p>Drive straight into it. More force, more speed, handle it now, jaw set, breath high in the chest. Looks like intensity. It&rsquo;s the alarm with its hands on the wheel.</p>
+          </div>
+          <div class="panel reveal" style="--i:1">
+            <div class="plabel">Withdraw</div>
+            <p>Go flat and far away. The volume of everything drops, the limbs get heavy, the day goes grey. Looks like calm. It&rsquo;s the same alarm, playing dead.</p>
+          </div>
+          <div class="panel reveal" style="--i:2">
+            <div class="plabel">Manage</div>
+            <p>Tighten the grip. Perfect the plan, track every variable, hold everything so nothing moves. Looks like being responsible. It&rsquo;s the alarm again, running the room.</p>
+          </div>
+        </div>
+        <p class="after reveal">Run one long enough and it stops looking like a state. It starts looking like a personality.</p>
+      </div>
+    </section>
+
+    <!-- 06 -->
+    <section class="plate" id="p06">
+      <div class="inner">
+        <div class="tag reveal"><span class="n">06</span><span class="dot"></span><span class="slug">still in there</span></div>
+        <h2 class="h reveal" style="--i:1">Whoever just recognized those three — that&rsquo;s the one.</h2>
+        <div class="body-copy reveal" style="--i:2">
+          <p>Reading the three styles above, something in you did the recognizing. Mid-spiral, it&rsquo;s the part that notices <em>I&rsquo;m doing it again</em> — and gets shouted over a second later. That part is not gone when the pattern runs. It&rsquo;s outvoted. The alarm takes so much of the attention that almost none is left for the one watching. Which means the problem was never absence. It&rsquo;s volume.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 -->
+    <section class="plate" id="p07">
+      <div class="inner">
+        <div class="tag reveal"><span class="n">07</span><span class="dot"></span><span class="slug">the two channels</span></div>
+        <h2 class="h reveal" style="--i:1">The machine reports in two languages.</h2>
+        <div class="body-copy reveal" style="--i:2">
+          <p>What the machine sends up comes in two forms. One is <em>narrated</em> — words, stories, verdicts: <em>this is too much, you&rsquo;re not ready, they think less of you now.</em> The other is <em>felt</em> — raw sensation, before any words: heat in the face, the tightening, the shake. The difference matters more than it looks. The alarm speaks only in the first language; its whole case is a story — which is exactly why it can be seen through, and outlasted. What it cannot do is touch the second. It cannot argue a shaking muscle out of shaking. That gap is the whole reason there&rsquo;s a place where none of this can be faked — and the last plates go straight there.</p>
+        </div>
+        <div class="channels reveal" style="--i:3">
+          <div><div class="ck">narrated</div><div class="cv">words, stories, verdicts</div></div>
+          <div><div class="ck">felt</div><div class="cv">raw sensation, before words</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 -->
+    <section class="plate wide" id="p08">
+      <div class="inner">
+        <div class="col">
+          <div class="tag reveal"><span class="n">08</span><span class="dot"></span><span class="slug">the move</span></div>
+          <h2 class="h reveal" style="--i:1">Stay one beat past the alarm.</h2>
+          <div class="body-copy reveal" style="--i:2">
+            <p>Not fighting it. Not obeying it. Staying — one beat — while it fires. The alarm exists to force an action, so when the action is withheld it escalates: louder story, tighter chest, <em>act now or something breaks.</em> Withheld anyway, it has nothing to run on. It burns through its own fuel and goes quiet. It can feel like dying — the alarm is built to make withholding feel like dying. It isn&rsquo;t dying. It&rsquo;s a loop running out of fuel. And in the quiet, the actual situation is visible — often for the first time since it started. The same email gets answered, the same hard call gets made. From here it costs almost nothing.</p>
+          </div>
+        </div>
+
+        <figure class="diagram reveal" style="--i:3">
+          <svg viewBox="0 0 760 400" role="img" aria-label="A signal spikes as the alarm fires, is held through a shaded beat, escalates briefly, then burns down to a flat clearing over time">
+            <!-- axes -->
+            <line class="axis" x1="88" y1="46" x2="88" y2="346"/>
+            <line class="axis" x1="88" y1="346" x2="712" y2="346"/>
+            <!-- resting / equilibrium -->
+            <line class="equi" x1="88" y1="250" x2="700" y2="250"/>
+            <!-- held-beat band -->
+            <rect class="band danno" x="176" y="52" width="150" height="294"/>
+            <!-- clearing shading -->
+            <rect class="clearfill danno" x="520" y="252" width="190" height="94"/>
+            <!-- the signal curve -->
+            <path class="curve" pathLength="1" d="M88,250
+              C124,248 150,244 176,236
+              C202,228 214,168 250,124
+              C276,92 292,74 305,74
+              C320,74 330,104 350,142
+              C388,214 440,238 500,250
+              C560,262 626,268 700,270"/>
+            <!-- axis labels -->
+            <text class="dtext" x="60" y="200" transform="rotate(-90 60 200)" text-anchor="middle">signal</text>
+            <text class="dtext" x="700" y="368" text-anchor="end">time &#8594;</text>
+            <!-- annotations -->
+            <g class="danno">
+              <text class="dtext" x="112" y="300">the alarm fires</text>
+              <text class="dtext ink" x="251" y="42" text-anchor="middle">the held beat</text>
+              <text class="dtext" x="470" y="304" text-anchor="middle">burns down</text>
+              <text class="dtext ink" x="616" y="238" text-anchor="middle">the clearing</text>
+            </g>
+          </svg>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 09 -->
+    <section class="plate" id="p09">
+      <div class="inner">
+        <div class="tag reveal"><span class="n">09</span><span class="dot"></span><span class="slug">what holds the beat</span></div>
+        <h2 class="h reveal" style="--i:1">The beat can&rsquo;t be held by willpower.</h2>
+        <div class="body-copy reveal" style="--i:2">
+          <p>Holding by will is real, but it runs on a small tank — and the tank drains first under stress, exactly when the hold is needed most. That&rsquo;s not weakness; it&rsquo;s how the equipment is built. What holds when will runs out is a boundary that isn&rsquo;t inside you at all: the class that doesn&rsquo;t end early, the room with no quick exit, the practice with a hard edge. Build the hold into the world, and staying stops being a fight.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="plate proof" id="p10">
+      <div class="inner">
+        <div class="tag reveal"><span class="n">10</span><span class="dot"></span><span class="slug">the proof</span></div>
+        <h2 class="h reveal" style="--i:1">The body is where none of this can be faked.</h2>
+        <div class="body-copy reveal" style="--i:2">
+          <p>Minute two of a hold. The legs shake, the breath climbs, and the alarm fires at full volume: <span class="stop">stop, this is the limit, put it down.</span> Stay one breath past it. The shake continues. Nothing breaks. And days later the muscle is measurably stronger — not despite being held at its edge, but because of it.</p>
+          <p>Every piece of the mechanism, visible in one minute: the alarm, dressed as the truth. The stay. The alarm burning out. The growth after. The alarm argues in words; it cannot edit sensation — which is why nothing here can be faked. A story can be argued with. A muscle that is <span class="ox">still holding, right now</span>, cannot.</p>
+        </div>
+        <div class="runtest reveal" style="--i:3">
+          <span class="rt-lead"><b>run the test</b></span>
+          This week, at the point where the legs shake and everything says stop — one more breath. Watch what the alarm does when it isn&rsquo;t obeyed.
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="plate" id="p11">
+      <div class="inner">
+        <div class="tag reveal"><span class="n">11</span><span class="dot"></span><span class="slug">what grows</span></div>
+        <h2 class="h reveal" style="--i:1">The same physics grows the one who stayed.</h2>
+        <div class="body-copy reveal" style="--i:2">
+          <p>What grows in the muscle is tissue. What grows in the person is the capacity to stay — and it accrues to the one who held, the one from plate 06, the one at the controls. Trained where the alarm is loudest and the proof is physical, it carries into the rooms where nothing shakes but the voice: the message, the meeting, the blank page. The readout is simple. Life knocks the same — the return is faster. Knocked over in the morning, steady by noon instead of by Thursday.</p>
+        </div>
+        <p class="beat reveal">In the body you find it the way you find your core — the still center everything moves from. Train the core, and you meet the core. Same word, and not by accident.</p>
+        <p class="beat reveal">And the alarm is never removed. The same wiring, under a different driver, becomes the strength: the force becomes drive, the vigilance becomes attention. The thing that ran the person turns into the thing the person runs on.</p>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="plate" id="p12">
+      <div class="inner">
+        <div class="statement reveal">
+          <div class="tag" style="justify-content:center"><span class="n">12</span><span class="dot"></span><span class="slug">the build</span></div>
+          <h2 class="h">This is what&rsquo;s being built.</h2>
+          <div class="body-copy">
+            <p>A training method for exactly this skill: a precise read of the pattern a specific person runs — not a type, the actual pattern — and a held place to practice staying one beat past it. Starting where the proof is physical: the body. It&rsquo;s being built now, by one person, from the mechanism you just walked.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- close -->
+    <section class="close" id="close">
+      <div class="inner">
+        <div class="seclabel reveal">the welcome</div>
+        <div class="reveal" style="--i:1">
+          <p class="familiar">A plant set in the wrong ground doesn&rsquo;t die. It holds on — thin leaves, small blooms, a whole season spent just standing. Moved back into the right ground, it thickens on its own. Nothing in the plant changed. The ground did.</p>
+          <p>If the walk above read less like an argument and more like a description of something familiar — the ground here might be yours.</p>
+        </div>
+
+        <div class="block-gap"></div>
+
+        <div class="seclabel reveal">the window</div>
+        <div class="reveal" style="--i:1">
+          <p>No list to join. Nothing to buy. Just a window:</p>
+          <p class="window-line"><a href="mailto:hello@poppylifeforce.com">hello@poppylifeforce.com</a> — say what you recognized.</p>
+        </div>
+
+        <a class="companion reveal" href="you-have-to-be-the-shopper.html">
+          <div class="clabel">the companion piece</div>
+          <div class="ctitle"><span>Why this skill, why now: You Have to Be the Shopper</span><span class="arrow">&#8594;</span></div>
+        </a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="fmark">Poppy Lifeforce &middot; The Return</div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  (function(){
+    var root=document.documentElement;
+    root.classList.remove('no-js');
+    root.classList.add('js');
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce||!('IntersectionObserver' in window)){
+      // show everything immediately
+      var all=document.querySelectorAll('.reveal,.diagram');
+      for(var i=0;i<all.length;i++){all[i].classList.add('in');}
+      return;
+    }
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    },{rootMargin:'0px 0px -12% 0px',threshold:.12});
+    document.querySelectorAll('.reveal,.diagram').forEach(function(el){io.observe(el);});
+  })();
+</script>
+</body>
+</html>
