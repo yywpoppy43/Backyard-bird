@@ -237,6 +237,53 @@
   .statement .body-copy{margin-top:1.3rem}
   .statement .body-copy p{text-wrap:pretty}
 
+  /* ---------------- closer: the depth layer ---------------- */
+  .closer{margin-top:2.7rem;border-top:1px solid var(--line-soft)}
+  .plate.wide .closer{max-width:var(--measure);margin-inline:auto}
+  .closer summary{
+    list-style:none;cursor:pointer;
+    padding:1.05rem 0 .15rem;
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;
+    color:var(--muted);display:flex;align-items:baseline;gap:.7em;
+    transition:color .18s ease;
+  }
+  .closer summary::-webkit-details-marker{display:none}
+  .closer summary:hover{color:var(--ink)}
+  .closer summary:focus-visible{outline:1px dashed var(--muted);outline-offset:4px}
+  .closer[open] summary{color:var(--ink)}
+  .closer .mark{display:inline-block;width:1em;text-align:center;color:var(--faint)}
+  .closer .mark::before{content:"+"}
+  .closer[open] .mark::before{content:"\2212"}
+  .closer .sub{color:var(--faint);letter-spacing:.1em;text-transform:lowercase}
+  .closer[open] summary .sub{color:var(--muted)}
+  .cl-body{
+    margin:1.2rem 0 .5rem;
+    padding-left:1.2rem;border-left:1px solid var(--line);
+    max-width:var(--measure);
+  }
+  .cl-body p{margin-top:1rem;font-size:.94em;line-height:1.62;color:var(--body);text-wrap:pretty}
+  .cl-body p:first-child{margin-top:0}
+  .cl-fig{margin:1.7rem 0 .5rem}
+  .cl-fig svg{width:100%;height:auto;display:block}
+  .cl-cap{
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:lowercase;
+    color:var(--muted);margin-top:.85rem;display:inline-flex;align-items:center;gap:.7em;
+  }
+  .cl-cap::before{content:"";width:1.6rem;height:1px;background:var(--line);display:inline-block}
+  .alloc-frame{fill:none;stroke:var(--faint);stroke-width:1}
+  .alloc-loud{fill:rgba(22,21,17,.08)}
+  .alloc-left{fill:var(--ink)}
+  .knock-depth{stroke:var(--faint);stroke-width:1;stroke-dasharray:2 5;opacity:.75}
+  .cl-fig .dtext{font-size:14px}
+  @media (max-width:719px){
+    .diagram .dtext{font-size:17px}
+    .cl-fig .dtext{font-size:20px}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .closer[open] .cl-body{animation:closerIn .55s cubic-bezier(.22,.7,.2,1)}
+    @keyframes closerIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  }
+
   /* ---------------- close ---------------- */
   .close{border-top:1px solid var(--line);padding-block:clamp(4.5rem,11vw,9rem)}
   .close .inner{max-width:var(--measure)}
@@ -327,6 +374,13 @@
         <div class="body-copy reveal" style="--i:2">
           <p>Most of us carry a two-part map of ourselves: a body, and somewhere above it a mind — a self, a me. Ask where the trouble lives and people point to one or the other: fix the body, quiet the mind. But there&rsquo;s a third part, running between those two, and it has no everyday name. Most of what gets called suffering happens there. And nothing there can be worked on while it stays invisible. So this whole page does one thing: it brings that part into view, piece by piece — until <em>you</em> is no longer a feeling, but something you can see the shape of.</p>
         </div>
+        <details class="closer reveal" style="--i:3">
+          <summary><span class="mark" aria-hidden="true"></span>closer<span class="sub">— the map error</span></summary>
+          <div class="cl-body">
+            <p>The two-part map isn&rsquo;t harmless — it routes the repair. Whatever hurts gets filed under one of the two visible parts, and the tool follows the filing: the body gets rest, diet, training; the mind gets reasoning, reframing, resolve. Both help. Neither touches the layer in between, because neither was aimed at it. The trouble gets treated where it&rsquo;s easiest to see, not where it runs.</p>
+            <p>And the oldest argument in the building — mind versus body, which one is really you — dissolves the moment the third layer is visible. Mind and body were never the two things. They&rsquo;re both equipment: two parts of one running machine. The real line sits somewhere else entirely — between the whole machine and the one watching it run. Everything below walks that line.</p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -411,6 +465,15 @@
             </div>
           </div>
         </figure>
+
+        <details class="closer reveal">
+          <summary><span class="mark" aria-hidden="true"></span>closer<span class="sub">— the physics</span></summary>
+          <div class="cl-body">
+            <p>Stillness sounds like the goal — nothing moving, nothing wrong. Physics reads it the other way. A system that has stopped exchanging with its surroundings is at equilibrium, and for a living thing equilibrium is the end state, not the good state. Being moved by the world isn&rsquo;t a malfunction of a life; it&rsquo;s the operating condition of one. So the aim is never to make the weather stop. It&rsquo;s to keep your form inside the exchange — moved, and not dissolved.</p>
+            <p>The structure doing the meeting — the capacity, the sensitivity, the speed you run at — was handed to you, not chosen. And it&rsquo;s neutral. A tall tree isn&rsquo;t better than a low flower; nature doesn&rsquo;t rank forms, it grows them. <em>Gift</em> and <em>flaw</em> aren&rsquo;t properties of a structure — they&rsquo;re verdicts pronounced on a meeting. Watch one trait of yours get praised in one room and blamed in another: the wiring didn&rsquo;t change on the way over. The verdict did.</p>
+            <p>It&rsquo;s also why the rest of nature is spared. A tree dropping its leaves doesn&rsquo;t feel guilty. An animal in hibernation doesn&rsquo;t call itself lazy. They meet conditions and adapt. Humans carry one extra layer — one that can argue with conditions instead of meeting them, and read an ordinary season as an emergency. Most of what we call suffering is that argument running.</p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -422,6 +485,14 @@
         <div class="body-copy reveal" style="--i:2">
           <p>One distinction holds up everything after it. There&rsquo;s the machinery — the part that takes the weather in, runs it, and throws off sensations, stories, reactions. And there&rsquo;s the one at the controls — the part that doesn&rsquo;t produce any of that, but watches it happen and can choose what to do next. Nearly all of the trouble starts with a single mix-up: taking the machine&rsquo;s output for yourself. <em>I am anxious</em> — when what&rsquo;s true is the machine is running anxiety, and you are the one noticing it run. Everything below turns on which of those you take yourself to be.</p>
         </div>
+        <details class="closer reveal" style="--i:3">
+          <summary><span class="mark" aria-hidden="true"></span>closer<span class="sub">— the seam</span></summary>
+          <div class="cl-body">
+            <p>The separation is a difference in kind, not in degree. Every part of the machine processes — takes input, runs it, produces output. The one at the controls doesn&rsquo;t process. It watches processing, and it can veto. Those are different operations, the way a motor running and a driver choosing a road are different operations. It reads every gauge on the panel, and no gauge reads it back.</p>
+            <p>The machine runs on stimulus and response — input in, protocol out, nothing in between. The watcher is the one thing in the system that can break that chain, because a watched reaction is interruptible and an unwatched one is not. Choice lives in exactly that interruption, and nowhere else. Everything this page builds stands on the seam.</p>
+            <p>None of it requires deciding what the watcher <em>is</em>. No claim here about souls or where consciousness comes from — only the checkable version: in lived experience, the watching part is either operative or drowned out. And watching isn&rsquo;t leaving. It works through the machine the way a player works through an instrument. There was never a distance to cross.</p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -443,6 +514,14 @@
         <div class="body-copy reveal closing-line" style="--i:4">
           <p>So nothing here is broken — it&rsquo;s an alarm with the sensitivity set too high.</p>
         </div>
+        <details class="closer reveal" style="--i:5">
+          <summary><span class="mark" aria-hidden="true"></span>closer<span class="sub">— the wiring</span></summary>
+          <div class="cl-body">
+            <p>The calibration flaw has a logic. This wiring is built against a lopsided error budget: a false alarm costs a little energy; one miss could cost everything. Under that asymmetry the correct design fires early, loud, and certain. Certainty isn&rsquo;t a defect — a hesitant alarm would be useless in the one situation it exists for. Doubt was left out of the circuit on purpose, and that is exactly why every verdict arrives dressed as the truth.</p>
+            <p>It was also written early — by a younger system, on cruder data, for rooms you may not live in anymore. It kept the settings. The hard email isn&rsquo;t a predator; the calibration just predates email.</p>
+            <p>And notice what it runs on: forecasts. <em>This is too much, get out</em> — every verdict is a simulation of a moment that hasn&rsquo;t happened, run on data it doesn&rsquo;t have. The pressure you feel under it is the cost of a machine generating its own weather, then bracing against the weather it generated.</p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -468,6 +547,14 @@
           </div>
         </div>
         <p class="after reveal">Run one long enough and it stops looking like a state. It starts looking like a personality.</p>
+
+        <details class="closer reveal">
+          <summary><span class="mark" aria-hidden="true"></span>closer<span class="sub">— one signal, three exits</span></summary>
+          <div class="cl-body">
+            <p>The styles aren&rsquo;t three alarms — they&rsquo;re three exits from the same signal: act on it, power down under it, clamp everything until it passes. All three are old survival wiring, the body&rsquo;s stock responses to threat, not inventions of character. Which exit a machine defaults to is part of its given structure — handed, like the rest of it. A style is a spec sheet, not a verdict.</p>
+            <p>And nobody runs one exit purely. These are weather patterns of the machine, not names for people — most systems are a mixture with a lean. The moment a style hardens into a label — <em>I&rsquo;m just an anxious person, I&rsquo;m just a control freak</em> — the mix-up from plate 03 has happened again, one level up: the machine&rsquo;s favorite exit got filed as the self.</p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -479,6 +566,25 @@
         <div class="body-copy reveal" style="--i:2">
           <p>Reading the three styles above, something in you did the recognizing. Mid-spiral, it&rsquo;s the part that notices <em>I&rsquo;m doing it again</em> — and gets shouted over a second later. That part is not gone when the pattern runs. It&rsquo;s outvoted. The alarm takes so much of the attention that almost none is left for the one watching. Which means the problem was never absence. It&rsquo;s volume.</p>
         </div>
+        <details class="closer reveal" style="--i:3">
+          <summary><span class="mark" aria-hidden="true"></span>closer<span class="sub">— the budget</span></summary>
+          <div class="cl-body">
+            <p>Attention behaves like a budget that always spends itself in full: weight pulled off one thing lands on another, and nothing is ever simply unattended. The alarm holds priority wiring — pre-empting the rest of the system is its job description. So when it fires it doesn&rsquo;t argue for attention; it seizes the allocation. Nearly everything to the threat. Almost nothing to anything else.</p>
+            <figure class="cl-fig">
+              <svg viewBox="0 0 640 168" role="img" aria-label="Attention drawn as one fixed band: while the alarm fires, the threat's share takes nearly all of it, and a thin remainder is left for the watcher">
+                <text class="dtext" x="20" y="24">attention, while the alarm fires</text>
+                <rect class="alloc-loud" x="20" y="44" width="552" height="40"/>
+                <rect class="alloc-left" x="572" y="44" width="48" height="40"/>
+                <rect class="alloc-frame" x="20" y="44" width="600" height="40"/>
+                <text class="dtext" x="296" y="69" text-anchor="middle">the threat&#8217;s share</text>
+                <line class="dtick" x1="596" y1="84" x2="596" y2="116"/>
+                <text class="dtext ink" x="608" y="134" text-anchor="end">what&#8217;s left for the watcher</text>
+              </svg>
+              <div class="cl-cap">outvoted, not gone</div>
+            </figure>
+            <p>That sliver is why the watcher seems to vanish — and the proof it doesn&rsquo;t: the noticing still happens. <em>I&rsquo;m doing it again</em> arrives late and small, like a voice from the back of a loud room, because it was queued behind the alarm&rsquo;s traffic. A signal that arrives late was not absent. And when the alarm burns through, the whole budget releases at once — which is why the clearing feels less like calming down and more like lights coming back on in a room that never went anywhere.</p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -494,6 +600,13 @@
           <div><div class="ck">narrated</div><div class="cv">words, stories, verdicts</div></div>
           <div><div class="ck">felt</div><div class="cv">raw sensation, before words</div></div>
         </div>
+        <details class="closer reveal" style="--i:4">
+          <summary><span class="mark" aria-hidden="true"></span>closer<span class="sub">— upstream, downstream</span></summary>
+          <div class="cl-body">
+            <p>The two languages differ in where they&rsquo;re made. Raw sensation is the machine&rsquo;s state, reported live — produced before interpretation. The narration is assembled afterward, out of the interpreted version: signal in, meaning assigned, story written. The alarm&rsquo;s editing desk sits at that assembly step. It can only rewrite what has already been turned into story — which leaves the machine with one channel downstream of the editor and one channel upstream of it.</p>
+            <p>Everything downstream is revisable — the same afternoon can be re-narrated as triumph or disaster by dinner. What&rsquo;s upstream can&rsquo;t be revised, only felt: the heat in the face arrives before any story about the heat. It&rsquo;s a difference of mode, not of place — same nervous system, one report taken before the edit, one after. And it&rsquo;s the entire reason the last plates go to the body: not because the body is wiser, but because it publishes on the channel the editor can&rsquo;t reach.</p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -539,6 +652,15 @@
             </g>
           </svg>
         </figure>
+
+        <details class="closer reveal">
+          <summary><span class="mark" aria-hidden="true"></span>closer<span class="sub">— the burn</span></summary>
+          <div class="cl-body">
+            <p>Why a beat, and not a fight? Because the loop leaves exactly one input open. It runs in three steps — something lands, the verdict fires, an action follows — and the first two are already done by the time you notice: the thing landed, the verdict is pre-written. The action is the only term still yours. Fighting the verdict feeds the loop on its home channel — arguing is fuel. Withholding the action starves it at the one point it can&rsquo;t supply itself.</p>
+            <p>The escalation is the signature of the starving, not of the danger growing. A loop built to force an action answers no-action the only way it can — same message, more volume. The spike reads as things getting worse; it&rsquo;s the loop spending its reserves faster. It has a bottom. And the dying feeling it produces is borrowed — leverage lifted from real emergencies and re-attached to an email.</p>
+            <p>Then there&rsquo;s the receipt. An act fired mid-alarm leaves the body paying afterward — the tension, the looping, the cost. The identical act, chosen in the clearing, leaves it quiet. Same behavior, opposite receipt, and the difference was never the act — it was the driver. That receipt is checkable in your own tissue, nowhere else, which makes it the honest gauge of who was at the wheel.</p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -550,6 +672,14 @@
         <div class="body-copy reveal" style="--i:2">
           <p>Holding by will is real, but it runs on a small tank — and the tank drains first under stress, exactly when the hold is needed most. That&rsquo;s not weakness; it&rsquo;s how the equipment is built. What holds when will runs out is a boundary that isn&rsquo;t inside you at all: the class that doesn&rsquo;t end early, the room with no quick exit, the practice with a hard edge. Build the hold into the world, and staying stops being a fight.</p>
         </div>
+        <details class="closer reveal" style="--i:3">
+          <summary><span class="mark" aria-hidden="true"></span>closer<span class="sub">— the fuel</span></summary>
+          <div class="cl-body">
+            <p>The two default tools both draw on the tank that empties. Trying harder spends restraint, and restraint is metered from a small reserve that every act of restraint drains — with the drain steepest under stress, exactly when the most is being asked of it. The supply of trying depletes first. That isn&rsquo;t a character flaw; it&rsquo;s the spec. <em>Just try harder</em> fails on schedule, at the worst moment, whenever the horizon is long enough.</p>
+            <p>Understanding more fails one channel over. Insight is deposited into the narrated layer — the one channel the alarm is fluent in — so the alarm reads it there and re-purposes it: <em>I know exactly what I&rsquo;m doing, and I&rsquo;m still doing it</em> becomes evidence for the prosecution. You can&rsquo;t out-think a thing that runs on the channel your thinking runs on.</p>
+            <p>Which leaves the third tool — the one the plate names. A boundary built into the world consumes no fuel, because you aren&rsquo;t the one holding it; it&rsquo;s a fact now, like the wall. The class ends when it ends whether or not you feel resolved. Willpower is a consumable. Walls are not.</p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -566,6 +696,13 @@
           <span class="rt-lead"><b>run the test</b></span>
           This week, at the point where the legs shake and everything says stop — one more breath. Watch what the alarm does when it isn&rsquo;t obeyed.
         </div>
+        <details class="closer reveal" style="--i:4">
+          <summary><span class="mark" aria-hidden="true"></span>closer<span class="sub">— why it can&rsquo;t be faked</span></summary>
+          <div class="cl-body">
+            <p>Two mechanics run underneath this plate. First: at real load, the narrator itself is under load. The machinery that writes the running commentary is busy carrying weight — there&rsquo;s less of it free to argue, embellish, spin. What comes through in a deep hold is direct in a way conversation rarely is, not because the body is mystical but because the commentary channel is occupied. The alarm still gets through — <em>stop</em> is short — but the essay it usually attaches doesn&rsquo;t fit.</p>
+            <p>Second: the growth is mechanical. Tissue held at its edge is stressed past current capacity, and the rebuild overshoots — the system doesn&rsquo;t repair back to the old line, it repairs past it, provisioning for a load it now knows exists. The overshoot is the adaptation. It can&rsquo;t be performed, hurried, or narrated into existence — which is what makes this proof rather than metaphor. In the body, <em>you grow by staying</em> is not a belief. It&rsquo;s a measurement.</p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -579,6 +716,33 @@
         </div>
         <p class="beat reveal">In the body you find it the way you find your core — the still center everything moves from. Train the core, and you meet the core. Same word, and not by accident.</p>
         <p class="beat reveal">And the alarm is never removed. The same wiring, under a different driver, becomes the strength: the force becomes drive, the vigilance becomes attention. The thing that ran the person turns into the thing the person runs on.</p>
+        <details class="closer reveal">
+          <summary><span class="mark" aria-hidden="true"></span>closer<span class="sub">— the curve</span></summary>
+          <div class="cl-body">
+            <p>Growth here has a readout you can plot. The knock stays the same size; what shrinks is the time back to the line.</p>
+            <figure class="cl-fig">
+              <svg viewBox="0 0 760 300" role="img" aria-label="A curve over time: knocked to the same depth three times, the return to the line gets shorter each time">
+                <line class="axis" x1="70" y1="40" x2="70" y2="266"/>
+                <line class="axis" x1="70" y1="266" x2="712" y2="266"/>
+                <line class="equi" x1="70" y1="104" x2="700" y2="104"/>
+                <line class="knock-depth" x1="70" y1="228" x2="700" y2="228"/>
+                <path class="curve" d="M70,104 H110 C118,146 126,228 140,228 C178,220 268,136 330,104 H385 C392,146 401,228 415,228 C448,222 512,138 555,104 H600 C606,146 616,228 630,228 C654,222 682,144 700,107" style="stroke-width:2.2"/>
+                <g style="fill:var(--ink)">
+                  <circle cx="140" cy="228" r="3.4"/><circle cx="415" cy="228" r="3.4"/><circle cx="630" cy="228" r="3.4"/>
+                </g>
+                <text class="dtext" x="76" y="250">the same knock</text>
+                <text class="dtext" x="235" y="90" text-anchor="middle">back by Thursday</text>
+                <text class="dtext" x="485" y="90" text-anchor="middle">by evening</text>
+                <text class="dtext ink" x="665" y="90" text-anchor="middle">by noon</text>
+                <text class="dtext" x="44" y="155" transform="rotate(-90 44 155)" text-anchor="middle">steadiness</text>
+                <text class="dtext" x="700" y="288" text-anchor="end">time &#8594;</text>
+              </svg>
+              <div class="cl-cap">the return is the readout</div>
+            </figure>
+            <p>Two things about that curve matter more than they look. It can&rsquo;t be faked — performed steadiness shows up as a flat curve, and flat is the readout of nothing growing; the curve only bends if the system actually holds more than it used to. And it grades whatever you lean on. If months of leaning shorten the return, the leaning is training something. If the return stays flat or stretches, the leaning has quietly become the thing holding you up. Same care, opposite readings, and the curve tells them apart.</p>
+            <p>Under the readout is the event itself. The claim from the gym — held at the edge, the system rebuilds past it — and the claim from the rest of a life — stay through the alarm, and you can stay longer next time — and the felt claim — <em>you&rsquo;re getting stronger</em> — aren&rsquo;t three claims. In the body they&rsquo;re one event, visible. Which is why the shake was never the failure condition: a system in real exchange with the world gets moved by it, and moved-and-returning is what an open, growing system looks like from the outside. Sealed-off calm has a shape too. It&rsquo;s flat — the shape of the tent.</p>
+          </div>
+        </details>
       </div>
     </section>
 
