@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f4f1ea">
 <meta name="description" content="Enter a birthday, get a read of the friction your build repeats.">
-<title>Hardware Read</title>
+<title>The Read</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -272,9 +272,9 @@
 <body>
   <div class="wrap">
     <header>
-      <h1 class="brand">Hardware Read<span class="dot">.</span></h1>
+      <h1 class="brand">The Read<span class="dot">.</span></h1>
       <div class="head-right">
-        <div class="modeltoggle" id="modelToggle" role="group" aria-label="Choose model">
+        <div class="modeltoggle" id="modelToggle" role="group" aria-label="Choose model" style="display:none;">
           <button type="button" data-engine="claude" class="active">Claude</button>
           <button type="button" data-engine="gemini">Gemini</button>
         </div>
@@ -337,6 +337,11 @@
   const sendBtn= $("send");
   const restartBtn = $("restart");
   const modelToggle = $("modelToggle");
+
+  // dev-only: the model toggle is hidden unless ?dev=1 is in the URL.
+  if(new URLSearchParams(location.search).get("dev") === "1"){
+    modelToggle.style.display = "inline-flex";
+  }
 
   // model toggle — pick which engine the next call uses
   modelToggle.querySelectorAll("button").forEach((b) => {
