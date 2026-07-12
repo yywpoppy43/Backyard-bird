@@ -16,6 +16,7 @@ and never leave the server. The browser only ever talks to this endpoint.
 """
 
 from http.server import BaseHTTPRequestHandler
+import datetime
 import json
 import os
 import socket
@@ -90,7 +91,30 @@ FORCE_ABSENCE = {
 
 ELEMENTS = ['Wood', 'Fire', 'Earth', 'Metal', 'Water']
 
-INTENSITY = {2: 'doubled', 3: 'tripled', 4: 'quadrupled', 5: 'fivefold', 6: 'sixfold'}
+INTENSITY = {2: 'doubled', 3: 'tripled', 4: 'quadrupled', 5: 'fivefold', 6: 'sixfold',
+             7: 'sevenfold', 8: 'eightfold'}
+
+# Hidden stems (canggan): each branch carries one to three stems beneath its
+# visible element, and a force present only inside a branch must still count —
+# otherwise it gets misread as absent. Weighting: the primary hidden stem is
+# the branch's own visible element and keeps full weight (1.0), so the visible
+# count is unchanged; the secondary stem counts 0.5 and the residual stem 0.3
+# (the conventional primary > secondary > residual ordering, scaled so buried
+# forces register without outweighing visible ones).
+BRANCH_HIDDEN = {
+    'Rat':     (('Water', 1.0),),
+    'Ox':      (('Earth', 1.0), ('Water', 0.5), ('Metal', 0.3)),
+    'Tiger':   (('Wood', 1.0), ('Fire', 0.5), ('Earth', 0.3)),
+    'Rabbit':  (('Wood', 1.0),),
+    'Dragon':  (('Earth', 1.0), ('Wood', 0.5), ('Water', 0.3)),
+    'Snake':   (('Fire', 1.0), ('Metal', 0.5), ('Earth', 0.3)),
+    'Horse':   (('Fire', 1.0), ('Earth', 0.5)),
+    'Goat':    (('Earth', 1.0), ('Fire', 0.5), ('Wood', 0.3)),
+    'Monkey':  (('Metal', 1.0), ('Water', 0.5), ('Earth', 0.3)),
+    'Rooster': (('Metal', 1.0),),
+    'Dog':     (('Earth', 1.0), ('Metal', 0.5), ('Fire', 0.3)),
+    'Pig':     (('Water', 1.0), ('Wood', 0.5)),
+}
 
 # Step 3 — branch pairs that clash (the foundation grinding against itself).
 BRANCH_CLASHES = [
@@ -109,29 +133,30 @@ def _branch_animal(branch):
     return branch.split(' (')[0]
 
 
-def _branch_element(branch):
-    # 'Rat (Water)' -> 'Water'
-    return branch.split('(')[1].rstrip(')')
-
-
 def translate_profile(pillars):
     """Turn the raw chart into the plain-quality profile the model receives."""
     # Step 1: core from the day-master stem.
     core = CORE_DESCRIPTOR[pillars['day']['stem']]
 
-    # Step 2: count the five forces across all pillars (stems + branches).
-    counts = {e: 0 for e in ELEMENTS}
+    # Step 2: count the five forces across all pillars — each visible stem at
+    # full weight, plus every hidden stem inside each branch at its
+    # BRANCH_HIDDEN weight (the primary hidden stem IS the branch's visible
+    # element, so visible counting is preserved).
+    counts = {e: 0.0 for e in ELEMENTS}
     for key in ('year', 'month', 'day'):
-        counts[_stem_element(pillars[key]['stem'])] += 1
-        counts[_branch_element(pillars[key]['branch'])] += 1
+        counts[_stem_element(pillars[key]['stem'])] += 1.0
+        for element, weight in BRANCH_HIDDEN[_branch_animal(pillars[key]['branch'])]:
+            counts[element] += weight
 
-    # STRONG = any force present twice or more, heaviest first.
+    # STRONG = any force with weight two or more, heaviest first. The
+    # intensity word uses the whole part of the weighted count.
     strong_forces = sorted((e for e in ELEMENTS if counts[e] >= 2),
                            key=lambda e: (-counts[e], ELEMENTS.index(e)))
     if strong_forces:
         strong = '; '.join(
             '{} — {} and heavy'.format(
-                FORCE_FUNCTION[e], INTENSITY.get(counts[e], '{}x'.format(counts[e])))
+                FORCE_FUNCTION[e],
+                INTENSITY.get(int(counts[e]), '{}x'.format(int(counts[e]))))
             for e in strong_forces)
     else:
         strong = 'forces sit fairly even — nothing dominates'
@@ -298,6 +323,13 @@ class handler(BaseHTTPRequestHandler):
 
         if not (1900 <= year <= 2100 and 1 <= month <= 12 and 1 <= day <= 31):
             return self._send(400, {"error": "That date doesn't look right. Use a year between 1900 and 2100."})
+
+        # The day must actually exist in that month and year (no Feb 30,
+        # no Apr 31) — reject impossible dates before any chart math runs.
+        try:
+            datetime.date(year, month, day)
+        except ValueError:
+            return self._send(400, {"error": "That date couldn't be read. Please check it and try again."})
 
         # --- compute the chart deterministically ---
         try:
