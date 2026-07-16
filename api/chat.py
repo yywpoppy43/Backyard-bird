@@ -57,36 +57,49 @@ def compute_chart(year: int, month: int, day: int):
 # and hand the model ONLY the translated profile (CORE / STRONG / ABSENT /
 # FAULT LINES). Names never reach the model, so names can never leak.
 
-# Step 1 — day-master stem -> core descriptor (a felt quality, never the name).
+# Step 1 — day-master stem -> core descriptor. This is the material mechanism
+# of the person's core capacity (how it runs, where it floods), NOT a nature
+# image. Each maps to one of the five substrate capacities — source,
+# consolidation, drive, recovery, the boundary — described in plain mechanism.
+# Deliberately free of the black-box-sealed words (element names, "system,"
+# "wiring," "energy") and of clinical jargon, because the model echoes whatever
+# it is handed; it must receive mechanism it can reason about literally.
 CORE_DESCRIPTOR = {
-    'Yang Wood':  'drives upward in one direction — steady, structural push; wants room to extend; holds its line under pressure and would rather snap than bend',
-    'Yin Wood':   'advances by adapting — finds the way around an obstacle rather than through it; quietly persistent; flexible without losing direction',
-    'Yang Fire':  'radiates outward — high visibility and warmth; energizes whatever is nearby; expressive, immediate, hard to hide',
-    'Yin Fire':   'focused, close-range warmth — precise intensity aimed at one thing at a time; steady rather than blazing',
-    'Yang Earth': 'holds position — massive, protective, very hard to move; absorbs impact without changing shape; shifts slowly and on its own schedule',
-    'Yin Earth':  'receives and holds — takes in what arrives, keeps it, releases slowly; stabilizing; carries weight quietly and for a long time',
-    'Yang Metal': 'built to execute — hard, decisive; converts a decision into action immediately; cuts through rather than negotiates',
-    'Yin Metal':  'built to refine — exacting, discerning; separates what matters from what does not; precision over force',
-    'Yang Water': 'generates and moves relentlessly — heavy continuous output, momentum, connects everything to everything; does not idle; when blocked, the output backs up and spills sideways',
-    'Yin Water':  'pervades quietly — continuous gentle influence; adapts to any container; reaches everywhere without force',
+    # Wood -> consolidation (repetition locks practice into automatic capability; matures into rigidity)
+    'Yang Wood':  'locks capability in by driving one track and repeating it until it runs on its own; builds durable structure — and once set, that structure resists re-cutting, so the push matures into rigidity and holds its line past the point it should give',
+    'Yin Wood':   'locks capability in by repeating an adaptable route — working the path around obstacles until it runs without thinking; persistent and flexible, slower to stiffen but still setting in place over time',
+    # Fire -> drive/arousal (lifts to meet demand, sharp in bursts; past the peak it floods into scatter)
+    'Yang Fire':  'lifts hard and wide to meet a demand — an outward, visible push that raises everything nearby; in tight bursts it is peak focus, but past the peak it spills indiscriminately and shatters into scatter, everything urgent and nothing finished',
+    'Yin Fire':   'lifts in a focused, close-range way — precise intensity aimed at one thing at a time, sustained rather than spiking; sharp while it stays narrow, but under overload the same drive still tips into scatter and burnout',
+    # Earth -> recovery/integration (pulls down, sorts and files what came in; stalls if held too long)
+    'Yang Earth': 'pulls the whole thing down out of drive and holds it steady — absorbs impact without changing shape and sorts what came in into lasting storage; the work is intense under a still surface, but held too long it stalls in the slowdown and resists starting up again',
+    'Yin Earth':  'takes in what arrives, keeps it, and releases slowly — receptive and stabilizing, doing the quiet sorting that makes things stick; it floods by holding too much and discharging too little, so weight accumulates and stays',
+    # Metal -> the boundary (decides what is cut; held by effort it fails first under pressure)
+    'Yang Metal': 'decides and cuts — turns a decision into action at once and separates what is allowed through from what is stopped; when the line is held by effort it costs the most to maintain and gives out first at the moment of highest pressure',
+    'Yin Metal':  'draws a fine, exacting line — discerns precisely what matters from what does not and refines rather than forces; same failure under load, the precise line is hardest to hold exactly when pressure is highest',
+    # Water -> the source (generates continuously, connects everything, never lands; floods when it will not switch off)
+    'Yang Water': 'generates continuously and does not idle — connects everything to everything, heavy nonstop output and momentum; the harder it runs the less it will switch off, so when it cannot discharge it backs up and spills sideways into scatter',
+    'Yin Water':  'generates quietly and without pause — a pervasive low current of connecting that reaches into everything and rarely shows on the surface; it seldom switches fully off, so it keeps producing underneath even at rest',
 }
 
-# Step 2 — each force, named only by its function (never the element word).
+# Step 2 — each force, named by its material mechanism (never the element word).
+# Same five substrate capacities, stated compactly for the STRONG line.
 FORCE_FUNCTION = {
-    'Wood':  'channel/structure/direction',
-    'Fire':  'heat/visibility/drive',
-    'Earth': 'holding/grounding/absorption',
-    'Metal': 'cutting/precision/boundaries',
-    'Water': 'flow/release/drainage',
+    'Wood':  'consolidation: repetition that locks practice into automatic capability',
+    'Fire':  'drive: the lift that rises to meet a demand, sharp in short bursts',
+    'Earth': 'recovery: the pull-down that sorts what came in and restores steadiness',
+    'Metal': 'the boundary: the cut that decides what passes and what is stopped',
+    'Water': 'the source: continuous generating that connects everything and makes raw material',
 }
 
-# What the absence of each force tends to mean (framed as what isn't there).
+# What the absence of each force tends to mean — the missing mechanism, framed
+# as what isn't there (never the element word).
 FORCE_ABSENCE = {
-    'Wood':  'no channel — nothing gives the force a direction to run, so it spreads sideways',
-    'Fire':  'no heat — little outward visibility or spark to light things up',
-    'Earth': 'no holding — nothing settles or grounds what moves through',
-    'Metal': 'no edge — no clean boundary or cut to decide and separate with',
-    'Water': 'no drainage — nothing carries the held weight away',
+    'Wood':  'no consolidation — practice does not lock into automatic capability, so each attempt starts near scratch and little sets or holds',
+    'Fire':  'no drive on demand — little sharpening or lift to lock onto a task, hard to rise to the moment when it matters',
+    'Earth': 'no recovery or sorting — nothing pulls things down to file and store, so what comes in never settles or consolidates',
+    'Metal': 'no cut — no clean line to decide what is allowed through, so nothing gets separated or stopped',
+    'Water': 'no source — little spontaneous generating or new connection opening on its own, not much raw material arising unbidden',
 }
 
 ELEMENTS = ['Wood', 'Fire', 'Earth', 'Metal', 'Water']
